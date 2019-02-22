@@ -26,20 +26,27 @@
 # -----------------------------------------------------------------------------------#
 
 # Install DADA2 & needed binaries
+# WARNING: This may take a long time, so only do 
+# this if these packages are not already installed!
+
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("dada2", version = "3.8")
+source("https://bioconductor.org/biocLite.R")
+biocLite("ShortRead")
 
 install.packages("dplyr")
 
-# Load DADA2
+# Load DADA2 and required packages
 library(dada2); packageVersion("dada2")
+library(ShortRead)
 library(dplyr)
 
 
 
+
 # pathway to idemp (demultiplexing tool)
-idemp <- "/main/data/oliverioa/bin/idemp/idemp" # CHANGE ME to the demultiplex idemp path 
+idemp <- "/main/data/hollandh/bin/idemp" # CHANGE ME to the demultiplex idemp path;
 system2(idemp) # Run shell commands from R
 
 # Set path to shared data folder and contents
@@ -51,10 +58,10 @@ I1.fp <- file.path(data.fp, "Undetermined_S0_L001_I1_001.fastq.gz")
 R1.fp <- file.path(data.fp, "Undetermined_S0_L001_R1_001.fastq.gz") 
 R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz") 
 
-# Set up file paths in YOUR directory where you want data
-project.fp <- "/data/oliverioa/MicroMethods_dada2_tutorial"
+# Set up file paths in YOUR directory where you want data; you do not need to create these directories
+project.fp <- "/data/hollandh/MicroMethods_dada2_tutorial"
 
-# Sub directories to stay organized
+# Set up names of sub directories to stay organized
 preprocess.fp <- file.path(project.fp, "01_preprocess")
     demultiplex.fp <- file.path(preprocess.fp, "demultiplexed")
     filtN.fp <- file.path(preprocess.fp, "filtN")
