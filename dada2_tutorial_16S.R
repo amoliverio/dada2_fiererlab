@@ -19,28 +19,37 @@
     # ssh <your microbe user name>@microbe.colorado.edu
 
 # Login to RStudio on the server (NOTE: you can also run from your own computer, slower!)
-    # ssh -N -f -L localhost:####:localhost:8787 <yourUSERNAME>@microbe.colorado.edu
+    # 1) Open a empty browser tab
+    # 2) type microbe.colorado.edu:8787
+    # 3) use your server login credentials to log into rstudio server
 
 # -----------------------------------------------------------------------------------#
 # Set up - You are logged in to Rstudio on server # (Or have it open on your computer)
 # -----------------------------------------------------------------------------------#
 
 # Install DADA2 & needed binaries
+# WARNING: This may take a long time, so only do 
+# this if these packages are not already installed!
+
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("dada2", version = "3.8")
+source("https://bioconductor.org/biocLite.R")
+biocLite("ShortRead")
 
 install.packages("dplyr")
 
-# Load DADA2
+# Load DADA2 and required packages
 library(dada2); packageVersion("dada2")
+library(ShortRead)
 library(dplyr)
 
 
 
+
 # pathway to idemp (demultiplexing tool)
-idemp <- "/main/data/oliverioa/bin/idemp/idemp" # CHANGE ME to the demultiplex idemp path 
-system2(idemp) # Run shell commands from R
+idemp <- "/main/data/hollandh/bin/idemp" # CHANGE ME to the demultiplex idemp path;
+system2(idemp) # Check that idemp is in your path and you can run shell commands from R
 
 # Set path to shared data folder and contents
 data.fp <- "/data/shared/2019_02_20_MicrMethods_tutorial"  ## CHANGE ME to the directory containing the fastq files.
@@ -51,10 +60,10 @@ I1.fp <- file.path(data.fp, "Undetermined_S0_L001_I1_001.fastq.gz")
 R1.fp <- file.path(data.fp, "Undetermined_S0_L001_R1_001.fastq.gz") 
 R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz") 
 
-# Set up file paths in YOUR directory where you want data
-project.fp <- "/data/oliverioa/MicroMethods_dada2_tutorial"
+# Set up file paths in YOUR directory where you want data; you do not need to create these directories
+project.fp <- "/data/hollandh/MicroMethods_dada2_tutorial"
 
-# Sub directories to stay organized
+# Set up names of sub directories to stay organized
 preprocess.fp <- file.path(project.fp, "01_preprocess")
     demultiplex.fp <- file.path(preprocess.fp, "demultiplexed")
     filtN.fp <- file.path(preprocess.fp, "filtN")
@@ -67,13 +76,14 @@ table.fp <- file.path(project.fp, "03_tabletax")
 # -----------------------------------------------------------------------------------#
 
  # Call demultiplex script
+
 flags <- paste("-b", barcode.fp, "-I1", I1.fp, "-R1", R1.fp, "-R2", R2.fp, "-o", demultiplex.fp) 
-system2(idemp, args = flags)
+system2(idemp, args = flags) # WARNING: This may take a while
 
 # Look at output of demultiplex
 list.files(demultiplex.fp)
 
-# Move unassignable reads (so they are not included in downstream analyses)
+# Change names of unassignable reads so they are not included in downstream analyses (remove "R1/2" from names).
 unassigned_1 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_unsigned.fastq.gz", " ", demultiplex.fp, "/Unassigned_reads1.fastq.gz")
 unassigned_2 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R2_001.fastq.gz_unsigned.fastq.gz", " ", demultiplex.fp, "/Unassigned_reads2.fastq.gz")
 system(unassigned_1)
@@ -108,10 +118,11 @@ FWD.orients <- allOrients(FWD)
 REV.orients <- allOrients(REV)
 FWD.orients
 
-# Pre-filter to remove Ns
-fnFs.filtN <- file.path(preprocess.fp, "filtN", basename(fnFs)) # Put N-filtered files in filtN/ subdirectory
+# Pre-filter to remove sequence reads with Ns
+fnFs.filtN <- file.path(preprocess.fp, "filtN", basename(fnFs)) # Name the N-filtered files to put them in filtN/ subdirectory
 fnRs.filtN <- file.path(preprocess.fp, "filtN", basename(fnRs))
-filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE)
+# filter Ns from reads and put them into the filtN directory
+filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE) # Change multithread to FALSE on Windows
 
 # Count how many time primers appear
 primerHits <- function(primer, fn) {
@@ -120,7 +131,8 @@ primerHits <- function(primer, fn) {
     return(sum(nhits > 0))
 }
 
-# Look at primer detection for first file
+# As a check, look at primer detection for first file,
+  ## there may be some primers here, we will remove them below
 rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.filtN[[1]]), 
       FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.filtN[[1]]), 
       REV.ForwardReads = sapply(REV.orients, primerHits, fn = fnFs.filtN[[1]]), 
@@ -130,7 +142,7 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.filtN[[1]]),
 
 # Load cutadapt
 cutadapt <- "/usr/local/Python27/bin/cutadapt" # CHANGE ME to the cutadapt path on your machine
-system2(cutadapt, args = "--version") # Run shell commands from R
+system2(cutadapt, args = "--version") # Check if it's working by running shell command from R
 
 # Trim primers
 if(!dir.exists(trimmed.fp)) dir.create(trimmed.fp)
@@ -180,7 +192,7 @@ file.copy(from = fnFs.cut, to = fnFs.Q)
 file.copy(from = fnRs.cut, to = fnRs.Q)
 
 # File parsing
-filtpathF <- file.path(subF.fp, "filtered") # Filtered forward files go into the pathF/filtered/ subdirectory
+filtpathF <- file.path(subF.fp, "filtered") # Filtered forward files go into the path preprocessed_F/filtered/ subdirectory
 filtpathR <- file.path(subR.fp, "filtered") # ...
 fastqFs <- sort(list.files(subF.fp, pattern="fastq.gz"))
 fastqRs <- sort(list.files(subR.fp, pattern="fastq.gz"))
@@ -191,6 +203,7 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 # -----------------------------------------------------------------------------------#
 
 # Filtering: THESE PARAMETERS ARENT OPTIMAL FOR ALL DATASETS
+# Specifically, the truncLen and the maxEE may need to be changed.
 filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
               rev=file.path(subR.fp, fastqRs), filt.rev=file.path(filtpathR, fastqRs),
               truncLen=c(150,150), maxEE=2, truncQ=11, maxN=0, rm.phix=TRUE,
@@ -214,7 +227,8 @@ sample.namesR <- gsub(".fastq.gz", "", sample.namesR)
 if(!identical(sample.names, sample.namesR)) stop("Forward and reverse files do not match.")
 names(filtFs) <- sample.names
 names(filtRs) <- sample.names
-set.seed(100)
+
+set.seed(100) # set seed to ensure that randomized steps are replicatable
 
 # Learn forward error rates
 errF <- learnErrors(filtFs, nbases=1e8, multithread=TRUE)
@@ -260,8 +274,8 @@ tax <- assignTaxonomy(seqtab, "/data/oliverioa/dada2_tutorials/silva_nr_v132_tra
                       multithread=TRUE)
 
 # Write to disk
-saveRDS(seqtab, paste0(table.fp, "/seqtab_final.rds")) # CHANGE ME to where you want sequence table saved
-saveRDS(tax, paste0(table.fp, "/tax_final.rds")) # CHANGE ME ...
+saveRDS(seqtab, paste0(table.fp, "/seqtab_final.rds"))
+saveRDS(tax, paste0(table.fp, "/tax_final.rds"))
 
 # -----------------------------------------------------------------------------------#
 # 4. Optional - Format to obtain ESV IDs and repset, and Input for mctoolsr
@@ -303,8 +317,10 @@ sort(colSums(input$data_loaded))
 save(input, rep_set_ESVs, file = paste0(table.fp, "/input_tutorial.rda"))
 
 # Also export files as .txt
-write.table(seqtab.t, file = paste0(table.fp, "/seqtab_final.txt"))
-write.table(tax, file = paste0(table.fp, "/tax_final.txt"))
+write.table(seqtab.t, file = paste0(table.fp, "/seqtab_final.txt"),
+            sep = "\t", row.names = TRUE, col.names = NA)
+write.table(tax, file = paste0(table.fp, "/tax_final.txt"), 
+            sep = "\t", row.names = TRUE, col.names = NA)
 
 # Note: you will need to think about the following in downstream applications:
     #1 Remove mitochondrial and chloroplast sequences, for example with mctoolsr:
