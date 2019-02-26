@@ -19,7 +19,9 @@
     # ssh <your microbe user name>@microbe.colorado.edu
 
 # Login to RStudio on the server (NOTE: you can also run from your own computer, slower!)
-    # ssh -N -f -L localhost:####:localhost:8787 <yourUSERNAME>@microbe.colorado.edu
+    # 1) Open a empty browser tab
+    # 2) type microbe.colorado.edu:8787
+    # 3) use your server login credentials to log into rstudio server
 
 # -----------------------------------------------------------------------------------#
 # Set up - You are logged in to Rstudio on server # (Or have it open on your computer)
@@ -272,8 +274,8 @@ tax <- assignTaxonomy(seqtab, "/data/oliverioa/dada2_tutorials/silva_nr_v132_tra
                       multithread=TRUE)
 
 # Write to disk
-saveRDS(seqtab, paste0(table.fp, "/seqtab_final.rds")) # CHANGE ME to where you want sequence table saved
-saveRDS(tax, paste0(table.fp, "/tax_final.rds")) # CHANGE ME ...
+saveRDS(seqtab, paste0(table.fp, "/seqtab_final.rds"))
+saveRDS(tax, paste0(table.fp, "/tax_final.rds"))
 
 # -----------------------------------------------------------------------------------#
 # 4. Optional - Format to obtain ESV IDs and repset, and Input for mctoolsr
@@ -315,8 +317,10 @@ sort(colSums(input$data_loaded))
 save(input, rep_set_ESVs, file = paste0(table.fp, "/input_tutorial.rda"))
 
 # Also export files as .txt
-write.table(seqtab.t, file = paste0(table.fp, "/seqtab_final.txt"))
-write.table(tax, file = paste0(table.fp, "/tax_final.txt"))
+write.table(seqtab.t, file = paste0(table.fp, "/seqtab_final.txt"),
+            sep = "\t", row.names = TRUE, col.names = NA)
+write.table(tax, file = paste0(table.fp, "/tax_final.txt"), 
+            sep = "\t", row.names = TRUE, col.names = NA)
 
 # Note: you will need to think about the following in downstream applications:
     #1 Remove mitochondrial and chloroplast sequences, for example with mctoolsr:
