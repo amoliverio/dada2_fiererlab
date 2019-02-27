@@ -260,13 +260,15 @@ hr {
 
 <p>Install DADA2 &amp; other necessary packages</p>
 
+<p><strong>NOTE:</strong> if you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: <a href="https://github.com/yhwu/idemp">https://github.com/yhwu/idemp</a></p>
+
 <table><thead>
 <tr>
 <th align="left"><span></th>
 </tr>
 </thead><tbody>
 <tr>
-<td align="left"><strong>NOTE:</strong> if you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: <a href="https://github.com/yhwu/idemp">https://github.com/yhwu/idemp</a></td>
+<td align="left"><strong>WARNING:</strong> This installation may take a long time, so only run this code if these packages are not already installed!</td>
 </tr>
 <tr>
 <td align="left"><span></td>
@@ -281,19 +283,6 @@ source(&quot;https://bioconductor.org/biocLite.R&quot;)
 biocLite(&quot;ShortRead&quot;)
 install.packages(&quot;dplyr&quot;)
 </code></pre>
-
-<table><thead>
-<tr>
-<th align="left"><span></th>
-</tr>
-</thead><tbody>
-<tr>
-<td align="left"><strong>WARNING:</strong> This installation may take a long time, so only do this if these packages are not already installed!</td>
-</tr>
-<tr>
-<td align="left"><span></td>
-</tr>
-</tbody></table>
 
 <p>Load DADA2 and required packages</p>
 
@@ -508,7 +497,7 @@ if(length(fastqFs) != length(fastqRs)) stop(&quot;Forward and reverse files do n
 
 <p>Before chosing sequence variants, we want to trim reads where their quality scores begin to drop (the <code>truncLen</code> and <code>truncQ</code> values) and remove any low-quality reads that are left over after we have finished trimming (the <code>maxEE</code> value).</p>
 
-<p>You <strong>will want to change this</strong> depending on run chemistry and quality: for 2x250 bp runs you can try truncLen=c(240,160) as per the dada2 tutorial if your reverse reads drop off in quality and higher, for example, truncLen=c(240,240) if they do not.</p>
+<p><strong>You will want to change this depending on run chemistry and quality:</strong> for 2x250 bp runs you can try truncLen=c(240,160) as per the dada2 tutorial if your reverse reads drop off in quality and higher, for example, truncLen=c(240,240) if they do not.</p>
 
 <p><strong>For ITS data:</strong> Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: <a href="">https://benjjneb.github.io/dada2/ITS_workflow.html</a>.</p>
 

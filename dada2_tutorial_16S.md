@@ -40,9 +40,11 @@ ssh <your microbe user name>@microbe.colorado.edu
 
 Install DADA2 & other necessary packages
 
+**NOTE:** if you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp)
+
 | <span> |
 | :--- |
-| **NOTE:** if you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp) |
+| **WARNING:** This installation may take a long time, so only run this code if these packages are not already installed! |
 | <span> |
 
 
@@ -57,10 +59,6 @@ biocLite("ShortRead")
 install.packages("dplyr")
 ```
 
-| <span> |
-| :--- |
-| **WARNING:** This installation may take a long time, so only do this if these packages are not already installed! |
-| <span> |
 
 Load DADA2 and required packages
 
@@ -288,7 +286,7 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 
 Before chosing sequence variants, we want to trim reads where their quality scores begin to drop (the `truncLen` and `truncQ` values) and remove any low-quality reads that are left over after we have finished trimming (the `maxEE` value).
 
-You **will want to change this** depending on run chemistry and quality: for 2x250 bp runs you can try truncLen=c(240,160) as per the dada2 tutorial if your reverse reads drop off in quality and higher, for example, truncLen=c(240,240) if they do not.
+**You will want to change this depending on run chemistry and quality:** for 2x250 bp runs you can try truncLen=c(240,160) as per the dada2 tutorial if your reverse reads drop off in quality and higher, for example, truncLen=c(240,240) if they do not.
 
 **For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: [https://benjjneb.github.io/dada2/ITS_workflow.html]().
 
