@@ -240,10 +240,11 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 #' begin to drop (the `truncLen` and `truncQ` values) and remove any low-quality reads 
 #' that are left over after we have finished trimming (the `maxEE` value).
 
-#' |**WARNING:** THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine
+#' ---
+#' **WARNING:** THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine
 #' the trim and filtering parameters for your data. The following settings are 
-#' generally appropriate for MiSeq runs.|
-#' | --- |
+#' generally appropriate for MiSeq runs.
+#' ---
 #'
 
 filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
