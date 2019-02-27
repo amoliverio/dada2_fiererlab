@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>dada2 tutorial with MiSeq dataset for Fierer Lab</title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: #990073
+   }
+
+   pre .number {
+     color: #099;
+   }
+
+   pre .comment {
+     color: #998;
+     font-style: italic
+   }
+
+   pre .keyword {
+     color: #900;
+     font-weight: bold
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: #d14;
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<h1>dada2 tutorial with MiSeq dataset for Fierer Lab</h1>
+
+<p>This version runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.</p>
+
+<p>We suggest opening the dada2 tutorial online to understand more about each step. The original pipeline on which this tutorial is based can be found here: <a href="https://benjjneb.github.io/dada2/bigdata_paired.html">https://benjjneb.github.io/dada2/bigdata_paired.html</a></p>
+
+<table><thead>
+<tr>
+<th align="left"><span></th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left"><strong>NOTE:</strong> There is a slightly different pipeline for ITS and non-&ldquo;Big data&rdquo; workflows. The non-&ldquo;Big data&rdquo; pipeline, in particular, has very nice detailed explanations for each step and can be found here: <a href="https://benjjneb.github.io/dada2/tutorial.html">https://benjjneb.github.io/dada2/tutorial.html</a></td>
+</tr>
+<tr>
+<td align="left"><span></td>
+</tr>
+</tbody></table>
+
+<h2>Set up (part 1) - Steps before starting pipeline</h2>
+
+<p>If you are running it through fierer lab &ldquo;microbe&rdquo; server:</p>
+
+<h4>Logging in:</h4>
+
+<p>To use the microbe server, open a terminal window, and type and hit return:</p>
+
+<pre><code class="bash">ssh &lt;your microbe user name&gt;@microbe.colorado.edu 
+</code></pre>
+
+<h4>Login to RStudio on the server</h4>
+
+<ol>
+<li>Open a your web browser and start a new empty tab</li>
+<li>type <code>microbe.colorado.edu:8787</code> in the address bar</li>
+<li>use your server login credentials to log into rstudio server</li>
+</ol>
+
+<p>If you are running it on your own computer (runs slower!):</p>
+
+<ol>
+<li>Download the tutorial data from here <a href="http://cme.colorado.edu/projects/bioinformatics-tutorials">http://cme.colorado.edu/projects/bioinformatics-tutorials</a></li>
+<li>Install idemp and cutadapt. 
+
+<ul>
+<li>idemp can be found here: <a href="https://github.com/yhwu/idemp">https://github.com/yhwu/idemp</a></li>
+<li>cutadapt can be installed from here: <a href="https://cutadapt.readthedocs.io/en/stable/installation.html">https://cutadapt.readthedocs.io/en/stable/installation.html</a></li>
+<li>Download the dada2-formatted reference database of your choice. Link to download here: <a href="https://benjjneb.github.io/dada2/training.html">https://benjjneb.github.io/dada2/training.html</a></li>
+</ul></li>
+</ol>
+
+<h2>Set up (part 2) - You are logged in to Rstudio on server (or have it open on your computer)</h2>
+
+<p>Install DADA2 &amp; other necessary packages.</p>
+
+<table><thead>
+<tr>
+<th align="left"><span></th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left"><strong>WARNING:</strong> This installation may take a long time, so only run this code if these packages are not already installed!</td>
+</tr>
+<tr>
+<td align="left"><span></td>
+</tr>
+</tbody></table>
+
+<pre><code class="r">if (!requireNamespace(&quot;BiocManager&quot;, quietly = TRUE))
+    install.packages(&quot;BiocManager&quot;)
+BiocManager::install(&quot;dada2&quot;, version = &quot;3.8&quot;)
+
+source(&quot;https://bioconductor.org/biocLite.R&quot;)
+biocLite(&quot;ShortRead&quot;)
+install.packages(&quot;dplyr&quot;)
+</code></pre>
+
+<p>Load DADA2 and required packages</p>
+
+<pre><code class="r">library(dada2); packageVersion(&quot;dada2&quot;)
+library(ShortRead)
+library(dplyr)
+</code></pre>
+
+<p>Once the packages are installed, you can check to make sure the auxillary
+software is working and set up some of the variables that you will need 
+along the way.</p>
+
+<table><thead>
+<tr>
+<th align="left"><span></th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left"><strong>NOTE:</strong> If you are not working from microbe server, you will need to change the file paths for idemp and cutadapt to where they are stored on your computer/server.</td>
+</tr>
+<tr>
+<td align="left"><span></td>
+</tr>
+</tbody></table>
+
+<p>For this tutorial we will be working with some samples that we obtained 16S amplicon data for, from a Illumina Miseq run. The data for these samples can be found on the CME website. <a href="http://cme.colorado.edu/projects/bioinformatics-tutorials">http://cme.colorado.edu/projects/bioinformatics-tutorials</a></p>
+
+<pre><code class="r"># Set up pathway to idemp (demultiplexing tool) and test
+idemp &lt;- &quot;/usr/bin/idemp&quot; # CHANGE ME if not on microbe
+system2(idemp) # Check that idemp is in your path and you can run shell commands from R
+
+# Set up pathway to cutadapt (primer trimming tool) and test
+cutadapt &lt;- &quot;/usr/local/Python27/bin/cutadapt&quot; # CHANGE ME if not on microbe
+system2(cutadapt, args = &quot;--version&quot;) # Check by running shell command from R
+
+# Set path to shared data folder and contents
+data.fp &lt;- &quot;/data/shared/2019_02_20_MicrMethods_tutorial&quot;
+
+# List all files in shared folder to check path
+list.files(data.fp)
+
+# Set file paths for barcodes file, map file, and fastqs
+    # barcodes need to have &#39;N&#39; on the end of each 12bp sequence for compatability
+barcode.fp &lt;- file.path(data.fp, &quot;barcode_demultiplex_short.txt&quot;) # .txt file: barcode &lt;/t&gt; sampleID
+map.fp &lt;- file.path(data.fp, &quot;Molecular_Methods_18_515fBC_16S_Mapping_File_SHORT_vFinal_Fierer_10252018.txt&quot;)
+I1.fp &lt;- file.path(data.fp, &quot;Undetermined_S0_L001_I1_001.fastq.gz&quot;) 
+R1.fp &lt;- file.path(data.fp, &quot;Undetermined_S0_L001_R1_001.fastq.gz&quot;) 
+R2.fp &lt;- file.path(data.fp, &quot;Undetermined_S0_L001_R2_001.fastq.gz&quot;) 
+</code></pre>
+
+<table><thead>
+<tr>
+<th align="left"><span></th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left"><strong>NOTE:</strong> idemp relies on having a match in length between the index file and and the barcode sequences. Since the index file includes a extra linker basepair, you should append the barcode sequences with &ldquo;N&rdquo; to make sure each is 13bp long.</td>
+</tr>
+<tr>
+<td align="left"><span></td>
+</tr>
+</tbody></table>
+
+<p>Set up file paths in YOUR directory where you want data; 
+you do not need to create the subdirectories but they are nice to have
+for organizational purposes. </p>
+
+<pre><code class="r">project.fp &lt;- &quot;/data/YOUR_USERNAME/MicroMethods_dada2_tutorial&quot; # CHANGE ME to project directory
+
+# Set up names of sub directories to stay organized
+preprocess.fp &lt;- file.path(project.fp, &quot;01_preprocess&quot;)
+    demultiplex.fp &lt;- file.path(preprocess.fp, &quot;demultiplexed&quot;)
+    filtN.fp &lt;- file.path(preprocess.fp, &quot;filtN&quot;)
+    trimmed.fp &lt;- file.path(preprocess.fp, &quot;trimmed&quot;)
+filter.fp &lt;- file.path(project.fp, &quot;02_filter&quot;) 
+table.fp &lt;- file.path(project.fp, &quot;03_tabletax&quot;) 
+</code></pre>
+
+<h2>Pre-processing data for dada2 - demultiplex, remove sequences with Ns, cutadapt</h2>
+
+<h4>Call the demultiplexing script</h4>
+
+<p>Demultiplexing splits your reads out into separate files based on the barcodes associated with each sample. </p>
+
+<pre><code class="r">flags &lt;- paste(&quot;-b&quot;, barcode.fp, &quot;-I1&quot;, I1.fp, &quot;-R1&quot;, R1.fp, &quot;-R2&quot;, R2.fp, &quot;-o&quot;, demultiplex.fp) 
+system2(idemp, args = flags) 
+
+# Look at output of demultiplexing
+list.files(demultiplex.fp)
+</code></pre>
+
+<table><thead>
+<tr>
+<th align="left"><span></th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left"><strong>WARNING:</strong> The demultiplexing step may take a while. If it takes too long you can safely close RStudio on the server and the demultiplexing will run in the background. You should be able to resume the pipeline after demultiplexing is complete by logging back into RStudio on the server.</td>
+</tr>
+<tr>
+<td align="left"><span></td>
+</tr>
+</tbody></table>
+
+<h4>Clean up the output from idemp</h4>
+
+<pre><code class="r"># Change names of unassignable reads so they are not included in downstream processing
+unassigned_1 &lt;- paste0(&quot;mv&quot;, &quot; &quot;, demultiplex.fp, &quot;/Undetermined_S0_L001_R1_001.fastq.gz_unsigned.fastq.gz&quot;,
+                       &quot; &quot;, demultiplex.fp, &quot;/Unassigned_reads1.fastq.gz&quot;)
+unassigned_2 &lt;- paste0(&quot;mv&quot;, &quot; &quot;, demultiplex.fp, &quot;/Undetermined_S0_L001_R2_001.fastq.gz_unsigned.fastq.gz&quot;, 
+                       &quot; &quot;, demultiplex.fp, &quot;/Unassigned_reads2.fastq.gz&quot;)
+system(unassigned_1)
+system(unassigned_2)
+
+# Rename files - gsub to get names in order!
+R1_names &lt;- gsub(paste0(demultiplex.fp, &quot;/Undetermined_S0_L001_R1_001.fastq.gz_&quot;), &quot;&quot;, 
+                 list.files(demultiplex.fp, pattern=&quot;R1&quot;, full.names = TRUE))
+file.rename(list.files(demultiplex.fp, pattern=&quot;R1&quot;, full.names = TRUE), 
+            paste0(demultiplex.fp, &quot;/R1_&quot;, R1_names))
+
+R2_names &lt;- gsub(paste0(demultiplex.fp, &quot;/Undetermined_S0_L001_R2_001.fastq.gz_&quot;), &quot;&quot;, 
+                 list.files(demultiplex.fp, pattern=&quot;R2&quot;, full.names = TRUE))
+file.rename(list.files(demultiplex.fp, pattern=&quot;R2&quot;, full.names = TRUE),
+            paste0(demultiplex.fp, &quot;/R2_&quot;, R2_names))
+
+# Get full paths for all files and save them for downstream analyses
+# Forward and reverse fastq filenames have format: 
+fnFs &lt;- sort(list.files(demultiplex.fp, pattern=&quot;R1_&quot;, full.names = TRUE))
+fnRs &lt;- sort(list.files(demultiplex.fp, pattern=&quot;R2_&quot;, full.names = TRUE))
+</code></pre>
+
+<h4>Pre-filter to remove sequence reads with Ns</h4>
+
+<p>Ambiguous bases will make it hard for cutadapt to find short primer sequences in the reads.
+To solve this problem, we will remove sequences with ambiguous bases (Ns)</p>
+
+<pre><code class="r"># Name the N-filtered files to put them in filtN/ subdirectory
+fnFs.filtN &lt;- file.path(preprocess.fp, &quot;filtN&quot;, basename(fnFs))
+fnRs.filtN &lt;- file.path(preprocess.fp, &quot;filtN&quot;, basename(fnRs))
+
+# filter Ns from reads and put them into the filtN directory
+filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE) 
+# CHANGE multithread to FALSE on Windows (here and elsewhere in the program)
+</code></pre>
+
+<h4>Prepare the primers sequences and custom functions for analyzing the results from cutadapt</h4>
+
+<p>Assign the primers you used to &ldquo;FWD&rdquo; and &ldquo;REV&rdquo; below. Note primers should be not be reverse complemented ahead of time. Our tutorial data uses 515f and 806br those are the primers below. Change if you sequenced with other primers.</p>
+
+<pre><code class="r"># set up the primer sequences to pass along to cutadapt
+FWD &lt;- &quot;GTGYCAGCMGCCGCGGTAA&quot;  ## CHANGE ME # this is 515f
+REV &lt;- &quot;GGACTACNVGGGTWTCTAAT&quot;  ## CHANGE ME # this is 806Br
+
+# Write a function that creates a list of all orientations of the primers
+allOrients &lt;- function(primer) {
+    # Create all orientations of the input sequence
+    require(Biostrings)
+    dna &lt;- DNAString(primer)  # The Biostrings works w/ DNAString objects rather than character vectors
+    orients &lt;- c(Forward = dna, Complement = complement(dna), Reverse = reverse(dna), 
+                 RevComp = reverseComplement(dna))
+    return(sapply(orients, toString))  # Convert back to character vector
+}
+
+# save the primer orientations to pass to cutadapt
+FWD.orients &lt;- allOrients(FWD)
+REV.orients &lt;- allOrients(REV)
+FWD.orients
+
+# Write a function that counts how many time primers appear in a sequence
+primerHits &lt;- function(primer, fn) {
+    # Counts number of reads in which the primer is found
+    nhits &lt;- vcountPattern(primer, sread(readFastq(fn)), fixed = FALSE)
+    return(sum(nhits &gt; 0))
+}
+</code></pre>
+
+<p>Before running cutadapt, we will look at primer detection
+for the first sample, as a check. There may be some primers here, we will remove them below using cutadapt.</p>
+
+<pre><code class="r">rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.filtN[[1]]), 
+      FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.filtN[[1]]), 
+      REV.ForwardReads = sapply(REV.orients, primerHits, fn = fnFs.filtN[[1]]), 
+      REV.ReverseReads = sapply(REV.orients, primerHits, fn = fnRs.filtN[[1]]))
+</code></pre>
+
+<h4>Remove primers with cutadapt and assess the output</h4>
+
+<pre><code class="r"># create directory to hold the output from cutadapt
+if (!dir.exists(trimmed.fp)) dir.create(trimmed.fp)
+fnFs.cut &lt;- file.path(trimmed.fp, basename(fnFs))
+fnRs.cut &lt;- file.path(trimmed.fp, basename(fnRs))
+
+# Save the reverse complements of the primers to variables
+FWD.RC &lt;- dada2:::rc(FWD)
+REV.RC &lt;- dada2:::rc(REV)
+
+##  Create the cutadapt flags ##
+# Trim FWD and the reverse-complement of REV off of R1 (forward reads)
+R1.flags &lt;- paste(&quot;-g&quot;, FWD, &quot;-a&quot;, REV.RC) 
+
+# Trim REV and the reverse-complement of FWD off of R2 (reverse reads)
+R2.flags &lt;- paste(&quot;-G&quot;, REV, &quot;-A&quot;, FWD.RC) 
+
+# Run Cutadapt
+for (i in seq_along(fnFs)) {
+    system2(cutadapt, args = c(R1.flags, R2.flags, &quot;-n&quot;, 2, # -n 2 required to remove FWD and REV from reads
+                               &quot;-o&quot;, fnFs.cut[i], &quot;-p&quot;, fnRs.cut[i], # output files
+                               fnFs.filtN[i], fnRs.filtN[i])) # input files
+}
+
+# As a sanity check, we will check for primers in the first cutadapt-ed sample:
+    ## should all be zero!
+rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.cut[[1]]), 
+      FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.cut[[1]]), 
+      REV.ForwardReads = sapply(REV.orients, primerHits, fn = fnFs.cut[[1]]), 
+      REV.ReverseReads = sapply(REV.orients, primerHits, fn = fnRs.cut[[1]]))
+</code></pre>
+
+<h1>Now start DADA2 pipeline</h1>
+
+<pre><code class="r"># Put filtered reads into separate sub-directories for big data workflow
+dir.create(filter.fp)
+    subF.fp &lt;- file.path(filter.fp, &quot;preprocessed_F&quot;) 
+    subR.fp &lt;- file.path(filter.fp, &quot;preprocessed_R&quot;) 
+dir.create(subF.fp)
+dir.create(subR.fp)
+
+# Move R1 and R2 from trimmed to separate forward/reverse sub-directories
+fnFs.Q &lt;- file.path(subF.fp,  basename(fnFs)) 
+fnRs.Q &lt;- file.path(subR.fp,  basename(fnRs))
+file.rename(from = fnFs.cut, to = fnFs.Q)
+file.rename(from = fnRs.cut, to = fnRs.Q)
+
+# File parsing
+filtpathF &lt;- file.path(subF.fp, &quot;filtered&quot;) # files go into preprocessed_F/filtered/
+filtpathR &lt;- file.path(subR.fp, &quot;filtered&quot;) # ...
+fastqFs &lt;- sort(list.files(subF.fp, pattern=&quot;fastq.gz&quot;))
+fastqRs &lt;- sort(list.files(subR.fp, pattern=&quot;fastq.gz&quot;))
+if(length(fastqFs) != length(fastqRs)) stop(&quot;Forward and reverse files do not match.&quot;)
+</code></pre>
+
+<h3>1. FILTER AND TRIM FOR QUALITY</h3>
+
+<p>Before chosing sequence variants, we want to trim reads where their quality scores begin to drop (the <code>truncLen</code> and <code>truncQ</code> values) and remove any low-quality reads that are left over after we have finished trimming (the <code>maxEE</code> value).</p>
+
+<p><strong>You will want to change this depending on run chemistry and quality:</strong> For 2x250 bp runs you can try truncLen=c(240,160) (as per the <a href="https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles">dada2 tutorial</a>) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, truncLen=c(240,240), if they do not.</p>
+
+<p><strong>For ITS data:</strong> Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: <a href="https://benjjneb.github.io/dada2/ITS_workflow.html">https://benjjneb.github.io/dada2/ITS_workflow.html</a>.</p>
+
+<p><strong>From dada2 tutorial:</strong></p>
+
+<blockquote>
+<p>If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters &hellip; are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE.</p>
+</blockquote>
+
+<table><thead>
+<tr>
+<th align="left"><span></th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left"><strong>WARNING:</strong> THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine the trim and filtering parameters for your data. The following settings are generally appropriate for MiSeq runs that are 2x150 bp. See above for more details.</td>
+</tr>
+<tr>
+<td align="left"><span></td>
+</tr>
+</tbody></table>
+
+<pre><code class="r">filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
+              rev=file.path(subR.fp, fastqRs), filt.rev=file.path(filtpathR, fastqRs),
+              truncLen=c(150,140), maxEE=1, truncQ=11, maxN=0, rm.phix=TRUE,
+              compress=TRUE, verbose=TRUE, multithread=TRUE)
+</code></pre>
+
+<h3>2. INFER sequence variants</h3>
+
+<p>In this part of the pipeline dada2 will learn to distinguish error from biological 
+differences using a subset of our data as a training set. After it understands the 
+error rates, we will reduce the size of the dataset by combining all identical 
+sequence reads into &ldquo;unique sequences&rdquo;. Then, using the dereplicated data and 
+error rates, dada2 will infer the sequence variants (OTUs) in our data. Finally, 
+we will merge the coresponding forward and reverse reads to create a list of the 
+fully denoised sequences and create a sequence table from the result.</p>
+
+<h4>Housekeeping step - set up and verify the file names for the output:</h4>
+
+<pre><code class="r"># File parsing
+filtFs &lt;- list.files(filtpathF, pattern=&quot;fastq.gz&quot;, full.names = TRUE)
+filtRs &lt;- list.files(filtpathR, pattern=&quot;fastq.gz&quot;, full.names = TRUE)
+
+# Sample names in order
+sample.names &lt;- substring(basename(filtFs), regexpr(&quot;_&quot;, basename(filtFs)) + 1) # doesn&#39;t drop fastq.gz
+sample.names &lt;- gsub(&quot;.fastq.gz&quot;, &quot;&quot;, sample.names)
+sample.namesR &lt;- substring(basename(filtRs), regexpr(&quot;_&quot;, basename(filtRs)) + 1) # doesn&#39;t drop fastq.gz
+sample.namesR &lt;- gsub(&quot;.fastq.gz&quot;, &quot;&quot;, sample.namesR)
+
+# Double check
+if(!identical(sample.names, sample.namesR)) stop(&quot;Forward and reverse files do not match.&quot;)
+names(filtFs) &lt;- sample.names
+names(filtRs) &lt;- sample.names
+</code></pre>
+
+<h4>Learn the error rates</h4>
+
+<pre><code class="r">set.seed(100) # set seed to ensure that randomized steps are replicatable
+
+# Learn forward error rates
+errF &lt;- learnErrors(filtFs, nbases=1e8, multithread=TRUE)
+
+# Learn reverse error rates
+errR &lt;- learnErrors(filtRs, nbases=1e8, multithread=TRUE)
+</code></pre>
+
+<h4>Dereplication, sequence inference, and merging of paired-end reads</h4>
+
+<pre><code class="r"># make a list to hold the loop output
+mergers &lt;- vector(&quot;list&quot;, length(sample.names))
+names(mergers) &lt;- sample.names
+
+# for each sample, get a list of merged and denoised sequences
+for(sam in sample.names) {
+    cat(&quot;Processing:&quot;, sam, &quot;\n&quot;)
+    derepF &lt;- derepFastq(filtFs[[sam]])
+    ddF &lt;- dada(derepF, err=errF, multithread=TRUE)
+    derepR &lt;- derepFastq(filtRs[[sam]])
+    ddR &lt;- dada(derepR, err=errR, multithread=TRUE)
+    merger &lt;- mergePairs(ddF, derepF, ddR, derepR)
+    mergers[[sam]] &lt;- merger
+}
+
+rm(derepF); rm(derepR)
+</code></pre>
+
+<h4>Construct sequence table</h4>
+
+<pre><code class="r">seqtab &lt;- makeSequenceTable(mergers)
+
+# save table as an r data object file
+dir.create(table.fp)
+saveRDS(seqtab, paste0(table.fp, &quot;/seqtab.rds&quot;))
+</code></pre>
+
+<h3>3. REMOVE Chimeras and ASSIGN Taxonomy</h3>
+
+<p>Although dada2 has searched for indel errors and subsitutions, there may still be chimeric
+sequences in our dataset (sequences that are derived from forward and reverse sequences from 
+two different organisms becoming fused together during PCR and/or sequencing). To identify 
+chimeras, we will search for rare sequence variants that can be reconstructed by combining
+left-hand and right-hand segments from two more abundant &ldquo;parent&rdquo; sequences. After removing chimeras, we will use a taxonomy database to train a classifer-algorithm
+to assign names to our sequence variants.</p>
+
+<p>For the tutorial 16S, we will assign taxonomy with Silva db v132, but you might want to use other databases for your data. Below are paths to some of the databases we use often. (If you are on your own computer you can download the database you need from this link <a href="https://benjjneb.github.io/dada2/training.html):">https://benjjneb.github.io/dada2/training.html):</a></p>
+
+<p>16S bacteria and archaea (SILVA db): /db_files/dada2/silva_nr_v132_train_set.fa
+ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.fasta
+18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta</p>
+
+<pre><code class="r"># Read in RDS 
+st.all &lt;- readRDS(paste0(table.fp, &quot;/seqtab.rds&quot;))
+
+# Remove chimeras
+seqtab &lt;- removeBimeraDenovo(st.all, method=&quot;consensus&quot;, multithread=TRUE)
+
+# Assign taxonomy
+tax &lt;- assignTaxonomy(seqtab, &quot;/db_files/dada2/silva_nr_v132_train_set.fa&quot;,
+                      multithread=TRUE)
+
+# Write results to disk
+saveRDS(seqtab, paste0(table.fp, &quot;/seqtab_final.rds&quot;))
+saveRDS(tax, paste0(table.fp, &quot;/tax_final.rds&quot;))
+</code></pre>
+
+<h3>4. Optional - FORMAT OUTPUT to obtain ESV IDs and repset, and input for mctoolsr</h3>
+
+<p>For convenience sake, we will now rename our ESVs with numbers, output our 
+results as a traditional taxa table, and create a matrix with the representative
+sequences for each ESV. </p>
+
+<pre><code class="r"># Flip table
+seqtab.t &lt;- as.data.frame(t(seqtab))
+
+# Pull out ESV repset
+rep_set_ESVs &lt;- as.data.frame(rownames(seqtab.t))
+rep_set_ESVs &lt;- mutate(rep_set_ESVs, ESV_ID = 1:n())
+rep_set_ESVs$ESV_ID &lt;- sub(&quot;^&quot;, &quot;ESV_&quot;, rep_set_ESVs$ESV_ID)
+rep_set_ESVs$ESV &lt;- rep_set_ESVs$`rownames(seqtab.t)` 
+rep_set_ESVs$`rownames(seqtab.t)` &lt;- NULL
+
+# Add ESV numbers to table
+rownames(seqtab.t) &lt;- rep_set_ESVs$ESV_ID
+
+# Add ESV numbers to taxonomy
+taxonomy &lt;- as.data.frame(tax)
+taxonomy$ESV &lt;- as.factor(rownames(taxonomy))
+taxonomy &lt;- merge(rep_set_ESVs, taxonomy, by = &quot;ESV&quot;)
+rownames(taxonomy) &lt;- taxonomy$ESV_ID
+taxonomy_for_mctoolsr &lt;- unite_(taxonomy, &quot;taxonomy&quot;, 
+                                c(&quot;Kingdom&quot;, &quot;Phylum&quot;, &quot;Class&quot;, &quot;Order&quot;,&quot;Family&quot;, &quot;Genus&quot;, &quot;ESV_ID&quot;),
+                                sep = &quot;;&quot;)
+
+# Merge taxonomy and table
+seqtab_wTax &lt;- merge(seqtab.t, taxonomy_for_mctoolsr, by = 0)
+seqtab_wTax$ESV &lt;- NULL
+
+# Set name of table in mctoolsr format and save
+out_fp &lt;- paste0(table.fp, &quot;/seqtab_wTax_mctoolsr.txt&quot;)
+names(seqtab_wTax)[1] = &quot;#ESV_ID&quot;
+write(&quot;#Exported for mctoolsr&quot;, out_fp)
+suppressWarnings(write.table(seqtab_wTax, out_fp, sep = &quot;\t&quot;, row.names = FALSE, append = TRUE))
+
+# Also export files as .txt
+write.table(seqtab.t, file = paste0(table.fp, &quot;/seqtab_final.txt&quot;),
+            sep = &quot;\t&quot;, row.names = TRUE, col.names = NA)
+write.table(tax, file = paste0(table.fp, &quot;/tax_final.txt&quot;), 
+            sep = &quot;\t&quot;, row.names = TRUE, col.names = NA)
+</code></pre>
+
+<h3>Post-pipeline considerations</h3>
+
+<p>After following this pipline, you will need to think about the following in downstream applications (example with &#39;mctoolsr&#39; R package below):</p>
+
+<ol>
+<li>Remove mitochondrial and chloroplast sequences</li>
+<li>Remove reads assigned as eukaryotes</li>
+<li>Remove reads that are unassigned at domain level</li>
+</ol>
+
+<pre><code class="r">input_filt &lt;- filter_taxa_from_input(input, taxa_to_remove = c(&quot;Chloroplast&quot;,&quot;Mitochondria&quot;, &quot;Eukaryota&quot;))
+input_filt &lt;- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_remove = &quot;NA&quot;)
+</code></pre>
+
+<ol>
+<li>Normalize or rarefy your ESV table
+You can also now transfer over the output files onto your local computer</li>
+</ol>
+
+</body>
+
+</html>
