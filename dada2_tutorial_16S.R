@@ -259,7 +259,7 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 
 #' | <span> |
 #' | :--- |
-#' | **WARNING:** THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine the trim and filtering parameters for your data. The following settings are generally appropriate for MiSeq runs that are 2x150 bp.
+#' | **WARNING:** THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine the trim and filtering parameters for your data. The following settings are generally appropriate for MiSeq runs that are 2x150 bp. <br>
 #' 
 #' You will want to change this depending on run chemistry and quality: for 2x250 bp runs you can try truncLen=c(240,160) as per the dada2 tutorial if your reverse reads drop off in quality and higher, for example, truncLen=c(240,240) if they do not.
 #' 
