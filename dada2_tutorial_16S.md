@@ -1,14 +1,16 @@
 # dada2 tutorial with MiSeq dataset for Fierer Lab 
+
+
+
 This version runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.
 
 * More information here: [https://benjjneb.github.io/dada2/bigdata_paired.html]([https://benjjneb.github.io/dada2/bigdata_paired.html])
    
 We suggest opening the dada2 tutorial online to understand more about each step
 
---- 
-**NOTE:** there is a slightly different pipeline for ITS and Non-"Big data" that takes a
-     closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html)
----
+<div class="alert alert-info">
+**NOTE:** there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html)
+</div>
 
 ## Set up (part 1) - Steps before starting pipeline ##
 
@@ -36,16 +38,16 @@ Install DADA2 & other necessary packages
 (NOTE: if you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: https://github.com/yhwu/idemp)
 
 
-````{r }
+
+```r
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("dada2", version = "3.8")
 
 source("https://bioconductor.org/biocLite.R")
 biocLite("ShortRead")
-
 install.packages("dplyr")
-````
+```
 
 ---
 **WARNING:** This installation may take a long time, so only do this if these 
@@ -54,11 +56,12 @@ packages are not already installed!
 
 Load DADA2 and required packages
 
-````{r }
+
+```r
 library(dada2); packageVersion("dada2")
 library(ShortRead)
 library(dplyr)
-````
+```
 
 Once the packages are installed, you can check to make sure the auxillary
 software is working and set up some of the variables that you will need 
@@ -69,7 +72,8 @@ Note: If you are not working from microbe server, you will need to change the fi
 For this tutorial we will be working with some samples that we obtained 16S amplicon data for, from a Illumina Miseq run. 
 
 
-````{r }
+
+```r
 # Set up pathway to idemp (demultiplexing tool) and test
 idemp <- "/usr/bin/idemp" # CHANGE ME if not on microbe
 system2(idemp) # Check that idemp is in your path and you can run shell commands from R
@@ -85,18 +89,20 @@ data.fp <- "/data/shared/2019_02_20_MicrMethods_tutorial"
 list.files(data.fp)
 
 # Set file paths for barcodes file, map file, and fastqs
+    # barcodes need to have 'N' on the end of each 12bp sequence for compatability
 barcode.fp <- file.path(data.fp, "barcode_demultiplex_short.txt") # .txt file: barcode </t> sampleID
 map.fp <- file.path(data.fp, "Molecular_Methods_18_515fBC_16S_Mapping_File_SHORT_vFinal_Fierer_10252018.txt")
 I1.fp <- file.path(data.fp, "Undetermined_S0_L001_I1_001.fastq.gz") 
 R1.fp <- file.path(data.fp, "Undetermined_S0_L001_R1_001.fastq.gz") 
 R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz") 
-````
+```
 
 Set up file paths in YOUR directory where you want data; 
 you do not need to create the subdirectories but they are nice to have
 for organizational purposes. 
 
-````{r }
+
+```r
 project.fp <- "/data/YOUR_USERNAME/MicroMethods_dada2_tutorial" # CHANGE ME to project directory
 
 # Set up names of sub directories to stay organized
@@ -106,20 +112,21 @@ preprocess.fp <- file.path(project.fp, "01_preprocess")
     trimmed.fp <- file.path(preprocess.fp, "trimmed")
 filter.fp <- file.path(project.fp, "02_filter") 
 table.fp <- file.path(project.fp, "03_tabletax") 
-````
+```
 
 ## Pre-processing data for dada2 - demultiplex, remove sequences with Ns, cutadapt 
 
 #### Call the demultiplexing script
 Demultiplexing splits your reads out into separate files based on the barcodes associated with each sample. 
 
-````{r }
+
+```r
 flags <- paste("-b", barcode.fp, "-I1", I1.fp, "-R1", R1.fp, "-R2", R2.fp, "-o", demultiplex.fp) 
 system2(idemp, args = flags) 
 
 # Look at output of demultiplexing
 list.files(demultiplex.fp)
-````
+```
 
 ---
 **WARNING:** The demultiplexing step may take a while. If it takes too long
@@ -131,7 +138,8 @@ is complete by logging back into RStudio on the server.
 #### Clean up the output from idemp
 
 
-````{r }
+
+```r
 # Change names of unassignable reads so they are not included in downstream processing
 unassigned_1 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_unsigned.fastq.gz", " ", demultiplex.fp, "/Unassigned_reads1.fastq.gz")
 unassigned_2 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R2_001.fastq.gz_unsigned.fastq.gz", " ", demultiplex.fp, "/Unassigned_reads2.fastq.gz")
@@ -149,26 +157,28 @@ file.rename(list.files(demultiplex.fp, pattern="R2", full.names = TRUE), paste0(
 # Forward and reverse fastq filenames have format: 
 fnFs <- sort(list.files(demultiplex.fp, pattern="R1_", full.names = TRUE))
 fnRs <- sort(list.files(demultiplex.fp, pattern="R2_", full.names = TRUE))
-````
+```
 
 #### Pre-filter to remove sequence reads with Ns
 Ambiguous bases will make it hard for cutadapt to find short primer sequences in the reads.
 To solve this problem, we will remove sequences with ambiguous bases (Ns)
 
-````{r }
+
+```r
 # Name the N-filtered files to put them in filtN/ subdirectory
 fnFs.filtN <- file.path(preprocess.fp, "filtN", basename(fnFs))
 fnRs.filtN <- file.path(preprocess.fp, "filtN", basename(fnRs))
 
 # filter Ns from reads and put them into the filtN directory
 filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE) # CHANGE multithread to FALSE on Windows (here and elsewhere in the program)
-````
+```
 
 #### Prepare the primers sequences and custom functions for analyzing the results from cutadapt
 Assign the primers you used to "FWD" and "REV" below. Note primers should be not be reverse complemented ahead of time. Our tutorial data uses 515f and 806br those are the primers below. Change if you sequenced with other primers.
 
 
-````{r }
+
+```r
 # set up the primer sequences to pass along to cutadapt
 FWD <- "GTGYCAGCMGCCGCGGTAA"  ## CHANGE ME # this is 515f
 REV <- "GGACTACNVGGGTWTCTAAT"  ## CHANGE ME # this is 806Br
@@ -194,22 +204,24 @@ primerHits <- function(primer, fn) {
     nhits <- vcountPattern(primer, sread(readFastq(fn)), fixed = FALSE)
     return(sum(nhits > 0))
 }
-````
+```
 
 Before running cutadapt, we will look at primer detection
 for the first sample, as a check. There may be some primers here, we will remove them below using cutadapt.
 
 
-````{r }
+
+```r
 rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.filtN[[1]]), 
       FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.filtN[[1]]), 
       REV.ForwardReads = sapply(REV.orients, primerHits, fn = fnFs.filtN[[1]]), 
       REV.ReverseReads = sapply(REV.orients, primerHits, fn = fnRs.filtN[[1]]))
-````
+```
 
 #### Remove primers with cutadapt and assess the output
 
-````{r }
+
+```r
 # create directory to hold the output from cutadapt
 if (!dir.exists(trimmed.fp)) dir.create(trimmed.fp)
 fnFs.cut <- file.path(trimmed.fp, basename(fnFs))
@@ -239,11 +251,12 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.cut[[1]]),
       FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.cut[[1]]), 
       REV.ForwardReads = sapply(REV.orients, primerHits, fn = fnFs.cut[[1]]), 
       REV.ReverseReads = sapply(REV.orients, primerHits, fn = fnRs.cut[[1]]))
-````
+```
 
 # Now start DADA2 pipeline
 
-````{r }
+
+```r
 # Put filtered reads into separate sub-directories for big data workflow
 dir.create(filter.fp)
     subF.fp <- file.path(filter.fp, "preprocessed_F") 
@@ -263,7 +276,7 @@ filtpathR <- file.path(subR.fp, "filtered") # ...
 fastqFs <- sort(list.files(subF.fp, pattern="fastq.gz"))
 fastqRs <- sort(list.files(subR.fp, pattern="fastq.gz"))
 if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not match.")
-````
+```
 
 ### 1. FILTER AND TRIM FOR QUALITY
 
@@ -283,12 +296,13 @@ You will want to change this depending on run chemistry and quality: for 2x250 b
 ---
 
 
-````{r }
+
+```r
 filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
               rev=file.path(subR.fp, fastqRs), filt.rev=file.path(filtpathR, fastqRs),
               truncLen=c(150,140), maxEE=1, truncQ=11, maxN=0, rm.phix=TRUE,
               compress=TRUE, verbose=TRUE, multithread=TRUE)
-````
+```
 
 ### 2. INFER sequence variants
 In this part of the pipeline dada2 will learn to distinguish error from biological 
@@ -300,7 +314,8 @@ we will merge the coresponding forward and reverse reads to create a list of the
 fully denoised sequences and create a sequence table from the result.
 #### Housekeeping step - set up and verify the file names for the output:
 
-````{r }
+
+```r
 # File parsing
 filtFs <- list.files(filtpathF, pattern="fastq.gz", full.names = TRUE)
 filtRs <- list.files(filtpathR, pattern="fastq.gz", full.names = TRUE)
@@ -315,11 +330,12 @@ sample.namesR <- gsub(".fastq.gz", "", sample.namesR)
 if(!identical(sample.names, sample.namesR)) stop("Forward and reverse files do not match.")
 names(filtFs) <- sample.names
 names(filtRs) <- sample.names
-````
+```
 
 #### Learn the error rates
 
-````{r }
+
+```r
 set.seed(100) # set seed to ensure that randomized steps are replicatable
 
 # Learn forward error rates
@@ -327,11 +343,12 @@ errF <- learnErrors(filtFs, nbases=1e8, multithread=TRUE)
 
 # Learn reverse error rates
 errR <- learnErrors(filtRs, nbases=1e8, multithread=TRUE)
-````
+```
 
 #### Dereplication, sequence inference, and merging of paired-end reads
 
-````{r }
+
+```r
 # make a list to hold the loop output
 mergers <- vector("list", length(sample.names))
 names(mergers) <- sample.names
@@ -348,17 +365,18 @@ for(sam in sample.names) {
 }
 
 rm(derepF); rm(derepR)
-````
+```
 
 #### Construct sequence table
 
-````{r }
+
+```r
 seqtab <- makeSequenceTable(mergers)
 
 # save table as an r data object file
 dir.create(table.fp)
 saveRDS(seqtab, paste0(table.fp, "/seqtab.rds"))
-````
+```
 
 ### 3. REMOVE Chimeras and ASSIGN Taxonomy
 Although dada2 has searched for indel errors and subsitutions, there may still be chimeric
@@ -375,7 +393,8 @@ ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.f
 18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta
 
 
-````{r }
+
+```r
 # Read in RDS 
 st.all <- readRDS(paste0(table.fp, "/seqtab.rds"))
 
@@ -389,14 +408,15 @@ tax <- assignTaxonomy(seqtab, "/db_files/dada2/silva_nr_v132_train_set.fa",
 # Write results to disk
 saveRDS(seqtab, paste0(table.fp, "/seqtab_final.rds"))
 saveRDS(tax, paste0(table.fp, "/tax_final.rds"))
-````
+```
 
 ### 4. Optional - FORMAT OUTPUT to obtain ESV IDs and repset, and input for mctoolsr
 For convenience sake, we will now rename our ESVs with numbers, output our 
 results as a traditional taxa table, and create a matrix with the representative
 sequences for each ESV. 
 
-````{r }
+
+```r
 # Flip table
 seqtab.t <- as.data.frame(t(seqtab))
 
@@ -432,7 +452,7 @@ write.table(seqtab.t, file = paste0(table.fp, "/seqtab_final.txt"),
             sep = "\t", row.names = TRUE, col.names = NA)
 write.table(tax, file = paste0(table.fp, "/tax_final.txt"), 
             sep = "\t", row.names = TRUE, col.names = NA)
-````
+```
 
 ### Post-pipeline considerations
 After following this pipline, you will need to think about the following in downstream applications (example with 'mctoolsr' R package below):
@@ -441,17 +461,19 @@ After following this pipline, you will need to think about the following in down
 2. Remove reads assigned as eukaryotes
 3. Remove reads that are unassigned at domain level
 
-````{r }
+
+```r
 input_filt <- filter_taxa_from_input(input, taxa_to_remove = c("Chloroplast","Mitochondria", "Eukaryota"))
 input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_remove = "NA")
-````
+```
 
 4. Normalize or rarefy your ESV table
 You can also now transfer over the output files onto your local computer
 
  .rda files are loaded into R like this: 
 
-````{r }
+
+```r
 load(file = "filepath/input_tutorial.rda")
-````
+```
 

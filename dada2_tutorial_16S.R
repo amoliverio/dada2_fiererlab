@@ -1,15 +1,17 @@
 #'# dada2 tutorial with MiSeq dataset for Fierer Lab 
 
+#+ setup, include=FALSE
+knitr::opts_chunk$set(eval = FALSE, include = TRUE)
+
 #' This version runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.
 #' 
 #' * More information here: [https://benjjneb.github.io/dada2/bigdata_paired.html]([https://benjjneb.github.io/dada2/bigdata_paired.html])
 #'    
 #' We suggest opening the dada2 tutorial online to understand more about each step
 #'
-#'--- 
-#' **NOTE:** there is a slightly different pipeline for ITS and Non-"Big data" that takes a
-#'      closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html)
-#'---
+#'<div class="alert alert-info">
+#' **NOTE:** there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html)
+#'</div>
 #' 
 #' ## Set up (part 1) - Steps before starting pipeline ##
 #' 
