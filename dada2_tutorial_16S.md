@@ -8,10 +8,10 @@ This version runs the dada2 workflow for Big Data (paired-end) from Rstudio on t
    
 We suggest opening the dada2 tutorial online to understand more about each step
 
-|| Note:||
-|-| :--- |-|
-|| _**NOTE:**_ there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) ||
-|| <span> ||
+| Note:|
+| :--- |
+| _**NOTE:**_ there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) |
+| <span> |
 
 
 ## Set up (part 1) - Steps before starting pipeline ##
