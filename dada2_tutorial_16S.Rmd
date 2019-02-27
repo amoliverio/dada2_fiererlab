@@ -63,7 +63,7 @@ Once the packages are installed, you can check to make sure the auxillary
 software is working and set up some of the variables that you will need 
 along the way.
 
-NOTE: If you are not working from microbe server, you will need to change the file paths for idemp and cutadapt to where they are stored on your computer/server.
+Note: If you are not working from microbe server, you will need to change the file paths for idemp and cutadapt to where they are stored on your computer/server.
 
 For this tutorial we will be working with some samples that we obtained 16S amplicon data for, from a Illumina Miseq run. 
 
@@ -155,7 +155,7 @@ To solve this problem, we will remove sequences with ambiguous bases (Ns)
 
 ````{r }
 # Name the N-filtered files to put them in filtN/ subdirectory
-fnFs.filtN <- file.path(preprocess.fp, "filtN", basename(fnFs)) 
+fnFs.filtN <- file.path(preprocess.fp, "filtN", basename(fnFs))
 fnRs.filtN <- file.path(preprocess.fp, "filtN", basename(fnRs))
 
 # filter Ns from reads and put them into the filtN directory
@@ -163,6 +163,8 @@ filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE) 
 ````
 
 #### Prepare the primers sequences and custom functions for analyzing the results from cutadapt
+Assign the primers you used to "FWD" and "REV" below. Note primers should be not be reverse complemented ahead of time. Our tutorial data uses 515f and 806br those are the primers below. Change if you sequenced with other primers.
+
 
 Assign the primers you used to "FWD" and "REV" below. Note primers should be not be reverse complemented ahead of time. Our tutorial data uses 515f and 806br those are the primers below. Change if you sequenced with other primers.
 
@@ -255,7 +257,7 @@ file.rename(from = fnFs.cut, to = fnFs.Q)
 file.rename(from = fnRs.cut, to = fnRs.Q)
 
 # File parsing
-filtpathF <- file.path(subF.fp, "filtered") # files go into preprocessed_F/filtered/ 
+filtpathF <- file.path(subF.fp, "filtered") # files go into preprocessed_F/filtered/
 filtpathR <- file.path(subR.fp, "filtered") # ...
 fastqFs <- sort(list.files(subF.fp, pattern="fastq.gz"))
 fastqRs <- sort(list.files(subR.fp, pattern="fastq.gz"))
@@ -377,7 +379,7 @@ st.all <- readRDS(paste0(table.fp, "/seqtab.rds"))
 # Remove chimeras
 seqtab <- removeBimeraDenovo(st.all, method="consensus", multithread=TRUE)
 
-# Assign taxonomy 
+# Assign taxonomy
 tax <- assignTaxonomy(seqtab, "/db_files/dada2/silva_nr_v132_train_set.fa",
                       multithread=TRUE)
 
@@ -439,7 +441,6 @@ After following this pipline, you will need to think about the following in down
 
 ````{r }
 input_filt <- filter_taxa_from_input(input, taxa_to_remove = c("Chloroplast","Mitochondria", "Eukaryota"))
-
 input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_remove = "NA")
 ````
 
