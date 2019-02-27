@@ -375,27 +375,22 @@ rep_set_ESVs$`rownames(seqtab.t)` <- NULL
 # Add ESV numbers to table
 rownames(seqtab.t) <- rep_set_ESVs$ESV_ID
 
-## Create Mctoolsr format for downstream analyses
-
 # Add ESV numbers to taxonomy
 taxonomy <- as.data.frame(tax)
 taxonomy$ESV <- as.factor(rownames(taxonomy))
 taxonomy <- merge(rep_set_ESVs, taxonomy, by = "ESV")
 rownames(taxonomy) <- taxonomy$ESV_ID
+taxonomy_for_mctoolsr <- unite_(taxonomy, "taxonomy", c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"), sep = ";")
 
-# Read in your map file w/sample IDs as rownames
-map <- read.delim(map.fp, row.names = 1, as.is = TRUE) 
+# Merge taxonomy and table
+seqtab_wTax <- merge(seqtab.t, taxonomy_for_mctoolsr, by = 0)
+seqtab_wTax$ESV <- NULL
 
-input <- list()
-input$data_loaded <- seqtab.t
-input$taxonomy_loaded <- taxonomy
-input$map_loaded <- map
-
-# Number of reads per sample
-sort(colSums(input$data_loaded))
-
-# Now the input should be compatible with MCTOOLSR, save files
-save(input, rep_set_ESVs, file = paste0(table.fp, "/input_tutorial.rda"))
+# Set name of table in mctoolsr format and save
+out_fp <- paste0(table.fp, "/seqtab_wTax_mctoolsr.txt")
+names(seqtab_wTax)[1] = "#ESV_ID"
+write("#Exported for mctoolsr", out_fp)
+suppressWarnings(write.table(seqtab_wTax, out_fp, sep = "\t", row.names = FALSE, append = TRUE))
 
 # Also export files as .txt
 write.table(seqtab.t, file = paste0(table.fp, "/seqtab_final.txt"),
@@ -404,12 +399,16 @@ write.table(tax, file = paste0(table.fp, "/tax_final.txt"),
             sep = "\t", row.names = TRUE, col.names = NA)
 
 #' ### Post-pipeline considerations
-#' After following this pipline, you will need to think about the following in downstream applications:
-#' 1. Remove mitochondrial and chloroplast sequences, for example with mctoolsr:
-input_filt <- filter_taxa_from_input(input, taxa_to_remove = "Chloroplast")
-input_filt <- filter_taxa_from_input(input_filt, taxa_to_remove = "Mitochondria")
-#' 2. Normalize or rarefy your ESV table
+#' After following this pipline, you will need to think about the following in downstream applications (example with 'mctoolsr' R package below):
+#' 
+#' 1. Remove mitochondrial and chloroplast sequences
+#' 2. Remove reads assigned as eukaryotes
+#' 3. Remove reads that are unassigned at domain level
 
+input_filt <- filter_taxa_from_input(input, taxa_to_remove = c("Chloroplast","Mitochondria", "Eukaryota"))
+input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_remove = "NA")
+
+#' 4. Normalize or rarefy your ESV table
 #' You can also now transfer over the output files onto your local computer
 #'
 #'  .rda files are loaded into R like this: 
