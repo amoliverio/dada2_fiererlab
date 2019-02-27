@@ -35,7 +35,6 @@ Install DADA2 & other necessary packages
 
 (NOTE: if you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: https://github.com/yhwu/idemp)
 
-
 ````{r }
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
@@ -68,25 +67,24 @@ Note: If you are not working from microbe server, you will need to change the fi
 
 For this tutorial we will be working with some samples that we obtained 16S amplicon data for, from a Illumina Miseq run. 
 
-
 ````{r }
 # Set up pathway to idemp (demultiplexing tool) and test
 idemp <- "/usr/bin/idemp" # CHANGE ME if not on microbe
 system2(idemp) # Check that idemp is in your path and you can run shell commands from R
 
 # Set up pathway to cutadapt (primer trimming tool) and test
-cutadapt <- "/usr/local/Python27/bin/cutadapt" # CHANGE ME if not on microbe
+cutadapt <- "/usr/local/Python27/bin/cutadapt"# CHANGE ME if not on microbe
 system2(cutadapt, args = "--version") # Check by running shell command from R
 
 # Set path to shared data folder and contents
-data.fp <- "/data/shared/2019_02_20_MicrMethods_tutorial"
+data.fp <- "/data/shared/2019_02_20_MicrMethods_tutorial"  
 
 # List all files in shared folder to check path
-list.files(data.fp)
+list.files(data.fp) 
 
 # Set file paths for barcodes file, map file, and fastqs
 barcode.fp <- file.path(data.fp, "barcode_demultiplex_short.txt") # .txt file: barcode </t> sampleID
-map.fp <- file.path(data.fp, "Molecular_Methods_18_515fBC_16S_Mapping_File_SHORT_vFinal_Fierer_10252018.txt")
+map.fp <- file.path(data.fp, "Molecular_Methods_18_515fBC_16S_Mapping_File_SHORT_vFinal_Fierer_10252018.txt") 
 I1.fp <- file.path(data.fp, "Undetermined_S0_L001_I1_001.fastq.gz") 
 R1.fp <- file.path(data.fp, "Undetermined_S0_L001_R1_001.fastq.gz") 
 R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz") 
@@ -168,6 +166,8 @@ filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE) 
 Assign the primers you used to "FWD" and "REV" below. Note primers should be not be reverse complemented ahead of time. Our tutorial data uses 515f and 806br those are the primers below. Change if you sequenced with other primers.
 
 
+Assign the primers you used to "FWD" and "REV" below. Note primers should be not be reverse complemented ahead of time. Our tutorial data uses 515f and 806br those are the primers below. Change if you sequenced with other primers.
+
 ````{r }
 # set up the primer sequences to pass along to cutadapt
 FWD <- "GTGYCAGCMGCCGCGGTAA"  ## CHANGE ME # this is 515f
@@ -198,7 +198,6 @@ primerHits <- function(primer, fn) {
 
 Before running cutadapt, we will look at primer detection
 for the first sample, as a check. There may be some primers here, we will remove them below using cutadapt.
-
 
 ````{r }
 rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.filtN[[1]]), 
@@ -273,16 +272,15 @@ that are left over after we have finished trimming (the `maxEE` value).
 ---
 **WARNING:** THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine
 the trim and filtering parameters for your data. The following settings are 
-generally appropriate for MiSeq runs that are 2x150 bp.
+generally appropriate for MiSeq runs that are 2x150 bp. 
 
 You will want to change this depending on run chemistry and quality: for 2x250 bp runs you can try truncLen=c(240,160) as per the dada2 tutorial if your reverse reads drop off in quality and higher, for example, truncLen=c(240,240) if they do not.
+
 **For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data:https://benjjneb.github.io/dada2/ITS_workflow.html.
 
 **NOTE from dada2 tutorial:**
 "If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE."
 ---
-
-
 ````{r }
 filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
               rev=file.path(subR.fp, fastqRs), filt.rev=file.path(filtpathR, fastqRs),
@@ -366,14 +364,13 @@ sequences in our dataset (sequences that are derived from forward and reverse se
 two different organisms becoming fused together during PCR and/or sequencing). To identify 
 chimeras, we will search for rare sequence variants that can be reconstructed by combining
 left-hand and right-hand segments from two more abundant "parent" sequences. After removing chimeras, we will use a taxonomy database to train a classifer-algorithm
-to assign names to our sequence variants.
+to assign names to our sequence variants. 
 
-For the tutorial 16S, we will assign taxonomy with Silva db v132, but you might want to use other databases for your data. Below are paths to some of the databases we use often. (If you are on your own computer you can download the database you need from this link https://benjjneb.github.io/dada2/training.html):
+For the tutorial 16S, we will assign taxonomy with Silva db v132, but you might want to use other databases for your data. Below are paths to some of the databases we use often. (If you are on your own computer you can download the database you need from this link https://benjjneb.github.io/dada2/training.html): 
 
 16S bacteria and archaea (SILVA db): /db_files/dada2/silva_nr_v132_train_set.fa
 ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.fasta
 18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta
-
 
 ````{r }
 # Read in RDS 
@@ -425,7 +422,8 @@ seqtab_wTax$ESV <- NULL
 out_fp <- paste0(table.fp, "/seqtab_wTax_mctoolsr.txt")
 names(seqtab_wTax)[1] = "#ESV_ID"
 write("#Exported for mctoolsr", out_fp)
-suppressWarnings(write.table(seqtab_wTax, out_fp, sep = "\t", row.names = FALSE, append = TRUE))
+suppressWarnings(write.table(seqtab_wTax, out_fp, sep = "\t", 
+                             row.names = FALSE, append = TRUE))
 
 # Also export files as .txt
 write.table(seqtab.t, file = paste0(table.fp, "/seqtab_final.txt"),
