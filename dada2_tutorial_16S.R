@@ -26,8 +26,8 @@ knitr::knit_hooks$set(
 #'    
 #' We suggest opening the dada2 tutorial online to understand more about each step
 #'
-#' | **NOTE:** there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) |
-#' | --- |
+#' | _**NOTE:** there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html)_ |
+#' | :--- |
 #' 
 #' ## Set up (part 1) - Steps before starting pipeline ##
 #' 
