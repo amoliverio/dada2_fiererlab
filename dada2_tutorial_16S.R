@@ -11,7 +11,7 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #'
 #' || <span> ||
 #' |-| :--- |-|
-#' | _**NOTE:**_ there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) |
+#' || _**NOTE:**_ there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) ||
 #' || <span> ||
 #' 
 #' 
