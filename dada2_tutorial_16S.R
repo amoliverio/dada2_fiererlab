@@ -69,10 +69,10 @@ library(dplyr)
 #'
 #' | <span> |
 #' | :--- | 
-#' | **Note:** If you are not working from microbe server, you will need to change the file paths for idemp and cutadapt to where they are stored on your computer/server. |
+#' | **NOTE:** If you are not working from microbe server, you will need to change the file paths for idemp and cutadapt to where they are stored on your computer/server. |
 #' | <span> |
 #' 
-#' For this tutorial we will be working with some samples that we obtained 16S amplicon data for, from a Illumina Miseq run. 
+#' For this tutorial we will be working with some samples that we obtained 16S amplicon data for, from a Illumina Miseq run. The data for these samples can be found on the CME website. [http://cme.colorado.edu/projects/bioinformatics-tutorials](http://cme.colorado.edu/projects/bioinformatics-tutorials)
 #' 
 # Set up pathway to idemp (demultiplexing tool) and test
 idemp <- "/usr/bin/idemp" # CHANGE ME if not on microbe
@@ -95,6 +95,11 @@ map.fp <- file.path(data.fp, "Molecular_Methods_18_515fBC_16S_Mapping_File_SHORT
 I1.fp <- file.path(data.fp, "Undetermined_S0_L001_I1_001.fastq.gz") 
 R1.fp <- file.path(data.fp, "Undetermined_S0_L001_R1_001.fastq.gz") 
 R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz") 
+
+#' | <span> |
+#' | :--- | 
+#' | **NOTE:** idemp relies on having a match in length between the index file and and the barcode sequences. Since the index file includes a extra linker basepair, you should append the barcode sequences with "N" to make sure each is 13bp long. |
+#' | <span> |
 
 #' Set up file paths in YOUR directory where you want data; 
 #' you do not need to create the subdirectories but they are nice to have
@@ -424,6 +429,3 @@ input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_remo
 #' 4. Normalize or rarefy your ESV table
 #' You can also now transfer over the output files onto your local computer
 #'
-#'  .rda files are loaded into R like this: 
-
-load(file = "filepath/input_tutorial.rda")

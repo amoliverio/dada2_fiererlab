@@ -297,14 +297,14 @@ along the way.</p>
 </tr>
 </thead><tbody>
 <tr>
-<td align="left"><strong>Note:</strong> If you are not working from microbe server, you will need to change the file paths for idemp and cutadapt to where they are stored on your computer/server.</td>
+<td align="left"><strong>NOTE:</strong> If you are not working from microbe server, you will need to change the file paths for idemp and cutadapt to where they are stored on your computer/server.</td>
 </tr>
 <tr>
 <td align="left"><span></td>
 </tr>
 </tbody></table>
 
-<p>For this tutorial we will be working with some samples that we obtained 16S amplicon data for, from a Illumina Miseq run. </p>
+<p>For this tutorial we will be working with some samples that we obtained 16S amplicon data for, from a Illumina Miseq run. The data for these samples can be found on the CME website. <a href="http://cme.colorado.edu/projects/bioinformatics-tutorials">http://cme.colorado.edu/projects/bioinformatics-tutorials</a></p>
 
 <pre><code class="r"># Set up pathway to idemp (demultiplexing tool) and test
 idemp &lt;- &quot;/usr/bin/idemp&quot; # CHANGE ME if not on microbe
@@ -328,6 +328,19 @@ I1.fp &lt;- file.path(data.fp, &quot;Undetermined_S0_L001_I1_001.fastq.gz&quot;)
 R1.fp &lt;- file.path(data.fp, &quot;Undetermined_S0_L001_R1_001.fastq.gz&quot;) 
 R2.fp &lt;- file.path(data.fp, &quot;Undetermined_S0_L001_R2_001.fastq.gz&quot;) 
 </code></pre>
+
+<table><thead>
+<tr>
+<th align="left"><span></th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left"><strong>NOTE:</strong> idemp relies on having a match in length between the index file and and the barcode sequences. Since the index file includes a extra linker basepair, you should append the barcode sequences with &ldquo;N&rdquo; to make sure each is 13bp long.</td>
+</tr>
+<tr>
+<td align="left"><span></td>
+</tr>
+</tbody></table>
 
 <p>Set up file paths in YOUR directory where you want data; 
 you do not need to create the subdirectories but they are nice to have
@@ -698,14 +711,9 @@ input_filt &lt;- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_r
 </code></pre>
 
 <ol>
-<li><p>Normalize or rarefy your ESV table
-You can also now transfer over the output files onto your local computer</p>
-
-<p>.rda files are loaded into R like this: </p></li>
+<li>Normalize or rarefy your ESV table
+You can also now transfer over the output files onto your local computer</li>
 </ol>
-
-<pre><code class="r">load(file = &quot;filepath/input_tutorial.rda&quot;)
-</code></pre>
 
 </body>
 
