@@ -254,13 +254,18 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 #' ---
 #' **WARNING:** THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine
 #' the trim and filtering parameters for your data. The following settings are 
-#' generally appropriate for MiSeq runs.
+#' generally appropriate for MiSeq runs that are 2x150 bp.
+#' 
+#' You will want to change this depending on run chemistry and quality: for 2x250 bp runs you can try truncLen=c(240,160) as per the dada2 tutorial if your reverse reads drop off in quality and higher, for example, truncLen=c(240,240) if they do not.
+#' 
+#' **NOTE from dada2 tutorial:**
+#' "If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE."
 #' ---
 #'
 
 filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
               rev=file.path(subR.fp, fastqRs), filt.rev=file.path(filtpathR, fastqRs),
-              truncLen=c(150,150), maxEE=2, truncQ=11, maxN=0, rm.phix=TRUE,
+              truncLen=c(150,140), maxEE=1, truncQ=11, maxN=0, rm.phix=TRUE,
               compress=TRUE, verbose=TRUE, multithread=TRUE)
 
 #' ### 2. INFER sequence variants
