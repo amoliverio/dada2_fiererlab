@@ -217,7 +217,7 @@ hr {
 </tr>
 </thead><tbody>
 <tr>
-<td align="left"><em><strong>NOTE:</strong></em> there is a slightly different pipeline for ITS and Non-&ldquo;Big data&rdquo; that takes a closer look at each step here: <a href="https://benjjneb.github.io/dada2/tutorial.html">https://benjjneb.github.io/dada2/tutorial.html</a></td>
+<td align="left"><strong>NOTE:</strong> there is a slightly different pipeline for ITS and Non-&ldquo;Big data&rdquo; that takes a closer look at each step here: <a href="https://benjjneb.github.io/dada2/tutorial.html">https://benjjneb.github.io/dada2/tutorial.html</a></td>
 </tr>
 <tr>
 <td align="left"><span></td>
@@ -237,7 +237,18 @@ hr {
 
 <h4>Login to RStudio on the server</h4>
 
-<p>(NOTE: you can also run from your own computer, but it will be slower!)</p>
+<table><thead>
+<tr>
+<th align="left"><span></th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left"><strong>NOTE:</strong> you can also run from your own computer, but it will be slower!)</td>
+</tr>
+<tr>
+<td align="left"><span></td>
+</tr>
+</tbody></table>
 
 <ol>
 <li>Open a your web browser and start a new empty tab</li>
@@ -251,9 +262,15 @@ hr {
 
 <table><thead>
 <tr>
-<th align="left"><em><strong>NOTE:</strong></em> if you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: <a href="https://github.com/yhwu/idemp">https://github.com/yhwu/idemp</a></th>
+<th align="left"><span></th>
 </tr>
 </thead><tbody>
+<tr>
+<td align="left"><strong>NOTE:</strong> if you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: <a href="https://github.com/yhwu/idemp">https://github.com/yhwu/idemp</a></td>
+</tr>
+<tr>
+<td align="left"><span></td>
+</tr>
 </tbody></table>
 
 <pre><code class="r">if (!requireNamespace(&quot;BiocManager&quot;, quietly = TRUE))
@@ -265,11 +282,18 @@ biocLite(&quot;ShortRead&quot;)
 install.packages(&quot;dplyr&quot;)
 </code></pre>
 
-<hr/>
-
-<p><strong>WARNING:</strong> This installation may take a long time, so only do this if these </p>
-
-<h2>packages are not already installed!</h2>
+<table><thead>
+<tr>
+<th align="left"><span></th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left"><strong>WARNING:</strong> This installation may take a long time, so only do this if these packages are not already installed!</td>
+</tr>
+<tr>
+<td align="left"><span></td>
+</tr>
+</tbody></table>
 
 <p>Load DADA2 and required packages</p>
 
@@ -337,13 +361,18 @@ system2(idemp, args = flags)
 list.files(demultiplex.fp)
 </code></pre>
 
-<hr/>
-
-<p><strong>WARNING:</strong> The demultiplexing step may take a while. If it takes too long
-you can safely close RStudio on the server and the demultiplexing will run 
-in the background. You should be able to resume the pipeline after demultiplexing</p>
-
-<h2>is complete by logging back into RStudio on the server.</h2>
+<table><thead>
+<tr>
+<th align="left"><span></th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left"><strong>WARNING:</strong> The demultiplexing step may take a while. If it takes too long you can safely close RStudio on the server and the demultiplexing will run in the background. You should be able to resume the pipeline after demultiplexing is complete by logging back into RStudio on the server.</td>
+</tr>
+<tr>
+<td align="left"><span></td>
+</tr>
+</tbody></table>
 
 <h4>Clean up the output from idemp</h4>
 
@@ -477,21 +506,18 @@ if(length(fastqFs) != length(fastqRs)) stop(&quot;Forward and reverse files do n
 
 <h3>1. FILTER AND TRIM FOR QUALITY</h3>
 
-<p>Before chosing sequence variants, we want to trim reads where their quality scores 
-begin to drop (the <code>truncLen</code> and <code>truncQ</code> values) and remove any low-quality reads </p>
+<p>Before chosing sequence variants, we want to trim reads where their quality scores begin to drop (the <code>truncLen</code> and <code>truncQ</code> values) and remove any low-quality reads that are left over after we have finished trimming (the <code>maxEE</code> value).
+| <span> |
+| :&mdash; |
+| <strong>WARNING:</strong> THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine the trim and filtering parameters for your data. The following settings are generally appropriate for MiSeq runs that are 2x150 bp.</p>
 
-<h2>that are left over after we have finished trimming (the <code>maxEE</code> value).</h2>
+<p>You will want to change this depending on run chemistry and quality: for 2x250 bp runs you can try truncLen=c(240,160) as per the dada2 tutorial if your reverse reads drop off in quality and higher, for example, truncLen=c(240,240) if they do not.</p>
 
-<p><strong>WARNING:</strong> THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine
-the trim and filtering parameters for your data. The following settings are 
-generally appropriate for MiSeq runs that are 2x150 bp.</p>
+<p><strong>For ITS data:</strong> Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: <a href="">https://benjjneb.github.io/dada2/ITS_workflow.html</a>.</p>
 
-<p>You will want to change this depending on run chemistry and quality: for 2x250 bp runs you can try truncLen=c(240,160) as per the dada2 tutorial if your reverse reads drop off in quality and higher, for example, truncLen=c(240,240) if they do not.
-<strong>For ITS data:</strong> Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data:<a href="https://benjjneb.github.io/dada2/ITS_workflow.html">https://benjjneb.github.io/dada2/ITS_workflow.html</a>.</p>
-
-<p><strong>NOTE from dada2 tutorial:</strong></p>
-
-<h2>&ldquo;If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters &hellip; are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE.&rdquo;</h2>
+<p><strong>NOTE from dada2 tutorial:</strong>
+&ldquo;If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters &hellip; are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE.&rdquo; |
+| <span> |</p>
 
 <pre><code class="r">filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
               rev=file.path(subR.fp, fastqRs), filt.rev=file.path(filtpathR, fastqRs),

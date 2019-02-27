@@ -9,9 +9,9 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #'    
 #' We suggest opening the dada2 tutorial online to understand more about each step
 #'
-#' | <span>|
+#' | <span> |
 #' | :--- |
-#' | _**NOTE:**_ there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) |
+#' | **NOTE:** there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) |
 #' | <span> |
 #' 
 #' 
@@ -28,7 +28,10 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #'
 #' #### Login to RStudio on the server 
 #' 
-#' (NOTE: you can also run from your own computer, but it will be slower!)
+#' | <span> |
+#' | :--- |
+#' | **NOTE:** you can also run from your own computer, but it will be slower!)|
+#' |<span>|
 #' 
 #'    1. Open a your web browser and start a new empty tab
 #'    2. type `microbe.colorado.edu:8787` in the address bar
@@ -38,8 +41,10 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #' 
 #' Install DADA2 & other necessary packages
 #' 
-#' | _**NOTE:**_ if you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp) |
+#' | <span> |
 #' | :--- |
+#' | **NOTE:** if you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp) |
+#' | <span> |
 #' 
 
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -50,10 +55,10 @@ source("https://bioconductor.org/biocLite.R")
 biocLite("ShortRead")
 install.packages("dplyr")
 
-#'---
-#' **WARNING:** This installation may take a long time, so only do this if these 
-#' packages are not already installed!
-#'---
+#' | <span> |
+#' | :--- |
+#' | **WARNING:** This installation may take a long time, so only do this if these packages are not already installed! |
+#' | <span> |
 #'
 
 #' Load DADA2 and required packages
@@ -117,12 +122,10 @@ system2(idemp, args = flags)
 # Look at output of demultiplexing
 list.files(demultiplex.fp)
 
-#'---
-#' **WARNING:** The demultiplexing step may take a while. If it takes too long
-#' you can safely close RStudio on the server and the demultiplexing will run 
-#' in the background. You should be able to resume the pipeline after demultiplexing
-#' is complete by logging back into RStudio on the server.
-#'---
+#' | <span> |
+#' | :--- |
+#' | **WARNING:** The demultiplexing step may take a while. If it takes too long you can safely close RStudio on the server and the demultiplexing will run in the background. You should be able to resume the pipeline after demultiplexing is complete by logging back into RStudio on the server. |
+#' | <span> |
 #'
 
 #' #### Clean up the output from idemp
@@ -252,21 +255,19 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 
 #' ### 1. FILTER AND TRIM FOR QUALITY
 #' 
-#' Before chosing sequence variants, we want to trim reads where their quality scores 
-#' begin to drop (the `truncLen` and `truncQ` values) and remove any low-quality reads 
-#' that are left over after we have finished trimming (the `maxEE` value).
+#' Before chosing sequence variants, we want to trim reads where their quality scores begin to drop (the `truncLen` and `truncQ` values) and remove any low-quality reads that are left over after we have finished trimming (the `maxEE` value).
 
-#' ---
-#' **WARNING:** THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine
-#' the trim and filtering parameters for your data. The following settings are 
-#' generally appropriate for MiSeq runs that are 2x150 bp.
+#' | <span> |
+#' | :--- |
+#' | **WARNING:** THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine the trim and filtering parameters for your data. The following settings are generally appropriate for MiSeq runs that are 2x150 bp.
 #' 
 #' You will want to change this depending on run chemistry and quality: for 2x250 bp runs you can try truncLen=c(240,160) as per the dada2 tutorial if your reverse reads drop off in quality and higher, for example, truncLen=c(240,240) if they do not.
-#' **For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data:https://benjjneb.github.io/dada2/ITS_workflow.html.
+#' 
+#' **For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: [https://benjjneb.github.io/dada2/ITS_workflow.html]().
 #' 
 #' **NOTE from dada2 tutorial:**
-#' "If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE."
-#' ---
+#' "If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE." |
+#' | <span> |
 #'
 
 filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
