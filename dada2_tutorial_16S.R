@@ -272,7 +272,7 @@ filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs
 #' we will merge the coresponding forward and reverse reads to create a list of the 
 #' fully denoised sequences and create a sequence table from the result.
 
-#' #### Housekeeping - set up and verify the file names for the output
+#' #### Housekeeping step - set up and verify the file names for the output:
 # File parsing
 filtFs <- list.files(filtpathF, pattern="fastq.gz", full.names = TRUE)
 filtRs <- list.files(filtpathR, pattern="fastq.gz", full.names = TRUE)
@@ -320,17 +320,22 @@ seqtab <- makeSequenceTable(mergers)
 
 # save table as an r data object file
 dir.create(table.fp)
-saveRDS(seqtab, paste0(table.fp, "/seqtab.rds")) # CHANGE ME to where you want sequence table saved
+saveRDS(seqtab, paste0(table.fp, "/seqtab.rds"))
 
 #' ### 3. REMOVE Chimeras and ASSIGN Taxonomy
 #' Although dada2 has searched for indel errors and subsitutions, there may still be chimeric
 #' sequences in our dataset (sequences that are derived from forward and reverse sequences from 
 #' two different organisms becoming fused together during PCR and/or sequencing). To identify 
 #' chimeras, we will search for rare sequence variants that can be reconstructed by combining
-#' left-hand and right-hand segments from two more abundant "parent" sequences.
+#' left-hand and right-hand segments from two more abundant "parent" sequences. After removing chimeras, we will use a taxonomy database to train a classifer-algorithm
+#' to assign names to our sequence variants.
 #' 
-#' After removing chimeras, we will use a taxonomy database to train a classifer-algorithm
-#' to assign names to our sequence variants. 
+#' For the tutorial 16S, we will assign taxonomy with Silva db v132, but you might want to use other databases for your data. Below are paths to some of the databases we use often. (If you are on your own computer you can download the database you need from this link https://benjjneb.github.io/dada2/training.html):
+#' 
+#' 16S bacteria and archaea (SILVA db): /db_files/dada2/silva_nr_v132_train_set.fa
+#' ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.fasta
+#' 18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta
+#' 
 
 # Read in RDS 
 st.all <- readRDS(paste0(table.fp, "/seqtab.rds"))
@@ -339,7 +344,7 @@ st.all <- readRDS(paste0(table.fp, "/seqtab.rds"))
 seqtab <- removeBimeraDenovo(st.all, method="consensus", multithread=TRUE)
 
 # Assign taxonomy
-tax <- assignTaxonomy(seqtab, "/data/oliverioa/dada2_tutorials/silva_nr_v132_train_set.fa.gz",
+tax <- assignTaxonomy(seqtab, "/db_files/dada2/silva_nr_v132_train_set.fa",
                       multithread=TRUE)
 
 # Write results to disk
