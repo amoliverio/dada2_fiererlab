@@ -11,8 +11,6 @@
 #'      closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html)
 #'---
 #' 
-#' 
-#' 
 #' ## Set up (part 1) - Steps before starting pipeline ##
 #' 
 #' If you are running it through fierer lab "microbe" server:
@@ -65,7 +63,9 @@ library(dplyr)
 #' along the way.
 #' 
 #' Note: If you are not working from microbe server, you will need to change the file paths for idemp and cutadapt to where they are stored on your computer/server.
-
+#' 
+#' For this tutorial we will be working with some samples that we obtained 16S amplicon data for, from a Illumina Miseq run. 
+#' 
 # Set up pathway to idemp (demultiplexing tool) and test
 idemp <- "/usr/bin/idemp" # CHANGE ME if not on microbe
 system2(idemp) # Check that idemp is in your path and you can run shell commands from R
@@ -132,6 +132,7 @@ system(unassigned_2)
 # Rename files - gsub to get names in order!
 R1_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_"), "", list.files(demultiplex.fp, pattern="R1", full.names = TRUE))
 file.rename(list.files(demultiplex.fp, pattern="R1", full.names = TRUE), paste0(demultiplex.fp, "/R1_", R1_names))
+
 R2_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R2_001.fastq.gz_"), "", list.files(demultiplex.fp, pattern="R2", full.names = TRUE))
 file.rename(list.files(demultiplex.fp, pattern="R2", full.names = TRUE), paste0(demultiplex.fp, "/R2_", R2_names))
 
@@ -231,14 +232,14 @@ dir.create(filter.fp)
 dir.create(subF.fp)
 dir.create(subR.fp)
 
-### copy R1 and R2 from trimmed to sub-directories
+# Move R1 and R2 from trimmed to separate forward/reverse sub-directories
 fnFs.Q <- file.path(subF.fp,  basename(fnFs)) 
 fnRs.Q <- file.path(subR.fp,  basename(fnRs))
-file.copy(from = fnFs.cut, to = fnFs.Q)
-file.copy(from = fnRs.cut, to = fnRs.Q)
+file.rename(from = fnFs.cut, to = fnFs.Q)
+file.rename(from = fnRs.cut, to = fnRs.Q)
 
 # File parsing
-filtpathF <- file.path(subF.fp, "filtered") # Filtered forward files go into the path preprocessed_F/filtered/ subdirectory
+filtpathF <- file.path(subF.fp, "filtered") # files go into preprocessed_F/filtered/
 filtpathR <- file.path(subR.fp, "filtered") # ...
 fastqFs <- sort(list.files(subF.fp, pattern="fastq.gz"))
 fastqRs <- sort(list.files(subR.fp, pattern="fastq.gz"))
