@@ -64,7 +64,7 @@ library(dplyr)
 #' software is working and set up some of the variables that you will need 
 #' along the way.
 #' 
-#' If you are not working from microbe server, you will need to change the file paths for idemp and cutadapt to where they are stored on your computer/server.
+#' Note: If you are not working from microbe server, you will need to change the file paths for idemp and cutadapt to where they are stored on your computer/server.
 
 # Set up pathway to idemp (demultiplexing tool) and test
 idemp <- "/usr/bin/idemp" # CHANGE ME if not on microbe
@@ -72,14 +72,17 @@ system2(idemp) # Check that idemp is in your path and you can run shell commands
 
 # Set up pathway to cutadapt (primer trimming tool) and test
 cutadapt <- "/usr/local/Python27/bin/cutadapt" # CHANGE ME if not on microbe
-system2(cutadapt, args = "--version") # Check if working - run shell command from R
-
+system2(cutadapt, args = "--version") # Check by running shell command from R
 
 # Set path to shared data folder and contents
-data.fp <- "/data/shared/2019_02_20_MicrMethods_tutorial"  ## CHANGE ME to the directory containing the fastq files.
-list.files(data.fp) # Should list all files in shared folder
-barcode.fp <- file.path(data.fp, "barcode_demultiplex_short.txt") # format is .txt file: barcode </t> sampleID
-map.fp <- file.path(data.fp, "Molecular_Methods_18_515fBC_16S_Mapping_File_SHORT_vFinal_Fierer_10252018.txt") # CHANGE ME to the name of your mapping file
+data.fp <- "/data/shared/2019_02_20_MicrMethods_tutorial"
+
+# List all files in shared folder to check path
+list.files(data.fp)
+
+# Set file paths for barcodes file, map file, and fastqs
+barcode.fp <- file.path(data.fp, "barcode_demultiplex_short.txt") # .txt file: barcode </t> sampleID
+map.fp <- file.path(data.fp, "Molecular_Methods_18_515fBC_16S_Mapping_File_SHORT_vFinal_Fierer_10252018.txt")
 I1.fp <- file.path(data.fp, "Undetermined_S0_L001_I1_001.fastq.gz") 
 R1.fp <- file.path(data.fp, "Undetermined_S0_L001_R1_001.fastq.gz") 
 R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz") 
@@ -88,7 +91,7 @@ R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz")
 #' you do not need to create the subdirectories but they are nice to have
 #' for organizational purposes. 
 
-project.fp <- "/data/hollandh/MicroMethods_dada2_tutorial" # CHANGE ME to the directory that you want your project to be in
+project.fp <- "/data/YOUR_USERNAME/MicroMethods_dada2_tutorial" # CHANGE ME to project directory
 
 # Set up names of sub directories to stay organized
 preprocess.fp <- file.path(project.fp, "01_preprocess")
@@ -120,7 +123,7 @@ list.files(demultiplex.fp)
 #' #### Clean up the output from idemp
 #'
  
-# Change names of unassignable reads so they are not included in downstream analyses (remove "R1/2" from names).
+# Change names of unassignable reads so they are not included in downstream processing
 unassigned_1 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_unsigned.fastq.gz", " ", demultiplex.fp, "/Unassigned_reads1.fastq.gz")
 unassigned_2 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R2_001.fastq.gz_unsigned.fastq.gz", " ", demultiplex.fp, "/Unassigned_reads2.fastq.gz")
 system(unassigned_1)
@@ -140,8 +143,9 @@ fnRs <- sort(list.files(demultiplex.fp, pattern="R2_", full.names = TRUE))
 #' #### Pre-filter to remove sequence reads with Ns
 #' Ambiguous bases will make it hard for cutadapt to find short primer sequences in the reads.
 #' To solve this problem, we will remove sequences with ambiguous bases (Ns)
-#' 
-fnFs.filtN <- file.path(preprocess.fp, "filtN", basename(fnFs)) # Name the N-filtered files to put them in filtN/ subdirectory
+
+# Name the N-filtered files to put them in filtN/ subdirectory
+fnFs.filtN <- file.path(preprocess.fp, "filtN", basename(fnFs))
 fnRs.filtN <- file.path(preprocess.fp, "filtN", basename(fnRs))
 
 # filter Ns from reads and put them into the filtN directory
@@ -149,10 +153,12 @@ filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE) 
 
 
 #' #### Prepare the primers sequences and custom functions for analyzing the results from cutadapt
+#' Assign the primers you used to "FWD" and "REV" below. Note primers should be not be reverse complemented ahead of time. Our tutorial data uses 515f and 806br those are the primers below. Change if you sequenced with other primers.
+#' 
 
 # set up the primer sequences to pass along to cutadapt
-FWD <- "GTGYCAGCMGCCGCGGTAA"  ## CHANGE ME to your forward primer sequence # this is 515f # Not Rev-Comp
-REV <- "GGACTACNVGGGTWTCTAAT"  ## CHANGE ME # this is 806Br # Not Rev-Comp
+FWD <- "GTGYCAGCMGCCGCGGTAA"  ## CHANGE ME # this is 515f
+REV <- "GGACTACNVGGGTWTCTAAT"  ## CHANGE ME # this is 806Br
 
 # Write a function that creates a list of all orientations of the primers
 allOrients <- function(primer) {
@@ -177,15 +183,14 @@ primerHits <- function(primer, fn) {
 }
 
 #' Before running cutadapt, we will look at primer detection
-#' for the first sample, as a check.
-#' There may be some primers here, we will remove them below using cutadapt
+#' for the first sample, as a check. There may be some primers here, we will remove them below using cutadapt.
 #' 
 rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.filtN[[1]]), 
       FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.filtN[[1]]), 
       REV.ForwardReads = sapply(REV.orients, primerHits, fn = fnFs.filtN[[1]]), 
       REV.ReverseReads = sapply(REV.orients, primerHits, fn = fnRs.filtN[[1]]))
 
-#' #### Remove primers with cutadapt and assess the output using our custom functions
+#' #### Remove primers with cutadapt and assess the output
 
 # create directory to hold the output from cutadapt
 if (!dir.exists(trimmed.fp)) dir.create(trimmed.fp)
@@ -210,7 +215,7 @@ for (i in seq_along(fnFs)) {
                                fnFs.filtN[i], fnRs.filtN[i])) # input files
 }
 
-# As a sanity check, we will count the presence of primers in the first cutadapt-ed sample:
+# As a sanity check, we will check for primers in the first cutadapt-ed sample:
     ## should all be zero!
 rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.cut[[1]]), 
       FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.cut[[1]]), 
