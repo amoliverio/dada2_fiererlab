@@ -35,6 +35,8 @@ ssh <your microbe user name>@microbe.colorado.edu
 
 Install DADA2 & other necessary packages
 
+(NOTE: if you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: https://github.com/yhwu/idemp)
+
 ````{r }
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
@@ -63,14 +65,16 @@ Once the packages are installed, you can check to make sure the auxillary
 software is working and set up some of the variables that you will need 
 along the way.
 
+If you are not working from microbe server, you will need to change the file paths for idemp and cutadapt to where they are stored on your computer/server.
+
 ````{r }
-# set up pathway to idemp (demultiplexing tool) and test
-idemp <- "/main/data/hollandh/bin/idemp" # CHANGE ME to the demultiplex idemp path;
+# Set up pathway to idemp (demultiplexing tool) and test
+idemp <- "/usr/bin/idemp" # CHANGE ME if not on microbe
 system2(idemp) # Check that idemp is in your path and you can run shell commands from R
 
 # Set up pathway to cutadapt (primer trimming tool) and test
-cutadapt <- "/usr/local/Python27/bin/cutadapt" # CHANGE ME to the cutadapt path on your machine
-system2(cutadapt, args = "--version") # Check if it's working by running shell command from R
+cutadapt <- "/usr/local/Python27/bin/cutadapt"# CHANGE ME if not on microbe
+system2(cutadapt, args = "--version") # Check if working- run shell command from R
 
 
 # Set path to shared data folder and contents
