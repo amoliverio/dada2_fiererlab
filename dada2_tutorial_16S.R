@@ -10,9 +10,9 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #' We suggest opening the dada2 tutorial online to understand more about each step
 #'
 #' | []() |
-#' |-|
-#' | _**NOTE:**_ there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) |
 #' | :--- |
+#' | _**NOTE:**_ there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) |
+#' 
 #' 
 #' ## Set up (part 1) - Steps before starting pipeline ##
 #' 
