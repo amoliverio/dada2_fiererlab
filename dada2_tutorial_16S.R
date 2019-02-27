@@ -35,6 +35,14 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #' | :--- |
 #' | **NOTE:** You can also run this pipeline from your own computer, but it will be slower!|
 #' |<span>|
+#' 
+#' If you are running it on your own computer:
+#' 
+#' 1. Download the tutorial data from here [http://cme.colorado.edu/projects/bioinformatics-tutorials](http://cme.colorado.edu/projects/bioinformatics-tutorials)
+#' 2. Install idemp and cutadapt. 
+#'  - idemp can be found here: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp)
+#'  - cutadapt can be installed from here: [https://cutadapt.readthedocs.io/en/stable/installation.html](https://cutadapt.readthedocs.io/en/stable/installation.html)
+#'  3. Download the dada2-formatted reference database of your choice. Link to download here: [https://benjjneb.github.io/dada2/training.html](https://benjjneb.github.io/dada2/training.html)
 #'
 #' ## Set up (part 2) - You are logged in to Rstudio on server (or have it open on your computer) ##
 #' 
@@ -100,7 +108,7 @@ R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz")
 #' | :--- | 
 #' | **NOTE:** idemp relies on having a match in length between the index file and and the barcode sequences. Since the index file includes a extra linker basepair, you should append the barcode sequences with "N" to make sure each is 13bp long. |
 #' | <span> |
-
+#' 
 #' Set up file paths in YOUR directory where you want data; 
 #' you do not need to create the subdirectories but they are nice to have
 #' for organizational purposes. 
