@@ -2,6 +2,23 @@
 
 #+ setup, include=FALSE
 knitr::opts_chunk$set(eval = FALSE, include = TRUE)
+knitr::knit_hooks$set(
+  error = function(x, options) {
+    paste('\n\n<div class="alert alert-danger">',
+          gsub('##', '\n', gsub('^##\ Error', '**Error**', x)),
+          '</div>', sep = '\n')
+  },
+  warning = function(x, options) {
+    paste('\n\n<div class="alert alert-warning">',
+          gsub('##', '\n', gsub('^##\ Warning:', '**Warning**', x)),
+          '</div>', sep = '\n')
+  },
+  message = function(x, options) {
+    paste('\n\n<div class="alert alert-info">',
+          gsub('##', '\n', x),
+          '</div>', sep = '\n')
+  }
+)
 
 #' This version runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.
 #' 
@@ -9,9 +26,8 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #'    
 #' We suggest opening the dada2 tutorial online to understand more about each step
 #'
-#'<div class="alert alert-info">
-#' **NOTE:** there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html)
-#'</div>
+#'**NOTE:** there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html)
+#'
 #' 
 #' ## Set up (part 1) - Steps before starting pipeline ##
 #' 
