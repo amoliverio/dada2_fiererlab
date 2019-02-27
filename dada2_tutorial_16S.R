@@ -257,6 +257,7 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 #' generally appropriate for MiSeq runs that are 2x150 bp.
 #' 
 #' You will want to change this depending on run chemistry and quality: for 2x250 bp runs you can try truncLen=c(240,160) as per the dada2 tutorial if your reverse reads drop off in quality and higher, for example, truncLen=c(240,240) if they do not.
+#' **For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data:https://benjjneb.github.io/dada2/ITS_workflow.html.
 #' 
 #' **NOTE from dada2 tutorial:**
 #' "If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE."
