@@ -5,13 +5,12 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 
 #' This version runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.
 #' 
-#' * More information  on this pipeline can be found here: [https://benjjneb.github.io/dada2/bigdata_paired.html](https://benjjneb.github.io/dada2/bigdata_paired.html)
+#' We suggest opening the dada2 tutorial online to understand more about each step. The original pipeline on which this tutorial is based can be found here: [https://benjjneb.github.io/dada2/bigdata_paired.html](https://benjjneb.github.io/dada2/bigdata_paired.html)
 #'    
-#' We suggest opening the dada2 tutorial online to understand more about each step
 #'
 #' | <span> |
 #' | :--- |
-#' | **NOTE:** there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) |
+#' | **NOTE:** There is a slightly different pipeline for ITS and Non-"Big data" workflows. The pipeline has more details about each step and can be found here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) |
 #' | <span> |
 #' 
 #' 
@@ -28,20 +27,20 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #'
 #' #### Login to RStudio on the server 
 #' 
-#' | <span> |
-#' | :--- |
-#' | **NOTE:** you can also run from your own computer, but it will be slower!)|
-#' |<span>|
-#' 
 #'    1. Open a your web browser and start a new empty tab
 #'    2. type `microbe.colorado.edu:8787` in the address bar
 #'    3. use your server login credentials to log into rstudio server
+#'
+#'#' | <span> |
+#' | :--- |
+#' | **NOTE:** You can also run this pipeline from your own computer, but it will be slower!|
+#' |<span>|
 #'
 #' ## Set up (part 2) - You are logged in to Rstudio on server (or have it open on your computer) ##
 #' 
 #' Install DADA2 & other necessary packages
 #' 
-#' **NOTE:** if you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp)
+#' **NOTE:** If you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp)
 #' 
 #' | <span> |
 #' | :--- |
@@ -67,8 +66,11 @@ library(dplyr)
 #' Once the packages are installed, you can check to make sure the auxillary
 #' software is working and set up some of the variables that you will need 
 #' along the way.
-#' 
-#' Note: If you are not working from microbe server, you will need to change the file paths for idemp and cutadapt to where they are stored on your computer/server.
+#'
+#' | <span> |
+#' | :--- | 
+#' | **Note:** If you are not working from microbe server, you will need to change the file paths for idemp and cutadapt to where they are stored on your computer/server. |
+#' | <span> |
 #' 
 #' For this tutorial we will be working with some samples that we obtained 16S amplicon data for, from a Illumina Miseq run. 
 #' 
@@ -254,9 +256,9 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 #' 
 #' Before chosing sequence variants, we want to trim reads where their quality scores begin to drop (the `truncLen` and `truncQ` values) and remove any low-quality reads that are left over after we have finished trimming (the `maxEE` value).
 #' 
-#' **You will want to change this depending on run chemistry and quality:** for 2x250 bp runs you can try truncLen=c(240,160) as per the dada2 tutorial if your reverse reads drop off in quality and higher, for example, truncLen=c(240,240) if they do not.
+#' **You will want to change this depending on run chemistry and quality:** For 2x250 bp runs you can try truncLen=c(240,160) (as per the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles)) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, truncLen=c(240,240), if they do not.
 #' 
-#' **For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: [https://benjjneb.github.io/dada2/ITS_workflow.html]().
+#' **For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: [https://benjjneb.github.io/dada2/ITS_workflow.html](https://benjjneb.github.io/dada2/ITS_workflow.html).
 #' 
 #' **From dada2 tutorial:**
 #' >If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE.
