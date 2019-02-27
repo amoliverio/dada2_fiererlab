@@ -43,7 +43,6 @@ BiocManager::install("dada2", version = "3.8")
 
 source("https://bioconductor.org/biocLite.R")
 biocLite("ShortRead")
-
 install.packages("dplyr")
 
 #'---
@@ -81,6 +80,7 @@ data.fp <- "/data/shared/2019_02_20_MicrMethods_tutorial"
 list.files(data.fp)
 
 # Set file paths for barcodes file, map file, and fastqs
+    # barcodes need to have 'N' on the end of each 12bp sequence for compatability
 barcode.fp <- file.path(data.fp, "barcode_demultiplex_short.txt") # .txt file: barcode </t> sampleID
 map.fp <- file.path(data.fp, "Molecular_Methods_18_515fBC_16S_Mapping_File_SHORT_vFinal_Fierer_10252018.txt")
 I1.fp <- file.path(data.fp, "Undetermined_S0_L001_I1_001.fastq.gz") 
