@@ -260,9 +260,10 @@ Before chosing sequence variants, we want to trim reads where their quality scor
 begin to drop (the `truncLen` and `truncQ` values) and remove any low-quality reads 
 that are left over after we have finished trimming (the `maxEE` value).
 ---
-**WARNING:** THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine
-the trim and filtering parameters for your data. The following settings are 
-generally appropriate for MiSeq runs.
+|**WARNING:** THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine | 
+|the trim and filtering parameters for your data. The following settings are |
+|generally appropriate for MiSeq runs.|
+| --- |
 ---
 
 ````{r }
