@@ -30,12 +30,7 @@ ssh <your microbe user name>@microbe.colorado.edu
    2. type `microbe.colorado.edu:8787` in the address bar
    3. use your server login credentials to log into rstudio server
 
-| <span> |
-| :--- |
-| **NOTE:** You can also run this pipeline from your own computer, but it will be slower!|
-|<span>|
-
-If you are running it on your own computer:
+If you are running it on your own computer (runs slower!):
 
 1. Download the tutorial data from here [http://cme.colorado.edu/projects/bioinformatics-tutorials](http://cme.colorado.edu/projects/bioinformatics-tutorials)
 2. Install idemp and cutadapt. 
@@ -46,8 +41,6 @@ If you are running it on your own computer:
 ## Set up (part 2) - You are logged in to Rstudio on server (or have it open on your computer) ##
 
 Install DADA2 & other necessary packages.
-
-**NOTE:** If you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp)
 
 | <span> |
 | :--- |
