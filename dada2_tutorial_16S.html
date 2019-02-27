@@ -213,7 +213,7 @@ hr {
 </tr>
 </thead><tbody>
 <tr>
-<td align="left"><strong>NOTE:</strong> There is a slightly different pipeline for ITS and Non-&ldquo;Big data&rdquo; workflows. The pipeline has more details about each step and can be found here: <a href="https://benjjneb.github.io/dada2/tutorial.html">https://benjjneb.github.io/dada2/tutorial.html</a></td>
+<td align="left"><strong>NOTE:</strong> There is a slightly different pipeline for ITS and non-&ldquo;Big data&rdquo; workflows. The non-&ldquo;Big data&rdquo; pipeline, in particular, has very nice detailed explanations for each step and can be found here: <a href="https://benjjneb.github.io/dada2/tutorial.html">https://benjjneb.github.io/dada2/tutorial.html</a></td>
 </tr>
 <tr>
 <td align="left"><span></td>
@@ -239,14 +239,22 @@ hr {
 <li>use your server login credentials to log into rstudio server</li>
 </ol>
 
-<p>#&#39; | <span> |
-| :&mdash; |
-| <strong>NOTE:</strong> You can also run this pipeline from your own computer, but it will be slower!|
-|<span>|</p>
+<table><thead>
+<tr>
+<th align="left"><span></th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left"><strong>NOTE:</strong> You can also run this pipeline from your own computer, but it will be slower!</td>
+</tr>
+<tr>
+<td align="left"><span></td>
+</tr>
+</tbody></table>
 
 <h2>Set up (part 2) - You are logged in to Rstudio on server (or have it open on your computer)</h2>
 
-<p>Install DADA2 &amp; other necessary packages</p>
+<p>Install DADA2 &amp; other necessary packages.</p>
 
 <p><strong>NOTE:</strong> If you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: <a href="https://github.com/yhwu/idemp">https://github.com/yhwu/idemp</a></p>
 
@@ -365,17 +373,23 @@ list.files(demultiplex.fp)
 <h4>Clean up the output from idemp</h4>
 
 <pre><code class="r"># Change names of unassignable reads so they are not included in downstream processing
-unassigned_1 &lt;- paste0(&quot;mv&quot;, &quot; &quot;, demultiplex.fp, &quot;/Undetermined_S0_L001_R1_001.fastq.gz_unsigned.fastq.gz&quot;, &quot; &quot;, demultiplex.fp, &quot;/Unassigned_reads1.fastq.gz&quot;)
-unassigned_2 &lt;- paste0(&quot;mv&quot;, &quot; &quot;, demultiplex.fp, &quot;/Undetermined_S0_L001_R2_001.fastq.gz_unsigned.fastq.gz&quot;, &quot; &quot;, demultiplex.fp, &quot;/Unassigned_reads2.fastq.gz&quot;)
+unassigned_1 &lt;- paste0(&quot;mv&quot;, &quot; &quot;, demultiplex.fp, &quot;/Undetermined_S0_L001_R1_001.fastq.gz_unsigned.fastq.gz&quot;,
+                       &quot; &quot;, demultiplex.fp, &quot;/Unassigned_reads1.fastq.gz&quot;)
+unassigned_2 &lt;- paste0(&quot;mv&quot;, &quot; &quot;, demultiplex.fp, &quot;/Undetermined_S0_L001_R2_001.fastq.gz_unsigned.fastq.gz&quot;, 
+                       &quot; &quot;, demultiplex.fp, &quot;/Unassigned_reads2.fastq.gz&quot;)
 system(unassigned_1)
 system(unassigned_2)
 
 # Rename files - gsub to get names in order!
-R1_names &lt;- gsub(paste0(demultiplex.fp, &quot;/Undetermined_S0_L001_R1_001.fastq.gz_&quot;), &quot;&quot;, list.files(demultiplex.fp, pattern=&quot;R1&quot;, full.names = TRUE))
-file.rename(list.files(demultiplex.fp, pattern=&quot;R1&quot;, full.names = TRUE), paste0(demultiplex.fp, &quot;/R1_&quot;, R1_names))
+R1_names &lt;- gsub(paste0(demultiplex.fp, &quot;/Undetermined_S0_L001_R1_001.fastq.gz_&quot;), &quot;&quot;, 
+                 list.files(demultiplex.fp, pattern=&quot;R1&quot;, full.names = TRUE))
+file.rename(list.files(demultiplex.fp, pattern=&quot;R1&quot;, full.names = TRUE), 
+            paste0(demultiplex.fp, &quot;/R1_&quot;, R1_names))
 
-R2_names &lt;- gsub(paste0(demultiplex.fp, &quot;/Undetermined_S0_L001_R2_001.fastq.gz_&quot;), &quot;&quot;, list.files(demultiplex.fp, pattern=&quot;R2&quot;, full.names = TRUE))
-file.rename(list.files(demultiplex.fp, pattern=&quot;R2&quot;, full.names = TRUE), paste0(demultiplex.fp, &quot;/R2_&quot;, R2_names))
+R2_names &lt;- gsub(paste0(demultiplex.fp, &quot;/Undetermined_S0_L001_R2_001.fastq.gz_&quot;), &quot;&quot;, 
+                 list.files(demultiplex.fp, pattern=&quot;R2&quot;, full.names = TRUE))
+file.rename(list.files(demultiplex.fp, pattern=&quot;R2&quot;, full.names = TRUE),
+            paste0(demultiplex.fp, &quot;/R2_&quot;, R2_names))
 
 # Get full paths for all files and save them for downstream analyses
 # Forward and reverse fastq filenames have format: 
@@ -393,7 +407,8 @@ fnFs.filtN &lt;- file.path(preprocess.fp, &quot;filtN&quot;, basename(fnFs))
 fnRs.filtN &lt;- file.path(preprocess.fp, &quot;filtN&quot;, basename(fnRs))
 
 # filter Ns from reads and put them into the filtN directory
-filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE) # CHANGE multithread to FALSE on Windows (here and elsewhere in the program)
+filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE) 
+# CHANGE multithread to FALSE on Windows (here and elsewhere in the program)
 </code></pre>
 
 <h4>Prepare the primers sequences and custom functions for analyzing the results from cutadapt</h4>
@@ -647,7 +662,9 @@ taxonomy &lt;- as.data.frame(tax)
 taxonomy$ESV &lt;- as.factor(rownames(taxonomy))
 taxonomy &lt;- merge(rep_set_ESVs, taxonomy, by = &quot;ESV&quot;)
 rownames(taxonomy) &lt;- taxonomy$ESV_ID
-taxonomy_for_mctoolsr &lt;- unite_(taxonomy, &quot;taxonomy&quot;, c(&quot;Kingdom&quot;, &quot;Phylum&quot;, &quot;Class&quot;, &quot;Order&quot;,&quot;Family&quot;, &quot;Genus&quot;, &quot;ESV_ID&quot;), sep = &quot;;&quot;)
+taxonomy_for_mctoolsr &lt;- unite_(taxonomy, &quot;taxonomy&quot;, 
+                                c(&quot;Kingdom&quot;, &quot;Phylum&quot;, &quot;Class&quot;, &quot;Order&quot;,&quot;Family&quot;, &quot;Genus&quot;, &quot;ESV_ID&quot;),
+                                sep = &quot;;&quot;)
 
 # Merge taxonomy and table
 seqtab_wTax &lt;- merge(seqtab.t, taxonomy_for_mctoolsr, by = 0)

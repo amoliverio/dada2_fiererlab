@@ -11,7 +11,7 @@ We suggest opening the dada2 tutorial online to understand more about each step.
 
 | <span> |
 | :--- |
-| **NOTE:** There is a slightly different pipeline for ITS and Non-"Big data" workflows. The pipeline has more details about each step and can be found here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) |
+| **NOTE:** There is a slightly different pipeline for ITS and non-"Big data" workflows. The non-"Big data" pipeline, in particular, has very nice detailed explanations for each step and can be found here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) |
 | <span> |
 
 
@@ -32,14 +32,14 @@ ssh <your microbe user name>@microbe.colorado.edu
    2. type `microbe.colorado.edu:8787` in the address bar
    3. use your server login credentials to log into rstudio server
 
-#' | <span> |
+| <span> |
 | :--- |
 | **NOTE:** You can also run this pipeline from your own computer, but it will be slower!|
 |<span>|
 
 ## Set up (part 2) - You are logged in to Rstudio on server (or have it open on your computer) ##
 
-Install DADA2 & other necessary packages
+Install DADA2 & other necessary packages.
 
 **NOTE:** If you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp)
 
@@ -143,17 +143,23 @@ list.files(demultiplex.fp)
 
 ````{r }
 # Change names of unassignable reads so they are not included in downstream processing
-unassigned_1 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_unsigned.fastq.gz", " ", demultiplex.fp, "/Unassigned_reads1.fastq.gz")
-unassigned_2 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R2_001.fastq.gz_unsigned.fastq.gz", " ", demultiplex.fp, "/Unassigned_reads2.fastq.gz")
+unassigned_1 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_unsigned.fastq.gz",
+                       " ", demultiplex.fp, "/Unassigned_reads1.fastq.gz")
+unassigned_2 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R2_001.fastq.gz_unsigned.fastq.gz", 
+                       " ", demultiplex.fp, "/Unassigned_reads2.fastq.gz")
 system(unassigned_1)
 system(unassigned_2)
 
 # Rename files - gsub to get names in order!
-R1_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_"), "", list.files(demultiplex.fp, pattern="R1", full.names = TRUE))
-file.rename(list.files(demultiplex.fp, pattern="R1", full.names = TRUE), paste0(demultiplex.fp, "/R1_", R1_names))
+R1_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_"), "", 
+                 list.files(demultiplex.fp, pattern="R1", full.names = TRUE))
+file.rename(list.files(demultiplex.fp, pattern="R1", full.names = TRUE), 
+            paste0(demultiplex.fp, "/R1_", R1_names))
 
-R2_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R2_001.fastq.gz_"), "", list.files(demultiplex.fp, pattern="R2", full.names = TRUE))
-file.rename(list.files(demultiplex.fp, pattern="R2", full.names = TRUE), paste0(demultiplex.fp, "/R2_", R2_names))
+R2_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R2_001.fastq.gz_"), "", 
+                 list.files(demultiplex.fp, pattern="R2", full.names = TRUE))
+file.rename(list.files(demultiplex.fp, pattern="R2", full.names = TRUE),
+            paste0(demultiplex.fp, "/R2_", R2_names))
 
 # Get full paths for all files and save them for downstream analyses
 # Forward and reverse fastq filenames have format: 
@@ -171,7 +177,8 @@ fnFs.filtN <- file.path(preprocess.fp, "filtN", basename(fnFs))
 fnRs.filtN <- file.path(preprocess.fp, "filtN", basename(fnRs))
 
 # filter Ns from reads and put them into the filtN directory
-filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE) # CHANGE multithread to FALSE on Windows (here and elsewhere in the program)
+filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE) 
+# CHANGE multithread to FALSE on Windows (here and elsewhere in the program)
 ````
 
 #### Prepare the primers sequences and custom functions for analyzing the results from cutadapt
@@ -423,7 +430,9 @@ taxonomy <- as.data.frame(tax)
 taxonomy$ESV <- as.factor(rownames(taxonomy))
 taxonomy <- merge(rep_set_ESVs, taxonomy, by = "ESV")
 rownames(taxonomy) <- taxonomy$ESV_ID
-taxonomy_for_mctoolsr <- unite_(taxonomy, "taxonomy", c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"), sep = ";")
+taxonomy_for_mctoolsr <- unite_(taxonomy, "taxonomy", 
+                                c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"),
+                                sep = ";")
 
 # Merge taxonomy and table
 seqtab_wTax <- merge(seqtab.t, taxonomy_for_mctoolsr, by = 0)
