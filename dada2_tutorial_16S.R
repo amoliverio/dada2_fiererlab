@@ -2,31 +2,14 @@
 
 #+ setup, include=FALSE
 knitr::opts_chunk$set(eval = FALSE, include = TRUE)
-knitr::knit_hooks$set(
-  error = function(x, options) {
-    paste('\n\n<div class="alert alert-danger">',
-          gsub('##', '\n', gsub('^##\ Error', '**Error**', x)),
-          '</div>', sep = '\n')
-  },
-  warning = function(x, options) {
-    paste('\n\n<div class="alert alert-warning">',
-          gsub('##', '\n', gsub('^##\ Warning:', '**Warning**', x)),
-          '</div>', sep = '\n')
-  },
-  message = function(x, options) {
-    paste('\n\n<div class="alert alert-info">',
-          gsub('##', '\n', x),
-          '</div>', sep = '\n')
-  }
-)
 
 #' This version runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.
 #' 
-#' * More information here: [https://benjjneb.github.io/dada2/bigdata_paired.html]([https://benjjneb.github.io/dada2/bigdata_paired.html])
+#' * More information  on this pipeline can be found here: [https://benjjneb.github.io/dada2/bigdata_paired.html](https://benjjneb.github.io/dada2/bigdata_paired.html)
 #'    
 #' We suggest opening the dada2 tutorial online to understand more about each step
 #'
-#' | _**NOTE:** there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html)_ |
+#' | _**NOTE:**_ there is a slightly different pipeline for ITS and Non-"Big data" that takes a closer look at each step here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) |
 #' | :--- |
 #' 
 #' ## Set up (part 1) - Steps before starting pipeline ##
@@ -52,7 +35,8 @@ knitr::knit_hooks$set(
 #' 
 #' Install DADA2 & other necessary packages
 #' 
-#' (NOTE: if you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: https://github.com/yhwu/idemp)
+#' | _**NOTE:**_ if you are running on your local computer make sure you have idemp installed. Found here and it is a very quick install: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp) |
+#' | :--- |
 #' 
 
 if (!requireNamespace("BiocManager", quietly = TRUE))
