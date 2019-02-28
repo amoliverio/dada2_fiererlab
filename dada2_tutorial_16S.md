@@ -36,7 +36,7 @@ If you are running it on your own computer (runs slower!):
 2. Install idemp and cutadapt. 
  - idemp can be found here: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp)
  - cutadapt can be installed from here: [https://cutadapt.readthedocs.io/en/stable/installation.html](https://cutadapt.readthedocs.io/en/stable/installation.html)
- 3. Download the dada2-formatted reference database of your choice. Link to download here: [https://benjjneb.github.io/dada2/training.html](https://benjjneb.github.io/dada2/training.html)
+3. Download the dada2-formatted reference database of your choice. Link to download here: [https://benjjneb.github.io/dada2/training.html](https://benjjneb.github.io/dada2/training.html)
 
 ## Set up (part 2) - You are logged in to Rstudio on server (or have it open on your computer) ##
 
@@ -98,7 +98,7 @@ data.fp <- "/data/shared/2019_02_20_MicrMethods_tutorial"
 list.files(data.fp)
 
 # Set file paths for barcodes file, map file, and fastqs
-    # barcodes need to have 'N' on the end of each 12bp sequence for compatability
+    # Barcodes need to have 'N' on the end of each 12bp sequence for compatability
 barcode.fp <- file.path(data.fp, "barcode_demultiplex_short.txt") # .txt file: barcode </t> sampleID
 map.fp <- file.path(data.fp, "Molecular_Methods_18_515fBC_16S_Mapping_File_SHORT_vFinal_Fierer_10252018.txt")
 I1.fp <- file.path(data.fp, "Undetermined_S0_L001_I1_001.fastq.gz") 
@@ -187,7 +187,7 @@ To solve this problem, we will remove sequences with ambiguous bases (Ns)
 fnFs.filtN <- file.path(preprocess.fp, "filtN", basename(fnFs))
 fnRs.filtN <- file.path(preprocess.fp, "filtN", basename(fnRs))
 
-# filter Ns from reads and put them into the filtN directory
+# Filter Ns from reads and put them into the filtN directory
 filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE) 
 # CHANGE multithread to FALSE on Windows (here and elsewhere in the program)
 ```
@@ -198,7 +198,7 @@ Assign the primers you used to "FWD" and "REV" below. Note primers should be not
 
 
 ```r
-# set up the primer sequences to pass along to cutadapt
+# Set up the primer sequences to pass along to cutadapt
 FWD <- "GTGYCAGCMGCCGCGGTAA"  ## CHANGE ME # this is 515f
 REV <- "GGACTACNVGGGTWTCTAAT"  ## CHANGE ME # this is 806Br
 
@@ -212,7 +212,7 @@ allOrients <- function(primer) {
     return(sapply(orients, toString))  # Convert back to character vector
 }
 
-# save the primer orientations to pass to cutadapt
+# Save the primer orientations to pass to cutadapt
 FWD.orients <- allOrients(FWD)
 REV.orients <- allOrients(REV)
 FWD.orients
@@ -241,7 +241,7 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.filtN[[1]]),
 
 
 ```r
-# create directory to hold the output from cutadapt
+# Create directory to hold the output from cutadapt
 if (!dir.exists(trimmed.fp)) dir.create(trimmed.fp)
 fnFs.cut <- file.path(trimmed.fp, basename(fnFs))
 fnRs.cut <- file.path(trimmed.fp, basename(fnRs))
@@ -301,7 +301,7 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 
 Before chosing sequence variants, we want to trim reads where their quality scores begin to drop (the `truncLen` and `truncQ` values) and remove any low-quality reads that are left over after we have finished trimming (the `maxEE` value).
 
-**You will want to change this depending on run chemistry and quality:** For 2x250 bp runs you can try truncLen=c(240,160) (as per the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles)) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, truncLen=c(240,240), if they do not.
+**You will want to change this depending on run chemistry and quality:** For 2x250 bp runs you can try truncLen=c(240,160) (as per the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles)) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, truncLen=c(240,200), if they do not.
 
 **For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: [https://benjjneb.github.io/dada2/ITS_workflow.html](https://benjjneb.github.io/dada2/ITS_workflow.html).
 
@@ -370,7 +370,7 @@ errR <- learnErrors(filtRs, nbases=1e8, multithread=TRUE)
 mergers <- vector("list", length(sample.names))
 names(mergers) <- sample.names
 
-# for each sample, get a list of merged and denoised sequences
+# For each sample, get a list of merged and denoised sequences
 for(sam in sample.names) {
     cat("Processing:", sam, "\n")
     derepF <- derepFastq(filtFs[[sam]])
@@ -390,7 +390,7 @@ rm(derepF); rm(derepR)
 ```r
 seqtab <- makeSequenceTable(mergers)
 
-# save table as an r data object file
+# Save table as an r data object file
 dir.create(table.fp)
 saveRDS(seqtab, paste0(table.fp, "/seqtab.rds"))
 ```
@@ -473,6 +473,16 @@ write.table(tax, file = paste0(table.fp, "/tax_final.txt"),
             sep = "\t", row.names = TRUE, col.names = NA)
 ```
 
+You can now transfer over the output files onto your local computer. 
+The table and taxonomy can be read into R with 'mctoolsr' package as below. 
+
+
+```r
+tax_table_fp = 'mypath/seqtab_wTax_mctoolsr.txt'
+map_fp = 'mypath/my_mapfile.txt' 
+input = load_taxa_table(tax_table_fp, map_fp)
+```
+
 ### Post-pipeline considerations
 After following this pipline, you will need to think about the following in downstream applications (example with 'mctoolsr' R package below):
 
@@ -487,5 +497,9 @@ input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_remo
 ```
 
 4. Normalize or rarefy your ESV table
-You can also now transfer over the output files onto your local computer
+
+
+```r
+input_filt <- single_rarefy(input = input_filt, depth = 5000) # CHANGE ME to desired depth.
+```
 
