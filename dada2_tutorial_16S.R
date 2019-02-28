@@ -90,7 +90,7 @@ data.fp <- "/data/shared/2019_02_20_MicrMethods_tutorial"
 list.files(data.fp)
 
 # Set file paths for barcodes file, map file, and fastqs
-    # barcodes need to have 'N' on the end of each 12bp sequence for compatability
+    # Barcodes need to have 'N' on the end of each 12bp sequence for compatability
 barcode.fp <- file.path(data.fp, "barcode_demultiplex_short.txt") # .txt file: barcode </t> sampleID
 map.fp <- file.path(data.fp, "Molecular_Methods_18_515fBC_16S_Mapping_File_SHORT_vFinal_Fierer_10252018.txt")
 I1.fp <- file.path(data.fp, "Undetermined_S0_L001_I1_001.fastq.gz") 
@@ -168,7 +168,7 @@ fnRs <- sort(list.files(demultiplex.fp, pattern="R2_", full.names = TRUE))
 fnFs.filtN <- file.path(preprocess.fp, "filtN", basename(fnFs))
 fnRs.filtN <- file.path(preprocess.fp, "filtN", basename(fnRs))
 
-# filter Ns from reads and put them into the filtN directory
+# Filter Ns from reads and put them into the filtN directory
 filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE) 
 # CHANGE multithread to FALSE on Windows (here and elsewhere in the program)
 
@@ -177,7 +177,7 @@ filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE)
 #' Assign the primers you used to "FWD" and "REV" below. Note primers should be not be reverse complemented ahead of time. Our tutorial data uses 515f and 806br those are the primers below. Change if you sequenced with other primers.
 #' 
 
-# set up the primer sequences to pass along to cutadapt
+# Set up the primer sequences to pass along to cutadapt
 FWD <- "GTGYCAGCMGCCGCGGTAA"  ## CHANGE ME # this is 515f
 REV <- "GGACTACNVGGGTWTCTAAT"  ## CHANGE ME # this is 806Br
 
@@ -191,7 +191,7 @@ allOrients <- function(primer) {
     return(sapply(orients, toString))  # Convert back to character vector
 }
 
-# save the primer orientations to pass to cutadapt
+# Save the primer orientations to pass to cutadapt
 FWD.orients <- allOrients(FWD)
 REV.orients <- allOrients(REV)
 FWD.orients
@@ -213,7 +213,7 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.filtN[[1]]),
 
 #' #### Remove primers with cutadapt and assess the output
 
-# create directory to hold the output from cutadapt
+# Create directory to hold the output from cutadapt
 if (!dir.exists(trimmed.fp)) dir.create(trimmed.fp)
 fnFs.cut <- file.path(trimmed.fp, basename(fnFs))
 fnRs.cut <- file.path(trimmed.fp, basename(fnRs))
@@ -325,7 +325,7 @@ errR <- learnErrors(filtRs, nbases=1e8, multithread=TRUE)
 mergers <- vector("list", length(sample.names))
 names(mergers) <- sample.names
 
-# for each sample, get a list of merged and denoised sequences
+# For each sample, get a list of merged and denoised sequences
 for(sam in sample.names) {
     cat("Processing:", sam, "\n")
     derepF <- derepFastq(filtFs[[sam]])
@@ -341,7 +341,7 @@ rm(derepF); rm(derepR)
 #' #### Construct sequence table
 seqtab <- makeSequenceTable(mergers)
 
-# save table as an r data object file
+# Save table as an r data object file
 dir.create(table.fp)
 saveRDS(seqtab, paste0(table.fp, "/seqtab.rds"))
 
