@@ -355,7 +355,9 @@ saveRDS(seqtab, paste0(table.fp, "/seqtab.rds"))
 #' For the tutorial 16S, we will assign taxonomy with Silva db v132, but you might want to use other databases for your data. Below are paths to some of the databases we use often. (If you are on your own computer you can download the database you need from this link https://benjjneb.github.io/dada2/training.html):
 #' 
 #' 16S bacteria and archaea (SILVA db): /db_files/dada2/silva_nr_v132_train_set.fa
+#'
 #' ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.fasta
+#' 
 #' 18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta
 #' 
 
