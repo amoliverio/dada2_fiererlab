@@ -41,7 +41,7 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #'
 #' ## Set up (part 2) - You are logged in to Rstudio on server (or have it open on your computer) ##
 #' 
-#' Install DADA2 & other necessary packages.
+#' Install DADA2 & other necessary packages. If this is your first time on Rstudio server, when you install a package you might get a prompt asking if you want to create your own library. Answer 'yes' twice in the console to continue.
 #' 
 #' | <span> |
 #' | :--- |
@@ -49,8 +49,7 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #' | <span> |
 #'
 
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+install.packages("BiocManager")
 BiocManager::install("dada2", version = "3.8")
 
 source("https://bioconductor.org/biocLite.R")
