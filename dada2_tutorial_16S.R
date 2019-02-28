@@ -37,7 +37,7 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #' 2. Install idemp and cutadapt. 
 #'  - idemp can be found here: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp)
 #'  - cutadapt can be installed from here: [https://cutadapt.readthedocs.io/en/stable/installation.html](https://cutadapt.readthedocs.io/en/stable/installation.html)
-#'  3. Download the dada2-formatted reference database of your choice. Link to download here: [https://benjjneb.github.io/dada2/training.html](https://benjjneb.github.io/dada2/training.html)
+#' 3. Download the dada2-formatted reference database of your choice. Link to download here: [https://benjjneb.github.io/dada2/training.html](https://benjjneb.github.io/dada2/training.html)
 #'
 #' ## Set up (part 2) - You are logged in to Rstudio on server (or have it open on your computer) ##
 #' 
@@ -269,7 +269,7 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 #' 
 #' Before chosing sequence variants, we want to trim reads where their quality scores begin to drop (the `truncLen` and `truncQ` values) and remove any low-quality reads that are left over after we have finished trimming (the `maxEE` value).
 #' 
-#' **You will want to change this depending on run chemistry and quality:** For 2x250 bp runs you can try truncLen=c(240,160) (as per the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles)) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, truncLen=c(240,240), if they do not.
+#' **You will want to change this depending on run chemistry and quality:** For 2x250 bp runs you can try truncLen=c(240,160) (as per the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles)) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, truncLen=c(240,200), if they do not.
 #' 
 #' **For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: [https://benjjneb.github.io/dada2/ITS_workflow.html](https://benjjneb.github.io/dada2/ITS_workflow.html).
 #' 
@@ -417,6 +417,13 @@ write.table(seqtab.t, file = paste0(table.fp, "/seqtab_final.txt"),
 write.table(tax, file = paste0(table.fp, "/tax_final.txt"), 
             sep = "\t", row.names = TRUE, col.names = NA)
 
+#' You can also now transfer over the output files onto your local computer. 
+#' You can read table and taxonomy the into R with 'mctoolsr' package as below. 
+
+tax_table_fp = 'mypath/seqtab_wTax_mctoolsr.txt'
+map_fp = 'mypath/my_mapfile.txt' 
+input = load_taxa_table(tax_table_fp, map_fp)
+
 #' ### Post-pipeline considerations
 #' After following this pipline, you will need to think about the following in downstream applications (example with 'mctoolsr' R package below):
 #' 
@@ -428,5 +435,5 @@ input_filt <- filter_taxa_from_input(input, taxa_to_remove = c("Chloroplast","Mi
 input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_remove = "NA")
 
 #' 4. Normalize or rarefy your ESV table
-#' You can also now transfer over the output files onto your local computer
-#'
+
+input_filt <- single_rarefy(input = input_filt, depth = 5000) # CHANGE ME to desired depth.
