@@ -417,8 +417,8 @@ write.table(seqtab.t, file = paste0(table.fp, "/seqtab_final.txt"),
 write.table(tax, file = paste0(table.fp, "/tax_final.txt"), 
             sep = "\t", row.names = TRUE, col.names = NA)
 
-#' You can also now transfer over the output files onto your local computer. 
-#' You can read table and taxonomy the into R with 'mctoolsr' package as below. 
+#' You can now transfer over the output files onto your local computer. 
+#' The table and taxonomy can be read into R with 'mctoolsr' package as below. 
 
 tax_table_fp = 'mypath/seqtab_wTax_mctoolsr.txt'
 map_fp = 'mypath/my_mapfile.txt' 
