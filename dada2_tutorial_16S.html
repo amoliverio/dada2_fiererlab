@@ -254,7 +254,7 @@ hr {
 
 <h2>Set up (part 2) - You are logged in to Rstudio on server (or have it open on your computer)</h2>
 
-<p>Install DADA2 &amp; other necessary packages.</p>
+<p>Install DADA2 &amp; other necessary packages. If this is your first time on Rstudio server, when you install a package you might get a prompt asking if you want to create your own library. Answer &#39;yes&#39; twice in the console to continue.</p>
 
 <table><thead>
 <tr>
@@ -269,8 +269,7 @@ hr {
 </tr>
 </tbody></table>
 
-<pre><code class="r">if (!requireNamespace(&quot;BiocManager&quot;, quietly = TRUE))
-    install.packages(&quot;BiocManager&quot;)
+<pre><code class="r">install.packages(&quot;BiocManager&quot;)
 BiocManager::install(&quot;dada2&quot;, version = &quot;3.8&quot;)
 
 source(&quot;https://bioconductor.org/biocLite.R&quot;)
@@ -630,9 +629,11 @@ to assign names to our sequence variants.</p>
 
 <p>For the tutorial 16S, we will assign taxonomy with Silva db v132, but you might want to use other databases for your data. Below are paths to some of the databases we use often. (If you are on your own computer you can download the database you need from this link <a href="https://benjjneb.github.io/dada2/training.html):">https://benjjneb.github.io/dada2/training.html):</a></p>
 
-<p>16S bacteria and archaea (SILVA db): /db_files/dada2/silva_nr_v132_train_set.fa
-ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.fasta
-18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta</p>
+<p>16S bacteria and archaea (SILVA db): /db_files/dada2/silva_nr_v132_train_set.fa</p>
+
+<p>ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.fasta</p>
+
+<p>18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta</p>
 
 <pre><code class="r"># Read in RDS 
 st.all &lt;- readRDS(paste0(table.fp, &quot;/seqtab.rds&quot;))
