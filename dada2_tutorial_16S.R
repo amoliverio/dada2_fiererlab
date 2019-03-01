@@ -85,6 +85,7 @@ system2(cutadapt, args = "--version") # Check by running shell command from R
 # Set path to shared data folder and contents
 data.fp <- "/data/shared/2019_02_20_MicrMethods_tutorial"
 
+
 # List all files in shared folder to check path
 list.files(data.fp)
 
@@ -105,7 +106,8 @@ R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz")
 #' you do not need to create the subdirectories but they are nice to have
 #' for organizational purposes. 
 
-project.fp <- "/data/YOUR_USERNAME/MicroMethods_dada2_tutorial" # CHANGE ME to project directory
+#project.fp <- "/data/YOUR_USERNAME/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
+project.fp <- "../MicroMethods_dada2_tutorial" # CHANGE ME to project directory
 
 # Set up names of sub directories to stay organized
 preprocess.fp <- file.path(project.fp, "01_preprocess")
@@ -223,10 +225,10 @@ REV.RC <- dada2:::rc(REV)
 
 ##  Create the cutadapt flags ##
 # Trim FWD and the reverse-complement of REV off of R1 (forward reads)
-R1.flags <- paste("-g", FWD, "-a", REV.RC) 
+R1.flags <- paste("-g", FWD, "-a", REV.RC, "--minimum-length 50") 
 
 # Trim REV and the reverse-complement of FWD off of R2 (reverse reads)
-R2.flags <- paste("-G", REV, "-A", FWD.RC) 
+R2.flags <- paste("-G", REV, "-A", FWD.RC, "--minimum-length 50") 
 
 # Run Cutadapt
 for (i in seq_along(fnFs)) {
@@ -274,6 +276,12 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 #' 
 #' **From dada2 tutorial:**
 #' >If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE.
+
+#' #### Inspect read quality profiles
+
+plotQualityProfile(paste0(subF.fp, "/", fastqFs[1]))
+
+
 #'
 #' | <span> |
 #' | :--- |
