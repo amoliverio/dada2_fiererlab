@@ -62,6 +62,7 @@ install.packages("dplyr")
 library(dada2); packageVersion("dada2")
 library(ShortRead)
 library(dplyr)
+library(tibble)
 
 #' Once the packages are installed, you can check to make sure the auxillary
 #' software is working and set up some of the variables that you will need 
@@ -278,20 +279,45 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 #' >If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE.
 
 #' #### Inspect read quality profiles
+#' It's important to get a feel for the quality of the data that we are using. To do this, we will plot the quality of some of the samples.
+#' **From the dada2 tutorial:**
+#' >In gray-scale is a heat map of the frequency of each quality score at each base position. The median quality score at each position is shown by the green line, and the quartiles of the quality score distribution by the orange lines. The red line shows the scaled proportion of reads that extend to at least that position (this is more useful for other sequencing technologies, as Illumina reads are typically all the same lenghth, hence the flat red line).
 
-plotQualityProfile(paste0(subF.fp, "/", fastqFs[1]))
+# If the number of samples is 20 or less, plot them all, otherwise, just plot 20
+if( length(fastqFs) <= 20) {
+  plotQualityProfile(paste0(subF.fp, "/", fastqFs))
+  plotQualityProfile(paste0(subR.fp, "/", fastqRs))
+} else {
+  rand_samples <- sample(size = 20, 1:length(fastqFs)) # grab 20 random samples to plot
+  plotQualityProfile(paste0(subF.fp, "/", fastqFs[rand_samples]))
+  plotQualityProfile(paste0(subR.fp, "/", fastqRs[rand_samples]))
+}
 
 
+#' #### Filter the data
 #'
 #' | <span> |
 #' | :--- |
 #' | **WARNING:** THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine the trim and filtering parameters for your data. The following settings are generally appropriate for MiSeq runs that are 2x150 bp. See above for more details. |
 #' | <span> |
 
-filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
+filt_out <- filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
               rev=file.path(subR.fp, fastqRs), filt.rev=file.path(filtpathR, fastqRs),
               truncLen=c(150,140), maxEE=1, truncQ=11, maxN=0, rm.phix=TRUE,
               compress=TRUE, verbose=TRUE, multithread=TRUE)
+
+# look at the percentage of reads kept
+head(filt_out)
+# summary of filt_out
+filt_out %>% 
+  data.frame() %>% 
+  mutate(Samples = rownames(.),
+         percent_kept = 100*(reads.out/reads.in)) %>%
+  select(Samples, everything()) %>%
+  summarise(min_remaining = paste0(round(min(percent_kept), 2), "%"), 
+            median_remaining = paste0(round(median(percent_kept), 2), "%"),
+            mean_remaining = paste0(round(mean(percent_kept), 2), "%"), 
+            max_remaining = paste0(round(max(percent_kept), 2), "%"))
 
 #' ### 2. INFER sequence variants
 #' In this part of the pipeline dada2 will learn to distinguish error from biological 
