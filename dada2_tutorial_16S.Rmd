@@ -66,6 +66,7 @@ Load DADA2 and required packages
 library(dada2); packageVersion("dada2")
 library(ShortRead)
 library(dplyr)
+library(tibble)
 ````
 
 Once the packages are installed, you can check to make sure the auxillary
@@ -92,6 +93,7 @@ system2(cutadapt, args = "--version") # Check by running shell command from R
 # Set path to shared data folder and contents
 data.fp <- "/data/shared/2019_02_20_MicrMethods_tutorial"
 
+
 # List all files in shared folder to check path
 list.files(data.fp)
 
@@ -114,7 +116,8 @@ you do not need to create the subdirectories but they are nice to have
 for organizational purposes. 
 
 ````{r }
-project.fp <- "/data/YOUR_USERNAME/MicroMethods_dada2_tutorial" # CHANGE ME to project directory
+#project.fp <- "/data/YOUR_USERNAME/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
+project.fp <- "../MicroMethods_dada2_tutorial" # CHANGE ME to project directory
 
 # Set up names of sub directories to stay organized
 preprocess.fp <- file.path(project.fp, "01_preprocess")
@@ -243,10 +246,10 @@ REV.RC <- dada2:::rc(REV)
 
 ##  Create the cutadapt flags ##
 # Trim FWD and the reverse-complement of REV off of R1 (forward reads)
-R1.flags <- paste("-g", FWD, "-a", REV.RC) 
+R1.flags <- paste("-g", FWD, "-a", REV.RC, "--minimum-length 50") 
 
 # Trim REV and the reverse-complement of FWD off of R2 (reverse reads)
-R2.flags <- paste("-G", REV, "-A", FWD.RC) 
+R2.flags <- paste("-G", REV, "-A", FWD.RC, "--minimum-length 50") 
 
 # Run Cutadapt
 for (i in seq_along(fnFs)) {
@@ -297,6 +300,24 @@ Before chosing sequence variants, we want to trim reads where their quality scor
 
 **From dada2 tutorial:**
 >If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE.
+#### Inspect read quality profiles
+It's important to get a feel for the quality of the data that we are using. To do this, we will plot the quality of some of the samples.
+**From the dada2 tutorial:**
+>In gray-scale is a heat map of the frequency of each quality score at each base position. The median quality score at each position is shown by the green line, and the quartiles of the quality score distribution by the orange lines. The red line shows the scaled proportion of reads that extend to at least that position (this is more useful for other sequencing technologies, as Illumina reads are typically all the same lenghth, hence the flat red line).
+
+````{r }
+# If the number of samples is 20 or less, plot them all, otherwise, just plot 20
+if( length(fastqFs) <= 20) {
+  plotQualityProfile(paste0(subF.fp, "/", fastqFs))
+  plotQualityProfile(paste0(subR.fp, "/", fastqRs))
+} else {
+  rand_samples <- sample(size = 20, 1:length(fastqFs)) # grab 20 random samples to plot
+  plotQualityProfile(paste0(subF.fp, "/", fastqFs[rand_samples]))
+  plotQualityProfile(paste0(subR.fp, "/", fastqRs[rand_samples]))
+}
+````
+
+#### Filter the data
 
 | <span> |
 | :--- |
@@ -304,10 +325,23 @@ Before chosing sequence variants, we want to trim reads where their quality scor
 | <span> |
 
 ````{r }
-filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
+filt_out <- filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
               rev=file.path(subR.fp, fastqRs), filt.rev=file.path(filtpathR, fastqRs),
               truncLen=c(150,140), maxEE=1, truncQ=11, maxN=0, rm.phix=TRUE,
               compress=TRUE, verbose=TRUE, multithread=TRUE)
+
+# look at the percentage of reads kept
+head(filt_out)
+# summary of filt_out
+filt_out %>% 
+  data.frame() %>% 
+  mutate(Samples = rownames(.),
+         percent_kept = 100*(reads.out/reads.in)) %>%
+  select(Samples, everything()) %>%
+  summarise(min_remaining = paste0(round(min(percent_kept), 2), "%"), 
+            median_remaining = paste0(round(median(percent_kept), 2), "%"),
+            mean_remaining = paste0(round(mean(percent_kept), 2), "%"), 
+            max_remaining = paste0(round(max(percent_kept), 2), "%"))
 ````
 
 ### 2. INFER sequence variants
