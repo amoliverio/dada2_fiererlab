@@ -624,6 +624,14 @@ errF &lt;- learnErrors(filtFs, nbases=1e8, multithread=TRUE)
 errR &lt;- learnErrors(filtRs, nbases=1e8, multithread=TRUE)
 </code></pre>
 
+<h4>Plot Error Rates</h4>
+
+<p>We want to make sure that the machine learning algorithm is learning the error rates properly. In the plots below, the red line represents what we should expect the learned error rates to look like for each of the 16 possible base transitions (A-&gt;A, A-&gt;C, A-&gt;G, etc.) and the black line and grey dots represent what the observed error rates are. If the black line and the red lines are very far off from each other, it may be a good idea to increase the <code>nbases</code> parameter. This alows the machine learning algorthim to train on a larger portion of your data and may help imporve the fit.</p>
+
+<pre><code class="r">plotErrors(errF, nominalQ=TRUE)
+plotErrors(errR, nominalQ=TRUE)
+</code></pre>
+
 <h4>Dereplication, sequence inference, and merging of paired-end reads</h4>
 
 <pre><code class="r"># make a list to hold the loop output

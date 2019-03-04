@@ -383,6 +383,14 @@ errF <- learnErrors(filtFs, nbases=1e8, multithread=TRUE)
 errR <- learnErrors(filtRs, nbases=1e8, multithread=TRUE)
 ````
 
+#### Plot Error Rates
+We want to make sure that the machine learning algorithm is learning the error rates properly. In the plots below, the red line represents what we should expect the learned error rates to look like for each of the 16 possible base transitions (A->A, A->C, A->G, etc.) and the black line and grey dots represent what the observed error rates are. If the black line and the red lines are very far off from each other, it may be a good idea to increase the ```nbases``` parameter. This alows the machine learning algorthim to train on a larger portion of your data and may help imporve the fit.
+
+````{r }
+plotErrors(errF, nominalQ=TRUE)
+plotErrors(errR, nominalQ=TRUE)
+````
+
 #### Dereplication, sequence inference, and merging of paired-end reads
 
 ````{r }
