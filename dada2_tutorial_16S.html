@@ -231,17 +231,38 @@ hr {
 <pre><code class="bash">ssh &lt;your microbe user name&gt;@microbe.colorado.edu 
 </code></pre>
 
+<h4>For your first time:</h4>
+
+<p><em>Setting up your password:</em></p>
+
+<p>When you log in for the first time, you will have to set a new password. First, log in using your temporary password. The command prompt will then ask you to write a new password. Type it in once and hit return, then type it in again to verify. When you set a new password, make sure that it is something secure (i.e. has at least letters and numbers in it). Note, nothing will show up on the screen when you enter passwords.</p>
+
+<p>Important: Please be respectful and do not give your PW out to other people. The server is currently accessible to the whole world, so if your PW falls into the wrong hands, this will make a lot more work for the folks who administer the server.</p>
+
+<h4>Downloading this tutorial from github</h4>
+
+<p>Once you have logged in, you can download a copy of the tutorial into your directory on the server. To retrieve the folder with this tutorial from github directly to the server, type the following into your terminal and hit return.</p>
+
+<pre><code class="bash">git clone https://github.com/amoliverio/dada2_fiererlab.git
+</code></pre>
+
+<p>If there are ever updates to the tutorial on github, you can update the contents of this folder by typing:</p>
+
+<pre><code class="bash">git pull
+</code></pre>
+
 <h4>Login to RStudio on the server</h4>
 
 <ol>
 <li>Open a your web browser and start a new empty tab</li>
-<li>type <code>microbe.colorado.edu:8787</code> in the address bar</li>
-<li>use your server login credentials to log into rstudio server</li>
+<li>Type <code>microbe.colorado.edu:8787</code> in the address bar</li>
+<li>Use your server login credentials to log into rstudio server</li>
 </ol>
 
 <p>If you are running it on your own computer (runs slower!):</p>
 
 <ol>
+<li>Download this tutorial from github. Go to <a href="https://github.com/amoliverio/dada2_fiererlab">the homepage</a>, and click the green &ldquo;Clone or download&rdquo; button. Then click &ldquo;Download ZIP&rdquo;, to save it to your computer. Unzip the file to access the R-script.</li>
 <li>Download the tutorial data from here <a href="http://cme.colorado.edu/projects/bioinformatics-tutorials">http://cme.colorado.edu/projects/bioinformatics-tutorials</a></li>
 <li>Install idemp and cutadapt. 
 
@@ -254,7 +275,9 @@ hr {
 
 <h2>Set up (part 2) - You are logged in to Rstudio on server (or have it open on your computer)</h2>
 
-<p>Install DADA2 &amp; other necessary packages. If this is your first time on Rstudio server, when you install a package you might get a prompt asking if you want to create your own library. Answer &#39;yes&#39; twice in the console to continue.</p>
+<p>First open the R script in Rstudio. The R script is located in the tutorial folder you downloaded in the first step. You can navigate to the proper folder in Rstudio by clicking on the files tab and navigating to the location where you downloaded the github folder. Then click dada2_fiererlab and dada2_tutorial_16S.R to open the R  script.</p>
+
+<p>Now, install DADA2 &amp; other necessary packages. If this is your first time on Rstudio server, when you install a package you might get a prompt asking if you want to create your own library. Answer &#39;yes&#39; twice in the console to continue.</p>
 
 <table><thead>
 <tr>
@@ -275,6 +298,7 @@ BiocManager::install(&quot;dada2&quot;, version = &quot;3.8&quot;)
 source(&quot;https://bioconductor.org/biocLite.R&quot;)
 biocLite(&quot;ShortRead&quot;)
 install.packages(&quot;dplyr&quot;)
+install.packages(&quot;ggplot2&quot;)
 </code></pre>
 
 <p>Load DADA2 and required packages</p>
@@ -282,6 +306,7 @@ install.packages(&quot;dplyr&quot;)
 <pre><code class="r">library(dada2); packageVersion(&quot;dada2&quot;)
 library(ShortRead)
 library(dplyr)
+library(ggplot2)
 </code></pre>
 
 <p>Once the packages are installed, you can check to make sure the auxillary
@@ -314,6 +339,7 @@ system2(cutadapt, args = &quot;--version&quot;) # Check by running shell command
 # Set path to shared data folder and contents
 data.fp &lt;- &quot;/data/shared/2019_02_20_MicrMethods_tutorial&quot;
 
+
 # List all files in shared folder to check path
 list.files(data.fp)
 
@@ -343,7 +369,8 @@ R2.fp &lt;- file.path(data.fp, &quot;Undetermined_S0_L001_R2_001.fastq.gz&quot;)
 you do not need to create the subdirectories but they are nice to have
 for organizational purposes. </p>
 
-<pre><code class="r">project.fp &lt;- &quot;/data/YOUR_USERNAME/MicroMethods_dada2_tutorial&quot; # CHANGE ME to project directory
+<pre><code class="r">project.fp &lt;- &quot;/data/YOUR_USERNAME/MicroMethods_dada2_tutorial&quot; # CHANGE ME to project directory; don&#39;t append with a &quot;/&quot;
+
 
 # Set up names of sub directories to stay organized
 preprocess.fp &lt;- file.path(project.fp, &quot;01_preprocess&quot;)
@@ -474,10 +501,10 @@ REV.RC &lt;- dada2:::rc(REV)
 
 ##  Create the cutadapt flags ##
 # Trim FWD and the reverse-complement of REV off of R1 (forward reads)
-R1.flags &lt;- paste(&quot;-g&quot;, FWD, &quot;-a&quot;, REV.RC) 
+R1.flags &lt;- paste(&quot;-g&quot;, FWD, &quot;-a&quot;, REV.RC, &quot;--minimum-length 50&quot;) 
 
 # Trim REV and the reverse-complement of FWD off of R2 (reverse reads)
-R2.flags &lt;- paste(&quot;-G&quot;, REV, &quot;-A&quot;, FWD.RC) 
+R2.flags &lt;- paste(&quot;-G&quot;, REV, &quot;-A&quot;, FWD.RC, &quot;--minimum-length 50&quot;) 
 
 # Run Cutadapt
 for (i in seq_along(fnFs)) {
@@ -521,15 +548,45 @@ if(length(fastqFs) != length(fastqRs)) stop(&quot;Forward and reverse files do n
 
 <p>Before chosing sequence variants, we want to trim reads where their quality scores begin to drop (the <code>truncLen</code> and <code>truncQ</code> values) and remove any low-quality reads that are left over after we have finished trimming (the <code>maxEE</code> value).</p>
 
-<p><strong>You will want to change this depending on run chemistry and quality:</strong> For 2x250 bp runs you can try truncLen=c(240,160) (as per the <a href="https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles">dada2 tutorial</a>) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, truncLen=c(240,200), if they do not.</p>
+<p><strong>You will want to change this depending on run chemistry and quality:</strong> For 2x250 bp runs you can try truncLen=c(240,160) (as per the <a href="https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles">dada2 tutorial</a>) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, truncLen=c(240,200), if they do not. In truncLen=c(xxx,yyy), xxx refers to the forward read truncation length, yyy refers to the reverse read truncation length.</p>
 
 <p><strong>For ITS data:</strong> Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: <a href="https://benjjneb.github.io/dada2/ITS_workflow.html">https://benjjneb.github.io/dada2/ITS_workflow.html</a>.</p>
 
-<p><strong>From dada2 tutorial:</strong></p>
+<p><em>From dada2 tutorial:</em></p>
 
 <blockquote>
 <p>If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters &hellip; are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE.</p>
+
+<h4>Inspect read quality profiles</h4>
+
+<p>It&#39;s important to get a feel for the quality of the data that we are using. To do this, we will plot the quality of some of the samples.</p>
 </blockquote>
+
+<p><em>From the dada2 tutorial:</em></p>
+
+<blockquote>
+<p>In gray-scale is a heat map of the frequency of each quality score at each base position. The median quality score at each position is shown by the green line, and the quartiles of the quality score distribution by the orange lines. The red line shows the scaled proportion of reads that extend to at least that position (this is more useful for other sequencing technologies, as Illumina reads are typically all the same lenghth, hence the flat red line).</p>
+</blockquote>
+
+<pre><code class="r"># If the number of samples is 20 or less, plot them all, otherwise, just plot 20 randomly selected samples
+if( length(fastqFs) &lt;= 20) {
+  plotQualityProfile(paste0(subF.fp, &quot;/&quot;, fastqFs))
+  plotQualityProfile(paste0(subR.fp, &quot;/&quot;, fastqRs))
+} else {
+  rand_samples &lt;- sample(size = 20, 1:length(fastqFs)) # grab 20 random samples to plot
+  fwd_qual_plots &lt;- plotQualityProfile(paste0(subF.fp, &quot;/&quot;, fastqFs[rand_samples]))
+  rev_qual_plots &lt;- plotQualityProfile(paste0(subR.fp, &quot;/&quot;, fastqRs[rand_samples]))
+}
+
+fwd_qual_plots
+rev_qual_plots
+
+# write plots to disk
+saveRDS(fwd_qual_plots, paste0(filter.fp, &quot;/fwd_qual_plots.rds&quot;))
+saveRDS(rev_qual_plots, paste0(filter.fp, &quot;/rev_qual_plots.rds&quot;))
+</code></pre>
+
+<h4>Filter the data</h4>
 
 <table><thead>
 <tr>
@@ -544,10 +601,23 @@ if(length(fastqFs) != length(fastqRs)) stop(&quot;Forward and reverse files do n
 </tr>
 </tbody></table>
 
-<pre><code class="r">filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
+<pre><code class="r">filt_out &lt;- filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
               rev=file.path(subR.fp, fastqRs), filt.rev=file.path(filtpathR, fastqRs),
               truncLen=c(150,140), maxEE=1, truncQ=11, maxN=0, rm.phix=TRUE,
               compress=TRUE, verbose=TRUE, multithread=TRUE)
+
+# look at the percentage of reads kept
+head(filt_out)
+# summary of filt_out
+filt_out %&gt;% 
+  data.frame() %&gt;% 
+  mutate(Samples = rownames(.),
+         percent_kept = 100*(reads.out/reads.in)) %&gt;%
+  select(Samples, everything()) %&gt;%
+  summarise(min_remaining = paste0(round(min(percent_kept), 2), &quot;%&quot;), 
+            median_remaining = paste0(round(median(percent_kept), 2), &quot;%&quot;),
+            mean_remaining = paste0(round(mean(percent_kept), 2), &quot;%&quot;), 
+            max_remaining = paste0(round(max(percent_kept), 2), &quot;%&quot;))
 </code></pre>
 
 <h3>2. INFER sequence variants</h3>
@@ -589,20 +659,46 @@ errF &lt;- learnErrors(filtFs, nbases=1e8, multithread=TRUE)
 errR &lt;- learnErrors(filtRs, nbases=1e8, multithread=TRUE)
 </code></pre>
 
+<h4>Plot Error Rates</h4>
+
+<p>We want to make sure that the machine learning algorithm is learning the error rates properly. In the plots below, the red line represents what we should expect the learned error rates to look like for each of the 16 possible base transitions (A-&gt;A, A-&gt;C, A-&gt;G, etc.) and the black line and grey dots represent what the observed error rates are. If the black line and the red lines are very far off from each other, it may be a good idea to increase the <code>nbases</code> parameter. This alows the machine learning algorthim to train on a larger portion of your data and may help imporve the fit.</p>
+
+<pre><code class="r">errF_plot &lt;- plotErrors(errF, nominalQ=TRUE)
+errR_plot &lt;- plotErrors(errR, nominalQ=TRUE)
+
+errF_plot
+errR_plot
+
+# write to disk
+saveRDS(errF_plot, paste0(filtpathF, &quot;/errF_plot.rds&quot;))
+saveRDS(errR_plot, paste0(filtpathR, &quot;/errR_plot.rds&quot;))
+</code></pre>
+
 <h4>Dereplication, sequence inference, and merging of paired-end reads</h4>
 
 <pre><code class="r"># make a list to hold the loop output
 mergers &lt;- vector(&quot;list&quot;, length(sample.names))
 names(mergers) &lt;- sample.names
+ddF &lt;- vector(&quot;list&quot;, length(sample.names))
+names(ddF) &lt;- sample.names
+ddR &lt;- vector(&quot;list&quot;, length(sample.names))
+names(ddR) &lt;- sample.names
 
 # For each sample, get a list of merged and denoised sequences
 for(sam in sample.names) {
     cat(&quot;Processing:&quot;, sam, &quot;\n&quot;)
+    # Dereplicate forward reads
     derepF &lt;- derepFastq(filtFs[[sam]])
-    ddF &lt;- dada(derepF, err=errF, multithread=TRUE)
+    # Infer sequences for forward reads
+    dadaF &lt;- dada(derepF, err=errF, multithread=TRUE)
+    ddF[[sam]] &lt;- dadaF
+    # Dereplicate reverse reads
     derepR &lt;- derepFastq(filtRs[[sam]])
-    ddR &lt;- dada(derepR, err=errR, multithread=TRUE)
-    merger &lt;- mergePairs(ddF, derepF, ddR, derepR)
+    # Infer sequences for reverse reads
+    dadaR &lt;- dada(derepR, err=errR, multithread=TRUE)
+    ddR[[sam]] &lt;- dadaR
+    # Merge reads together
+    merger &lt;- mergePairs(ddF[[sam]], derepF, ddR[[sam]], derepR)
     mergers[[sam]] &lt;- merger
 }
 
@@ -639,7 +735,10 @@ to assign names to our sequence variants.</p>
 st.all &lt;- readRDS(paste0(table.fp, &quot;/seqtab.rds&quot;))
 
 # Remove chimeras
-seqtab &lt;- removeBimeraDenovo(st.all, method=&quot;consensus&quot;, multithread=TRUE)
+seqtab.nochim &lt;- removeBimeraDenovo(st.all, method=&quot;consensus&quot;, multithread=TRUE)
+
+# Print percentage of our seqences that were chimeric.
+100*sum(seqtab.nochim)/sum(seqtab)
 
 # Assign taxonomy
 tax &lt;- assignTaxonomy(seqtab, &quot;/db_files/dada2/silva_nr_v132_train_set.fa&quot;,
@@ -680,7 +779,7 @@ taxonomy_for_mctoolsr &lt;- unite_(taxonomy, &quot;taxonomy&quot;,
 
 # Merge taxonomy and table
 seqtab_wTax &lt;- merge(seqtab.t, taxonomy_for_mctoolsr, by = 0)
-seqtab_wTax$ESV &lt;- NULL
+seqtab_wTax$ESV &lt;- NULL 
 
 # Set name of table in mctoolsr format and save
 out_fp &lt;- paste0(table.fp, &quot;/seqtab_wTax_mctoolsr.txt&quot;)
@@ -694,6 +793,74 @@ write.table(seqtab.t, file = paste0(table.fp, &quot;/seqtab_final.txt&quot;),
 write.table(tax, file = paste0(table.fp, &quot;/tax_final.txt&quot;), 
             sep = &quot;\t&quot;, row.names = TRUE, col.names = NA)
 </code></pre>
+
+<h3>5. Summary of reads throughout pipeline</h3>
+
+<p>Here we track the reads throughout the pipeline to see if any step is resulting in a greater-than-expected loss of reads. If a step is showing a greater than expected loss of reads, it is a good idea to go back to that step and troubleshoot why reads are dropping out. The dada2 tutorial has more details about what can be changed at each step. </p>
+
+<pre><code class="r">getN &lt;- function(x) sum(getUniques(x)) # function to grab sequence counts from output objects
+# tracking reads by counts
+track &lt;- cbind(filt_out, 
+               sapply(ddF[sample.names], getN), 
+               sapply(ddR[sample.names], getN), 
+               sapply(mergers, getN), 
+               rowSums(seqtab.nochim))
+colnames(track) &lt;- c(&quot;input&quot;, &quot;filtered&quot;, &quot;denoisedF&quot;, &quot;denoisedR&quot;, &quot;merged&quot;, &quot;nonchim&quot;)
+rownames(track) &lt;- sample.names
+head(track)
+
+# tracking reads by percentage
+track_pct &lt;- track %&gt;% 
+  data.frame() %&gt;%
+  mutate(Sample = rownames(.),
+         filtered_pct = 100 * (filtered/input),
+         denoisedF_pct = 100 * (denoisedF/filtered),
+         denoisedR_pct = 100 * (denoisedR/filtered),
+         merged_pct = 100 * merged/((denoisedF + denoisedR)/2),
+         nonchim_pct = 100 * (nonchim/merged),
+         total_pct = 100 * nonchim/input) %&gt;%
+  select(Sample, ends_with(&quot;_pct&quot;))
+
+# summary stats of tracked reads averaged across samples
+track_pct_avg &lt;- track_pct %&gt;% summarize_at(vars(ends_with(&quot;_pct&quot;)), 
+                           list(avg = mean))
+head(track_pct_avg)
+
+# Plotting each sample&#39;s reads through the pipeline
+track_plot &lt;- track %&gt;% 
+  data.frame() %&gt;%
+  mutate(Sample = rownames(.)) %&gt;%
+  gather(key = &quot;Step&quot;, value = &quot;Reads&quot;, -Sample) %&gt;%
+  mutate(Step = factor(Step, 
+                       levels = c(&quot;input&quot;, &quot;filtered&quot;, &quot;denoisedF&quot;, &quot;denoisedR&quot;, &quot;merged&quot;, &quot;nonchim&quot;))) %&gt;%
+  ggplot(aes(x = Step, y = Reads)) +
+  geom_line(aes(group = Sample), alpha = 0.2) +
+  geom_point(alpha = 0.5, position = position_jitter(width = 0)) + 
+  stat_summary(fun.y = mean, geom = &quot;line&quot;, group = 1, color = &quot;steelblue&quot;, size = 1, alpha = 0.5) +
+  stat_summary(fun.y = mean, geom = &quot;point&quot;, group = 1, color = &quot;steelblue&quot;, size = 2) +
+  stat_summary(fun.data = median_hilow, fun.args = list(conf.int = 0.5), 
+               geom = &quot;ribbon&quot;, group = 1, fill = &quot;steelblue&quot;, alpha = 0.2) +
+  geom_label(data = t(track_pct_avg[1:5]) %&gt;% data.frame() %&gt;% 
+               rename(Percent = 1) %&gt;%
+               mutate(Step = c(&quot;filtered&quot;, &quot;denoisedF&quot;, &quot;denoisedR&quot;, &quot;merged&quot;, &quot;nonchim&quot;),
+                      Percent = paste(round(Percent, 2), &quot;%&quot;)),
+             aes(label = Percent), y = 1.1 * max(track[,2])) +
+  geom_label(data = track_pct_avg[6] %&gt;% data.frame() %&gt;%
+               rename(total = 1),
+             aes(label = paste(&quot;Total\nRemaining:\n&quot;, round(track_pct_avg[1,6], 2), &quot;%&quot;)), 
+             y = mean(track[,6]), x = 6.5) +
+  expand_limits(y = 1.1 * max(track[,2]), x = 7) +
+  theme_classic()
+
+track_plot
+
+# Write results to disk
+saveRDS(track, paste0(project.fp, &quot;/tracking_reads.rds&quot;))
+saveRDS(track_pct, paste0(project.fp, &quot;/tracking_reads_percentage.rds&quot;))
+saveRDS(track_plot, paste0(project.fp, &quot;/tracking_reads_summary_plot.rds&quot;))
+</code></pre>
+
+<h2>Final Steps</h2>
 
 <p>You can now transfer over the output files onto your local computer. 
 The table and taxonomy can be read into R with &#39;mctoolsr&#39; package as below. </p>
