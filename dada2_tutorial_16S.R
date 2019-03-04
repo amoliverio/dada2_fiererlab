@@ -55,6 +55,7 @@ BiocManager::install("dada2", version = "3.8")
 source("https://bioconductor.org/biocLite.R")
 biocLite("ShortRead")
 install.packages("dplyr")
+install.packages("ggplot2")
 
 #'
 #' Load DADA2 and required packages
@@ -62,7 +63,7 @@ install.packages("dplyr")
 library(dada2); packageVersion("dada2")
 library(ShortRead)
 library(dplyr)
-library(tibble)
+library(ggplot2)
 
 #' Once the packages are installed, you can check to make sure the auxillary
 #' software is working and set up some of the variables that you will need 
@@ -289,9 +290,16 @@ if( length(fastqFs) <= 20) {
   plotQualityProfile(paste0(subR.fp, "/", fastqRs))
 } else {
   rand_samples <- sample(size = 20, 1:length(fastqFs)) # grab 20 random samples to plot
-  plotQualityProfile(paste0(subF.fp, "/", fastqFs[rand_samples]))
-  plotQualityProfile(paste0(subR.fp, "/", fastqRs[rand_samples]))
+  fwd_qual_plots <- plotQualityProfile(paste0(subF.fp, "/", fastqFs[rand_samples]))
+  rev_qual_plots <- plotQualityProfile(paste0(subR.fp, "/", fastqRs[rand_samples]))
 }
+
+fwd_qual_plots
+rev_qual_plots
+
+# write plots to disk
+saveRDS(fwd_qual_plots, paste0(filter.fp, "/fwd_qual_plots.rds"))
+saveRDS(rev_qual_plots, paste0(filter.fp, "/rev_qual_plots.rds"))
 
 
 #' #### Filter the data
@@ -356,22 +364,35 @@ errR <- learnErrors(filtRs, nbases=1e8, multithread=TRUE)
 #' #### Plot Error Rates
 #' We want to make sure that the machine learning algorithm is learning the error rates properly. In the plots below, the red line represents what we should expect the learned error rates to look like for each of the 16 possible base transitions (A->A, A->C, A->G, etc.) and the black line and grey dots represent what the observed error rates are. If the black line and the red lines are very far off from each other, it may be a good idea to increase the ```nbases``` parameter. This alows the machine learning algorthim to train on a larger portion of your data and may help imporve the fit.
 
-plotErrors(errF, nominalQ=TRUE)
-plotErrors(errR, nominalQ=TRUE)
+errF_plot <- plotErrors(errF, nominalQ=TRUE)
+errR_plot <- plotErrors(errR, nominalQ=TRUE)
+
+errF_plot
+errR_plot
+
+# write to disk
+saveRDS(errF_plot, paste0(filtpathF, "/errF_plot.rds"))
+saveRDS(errR_plot, paste0(filtpathR, "/errR_plot.rds"))
 
 #' #### Dereplication, sequence inference, and merging of paired-end reads
 # make a list to hold the loop output
 mergers <- vector("list", length(sample.names))
 names(mergers) <- sample.names
+ddF <- vector("list", length(sample.names))
+names(ddF) <- sample.names
+ddR <- vector("list", length(sample.names))
+names(ddR) <- sample.names
 
 # For each sample, get a list of merged and denoised sequences
 for(sam in sample.names) {
     cat("Processing:", sam, "\n")
     derepF <- derepFastq(filtFs[[sam]])
-    ddF <- dada(derepF, err=errF, multithread=TRUE)
+    dadaF <- dada(derepF, err=errF, multithread=TRUE)
+    ddF[[sam]] <- dadaF
     derepR <- derepFastq(filtRs[[sam]])
-    ddR <- dada(derepR, err=errR, multithread=TRUE)
-    merger <- mergePairs(ddF, derepF, ddR, derepR)
+    dadaR <- dada(derepR, err=errR, multithread=TRUE)
+    ddR[[sam]] <- dadaR
+    merger <- mergePairs(ddF[[sam]], derepF, ddR[[sam]], derepR)
     mergers[[sam]] <- merger
 }
 
@@ -405,7 +426,10 @@ saveRDS(seqtab, paste0(table.fp, "/seqtab.rds"))
 st.all <- readRDS(paste0(table.fp, "/seqtab.rds"))
 
 # Remove chimeras
-seqtab <- removeBimeraDenovo(st.all, method="consensus", multithread=TRUE)
+seqtab.nochim <- removeBimeraDenovo(st.all, method="consensus", multithread=TRUE)
+
+# understand rate of chimeric sequences
+100*sum(seqtab.nochim)/sum(seqtab)
 
 # Assign taxonomy
 tax <- assignTaxonomy(seqtab, "/db_files/dada2/silva_nr_v132_train_set.fa",
@@ -444,7 +468,7 @@ taxonomy_for_mctoolsr <- unite_(taxonomy, "taxonomy",
 
 # Merge taxonomy and table
 seqtab_wTax <- merge(seqtab.t, taxonomy_for_mctoolsr, by = 0)
-seqtab_wTax$ESV <- NULL
+seqtab_wTax$ESV <- NULL 
 
 # Set name of table in mctoolsr format and save
 out_fp <- paste0(table.fp, "/seqtab_wTax_mctoolsr.txt")
@@ -458,6 +482,70 @@ write.table(seqtab.t, file = paste0(table.fp, "/seqtab_final.txt"),
 write.table(tax, file = paste0(table.fp, "/tax_final.txt"), 
             sep = "\t", row.names = TRUE, col.names = NA)
 
+#' ### 5. Summary of reads throughout pipeline
+#' Here we track the reads throughout the pipeline to see if any step is resulting in a greater-than-expected loss of reads. If a step is showing a greater than expected loss of reads, it is a good idea to go back to that step and troubleshoot why reads are dropping out. The dada2 tutorial has more details about what can be changed at each step. 
+#' 
+getN <- function(x) sum(getUniques(x)) # function to grab sequence counts from output objects
+track <- cbind(filt_out, 
+               sapply(ddF[sample.names], getN), 
+               sapply(ddR[sample.names], getN), 
+               sapply(mergers, getN), 
+               rowSums(seqtab.nochim))
+colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
+rownames(track) <- sample.names
+head(track)
+
+# tracking reads by percentage
+track_pct <- track %>% 
+  data.frame() %>%
+  mutate(Sample = rownames(.),
+         filtered_pct = 100 * (filtered/input),
+         denoisedF_pct = 100 * (denoisedF/filtered),
+         denoisedR_pct = 100 * (denoisedR/filtered),
+         merged_pct = 100 * merged/((denoisedF + denoisedR)/2),
+         nonchim_pct = 100 * (nonchim/merged),
+         total_pct = 100 * nonchim/input) %>%
+  select(Sample, ends_with("_pct"))
+
+# summary stats of tracked reads across samples
+track_pct_avg <- track_pct %>% summarize_at(vars(ends_with("_pct")), 
+                           list(avg = mean))
+head(track_pct_avg)
+
+track_plot <- track %>% 
+  data.frame() %>%
+  mutate(Sample = rownames(.)) %>%
+  gather(key = "Step", value = "Reads", -Sample) %>%
+  mutate(Step = factor(Step, 
+                       levels = c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim"))) %>%
+  ggplot(aes(x = Step, y = Reads)) +
+  geom_line(aes(group = Sample), alpha = 0.2) +
+  geom_point(alpha = 0.5, position = position_jitter(width = 0)) + 
+  stat_summary(fun.y = mean, geom = "line", group = 1, color = "steelblue", size = 1, alpha = 0.5) +
+  stat_summary(fun.y = mean, geom = "point", group = 1, color = "steelblue", size = 2) +
+  stat_summary(fun.data = median_hilow, fun.args = list(conf.int = 0.5), 
+               geom = "ribbon", group = 1, fill = "steelblue", alpha = 0.2) +
+  geom_label(data = t(track_pct_avg[1:5]) %>% data.frame() %>% 
+               rename(Percent = 1) %>%
+               mutate(Step = c("filtered", "denoisedF", "denoisedR", "merged", "nonchim"),
+                      Percent = paste(round(Percent, 2), "%")),
+             aes(label = Percent), y = 1.1 * max(track[,2])) +
+  geom_label(data = track_pct_avg[6] %>% data.frame() %>%
+               rename(total = 1),
+             aes(label = paste("Total\nRemaining:\n", round(track_pct_avg[1,6], 2), "%")), 
+             y = mean(track[,6]), x = 6.5) +
+  expand_limits(y = 1.1 * max(track[,2]), x = 7) +
+  theme_classic()
+
+track_plot
+
+# Write results to disk
+saveRDS(track, paste0(project.fp, "/tracking_reads.rds"))
+saveRDS(track_pct, paste0(project.fp, "/tracking_reads_percentage.rds"))
+saveRDS(track_plot, paste0(project.fp, "/tracking_reads_summary_plot.rds"))
+
+
+#' ## Final Steps
 #' You can now transfer over the output files onto your local computer. 
 #' The table and taxonomy can be read into R with 'mctoolsr' package as below. 
 
