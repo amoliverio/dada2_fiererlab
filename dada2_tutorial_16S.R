@@ -27,14 +27,14 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #' 
 #' #### For your first time:
 #' 
-#' **Setting up your password:**
+#' Setting up your password:
 #' 
 #' When you log in for the first time, you will have to set a new password. First, log in using your temporary password. The command prompt will then ask you to write a new password. Type it in once and hit return, then type it in again to verify. When you set a new password, make sure that it is something secure (i.e. has at least letters and numbers in it). Note, nothing will show up on the screen when you enter passwords.
 #' 
 #' Important: Please be respectful and do not give your PW out to other people. The server is currently accessible to the whole world, so if your PW falls into the wrong hands, this will make a lot more work for the folks who administer the server.
 #' 
 #' #### Downloading this tutorial from github
-#' To retrieve the folder with this tutorial from github, type the following into your terminal and hit return.
+#' Once you have logged in, you can download a copy of the tutorial into your directory on the server. To retrieve the folder with this tutorial from github directly to the server, type the following into your terminal and hit return.
 #' 
 #' ```bash    
 #' git clone https://github.com/amoliverio/dada2_fiererlab.git
@@ -49,21 +49,21 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #' #### Login to RStudio on the server 
 #' 
 #'    1. Open a your web browser and start a new empty tab
-#'    2. type `microbe.colorado.edu:8787` in the address bar
-#'    3. use your server login credentials to log into rstudio server
+#'    2. Type `microbe.colorado.edu:8787` in the address bar
+#'    3. Use your server login credentials to log into rstudio server
 #' 
 #' If you are running it on your own computer (runs slower!):
 #' 
-#' 1. Download this tutorial from github. Go to [https://github.com/amoliverio/dada2_fiererlab](the homepage), and click the green "Clone or download" button. Then click "Download ZIP", to save it to your computer. Unzip the file to access the R-script.
+#' 1. Download this tutorial from github. Go to [the homepage](https://github.com/amoliverio/dada2_fiererlab), and click the green "Clone or download" button. Then click "Download ZIP", to save it to your computer. Unzip the file to access the R-script.
 #' 2. Download the tutorial data from here [http://cme.colorado.edu/projects/bioinformatics-tutorials](http://cme.colorado.edu/projects/bioinformatics-tutorials)
 #' 3. Install idemp and cutadapt. 
-#'  - idemp can be found here: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp)
-#'  - cutadapt can be installed from here: [https://cutadapt.readthedocs.io/en/stable/installation.html](https://cutadapt.readthedocs.io/en/stable/installation.html)
+#'     - idemp can be found here: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp)
+#'     - cutadapt can be installed from here: [https://cutadapt.readthedocs.io/en/stable/installation.html](https://cutadapt.readthedocs.io/en/stable/installation.html)
 #' 4. Download the dada2-formatted reference database of your choice. Link to download here: [https://benjjneb.github.io/dada2/training.html](https://benjjneb.github.io/dada2/training.html)
 #'
 #' ## Set up (part 2) - You are logged in to Rstudio on server (or have it open on your computer) ##
 #' 
-#' First open the R script in Rstudio. The R script is located in the tutorial folder you downloaded in the first step. You can navigate to the proper folder in Rstudio by clicking on the files tab and navigating to the location where you downloaded the github folder. Then clicking dada2_fiererlab -> dada2_tutorial_16S.R to open the R  script.
+#' First open the R script in Rstudio. The R script is located in the tutorial folder you downloaded in the first step. You can navigate to the proper folder in Rstudio by clicking on the files tab and navigating to the location where you downloaded the github folder. Then click dada2_fiererlab and dada2_tutorial_16S.R to open the R  script.
 #' 
 #' Now, install DADA2 & other necessary packages. If this is your first time on Rstudio server, when you install a package you might get a prompt asking if you want to create your own library. Answer 'yes' twice in the console to continue.
 #' 
@@ -300,12 +300,13 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 #' 
 #' **For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: [https://benjjneb.github.io/dada2/ITS_workflow.html](https://benjjneb.github.io/dada2/ITS_workflow.html).
 #' 
-#' **From dada2 tutorial:**
+#' *From dada2 tutorial:*
 #' >If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE.
 
 #' #### Inspect read quality profiles
 #' It's important to get a feel for the quality of the data that we are using. To do this, we will plot the quality of some of the samples.
-#' **From the dada2 tutorial:**
+#' 
+#' *From the dada2 tutorial:*
 #' >In gray-scale is a heat map of the frequency of each quality score at each base position. The median quality score at each position is shown by the green line, and the quartiles of the quality score distribution by the orange lines. The red line shows the scaled proportion of reads that extend to at least that position (this is more useful for other sequencing technologies, as Illumina reads are typically all the same lenghth, hence the flat red line).
 
 # If the number of samples is 20 or less, plot them all, otherwise, just plot 20
@@ -452,7 +453,7 @@ st.all <- readRDS(paste0(table.fp, "/seqtab.rds"))
 # Remove chimeras
 seqtab.nochim <- removeBimeraDenovo(st.all, method="consensus", multithread=TRUE)
 
-# understand rate of chimeric sequences
+# Print percentage of our seqences that were chimeric.
 100*sum(seqtab.nochim)/sum(seqtab)
 
 # Assign taxonomy
@@ -510,6 +511,7 @@ write.table(tax, file = paste0(table.fp, "/tax_final.txt"),
 #' Here we track the reads throughout the pipeline to see if any step is resulting in a greater-than-expected loss of reads. If a step is showing a greater than expected loss of reads, it is a good idea to go back to that step and troubleshoot why reads are dropping out. The dada2 tutorial has more details about what can be changed at each step. 
 #' 
 getN <- function(x) sum(getUniques(x)) # function to grab sequence counts from output objects
+# tracking reads by counts
 track <- cbind(filt_out, 
                sapply(ddF[sample.names], getN), 
                sapply(ddR[sample.names], getN), 
@@ -531,11 +533,12 @@ track_pct <- track %>%
          total_pct = 100 * nonchim/input) %>%
   select(Sample, ends_with("_pct"))
 
-# summary stats of tracked reads across samples
+# summary stats of tracked reads averaged across samples
 track_pct_avg <- track_pct %>% summarize_at(vars(ends_with("_pct")), 
                            list(avg = mean))
 head(track_pct_avg)
 
+# Plotting each sample's reads through the pipeline
 track_plot <- track %>% 
   data.frame() %>%
   mutate(Sample = rownames(.)) %>%
