@@ -231,6 +231,26 @@ hr {
 <pre><code class="bash">ssh &lt;your microbe user name&gt;@microbe.colorado.edu 
 </code></pre>
 
+<h4>For your first time:</h4>
+
+<p><strong>Setting up your password:</strong></p>
+
+<p>When you log in for the first time, you will have to set a new password. First, log in using your temporary password. The command prompt will then ask you to write a new password. Type it in once and hit return, then type it in again to verify. When you set a new password, make sure that it is something secure (i.e. has at least letters and numbers in it). Note, nothing will show up on the screen when you enter passwords.</p>
+
+<p>Important: Please be respectful and do not give your PW out to other people. The server is currently accessible to the whole world, so if your PW falls into the wrong hands, this will make a lot more work for the folks who administer the server.</p>
+
+<h4>Downloading this tutorial from github</h4>
+
+<p>To retrieve the folder with this tutorial from github, type the following into your terminal and hit return.</p>
+
+<pre><code class="bash">git clone https://github.com/amoliverio/dada2_fiererlab.git
+</code></pre>
+
+<p>If there are ever updates to the tutorial on github, you can update the contents of this folder by typing:</p>
+
+<pre><code class="bash">git pull
+</code></pre>
+
 <h4>Login to RStudio on the server</h4>
 
 <ol>
@@ -242,6 +262,7 @@ hr {
 <p>If you are running it on your own computer (runs slower!):</p>
 
 <ol>
+<li>Download this tutorial from github. Go to <a href="the%20homepage">https://github.com/amoliverio/dada2_fiererlab</a>, and click the green &ldquo;Clone or download&rdquo; button. Then click &ldquo;Download ZIP&rdquo;, to save it to your computer. Unzip the file to access the R-script.</li>
 <li>Download the tutorial data from here <a href="http://cme.colorado.edu/projects/bioinformatics-tutorials">http://cme.colorado.edu/projects/bioinformatics-tutorials</a></li>
 <li>Install idemp and cutadapt. 
 
@@ -254,7 +275,9 @@ hr {
 
 <h2>Set up (part 2) - You are logged in to Rstudio on server (or have it open on your computer)</h2>
 
-<p>Install DADA2 &amp; other necessary packages. If this is your first time on Rstudio server, when you install a package you might get a prompt asking if you want to create your own library. Answer &#39;yes&#39; twice in the console to continue.</p>
+<p>First open the R script in Rstudio. The R script is located in the tutorial folder you downloaded in the first step. You can navigate to the proper folder in Rstudio by clicking on the files tab and navigating to the location where you downloaded the github folder. Then clicking dada2_fiererlab -&gt; dada2_tutorial_16S.R to open the R  script.</p>
+
+<p>Now, install DADA2 &amp; other necessary packages. If this is your first time on Rstudio server, when you install a package you might get a prompt asking if you want to create your own library. Answer &#39;yes&#39; twice in the console to continue.</p>
 
 <table><thead>
 <tr>
@@ -525,7 +548,7 @@ if(length(fastqFs) != length(fastqRs)) stop(&quot;Forward and reverse files do n
 
 <p>Before chosing sequence variants, we want to trim reads where their quality scores begin to drop (the <code>truncLen</code> and <code>truncQ</code> values) and remove any low-quality reads that are left over after we have finished trimming (the <code>maxEE</code> value).</p>
 
-<p><strong>You will want to change this depending on run chemistry and quality:</strong> For 2x250 bp runs you can try truncLen=c(240,160) (as per the <a href="https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles">dada2 tutorial</a>) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, truncLen=c(240,200), if they do not.</p>
+<p><strong>You will want to change this depending on run chemistry and quality:</strong> For 2x250 bp runs you can try truncLen=c(240,160) (as per the <a href="https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles">dada2 tutorial</a>) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, truncLen=c(240,200), if they do not. In truncLen=c(xxx,yyy), xxx refers to the forward read truncation length, yyy refers to the reverse read truncation length.</p>
 
 <p><strong>For ITS data:</strong> Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: <a href="https://benjjneb.github.io/dada2/ITS_workflow.html">https://benjjneb.github.io/dada2/ITS_workflow.html</a>.</p>
 

@@ -24,7 +24,28 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #' ```bash    
 #' ssh <your microbe user name>@microbe.colorado.edu 
 #' ```
-#'
+#' 
+#' #### For your first time:
+#' 
+#' **Setting up your password:**
+#' 
+#' When you log in for the first time, you will have to set a new password. First, log in using your temporary password. The command prompt will then ask you to write a new password. Type it in once and hit return, then type it in again to verify. When you set a new password, make sure that it is something secure (i.e. has at least letters and numbers in it). Note, nothing will show up on the screen when you enter passwords.
+#' 
+#' Important: Please be respectful and do not give your PW out to other people. The server is currently accessible to the whole world, so if your PW falls into the wrong hands, this will make a lot more work for the folks who administer the server.
+#' 
+#' #### Downloading this tutorial from github
+#' To retrieve the folder with this tutorial from github, type the following into your terminal and hit return.
+#' 
+#' ```bash    
+#' git clone https://github.com/amoliverio/dada2_fiererlab.git
+#' ```
+#' If there are ever updates to the tutorial on github, you can update the contents of this folder by typing:
+#' 
+#' ```bash    
+#' git pull
+#' ```
+#' 
+#' 
 #' #### Login to RStudio on the server 
 #' 
 #'    1. Open a your web browser and start a new empty tab
@@ -33,15 +54,18 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #' 
 #' If you are running it on your own computer (runs slower!):
 #' 
-#' 1. Download the tutorial data from here [http://cme.colorado.edu/projects/bioinformatics-tutorials](http://cme.colorado.edu/projects/bioinformatics-tutorials)
-#' 2. Install idemp and cutadapt. 
+#' 1. Download this tutorial from github. Go to [https://github.com/amoliverio/dada2_fiererlab](the homepage), and click the green "Clone or download" button. Then click "Download ZIP", to save it to your computer. Unzip the file to access the R-script.
+#' 2. Download the tutorial data from here [http://cme.colorado.edu/projects/bioinformatics-tutorials](http://cme.colorado.edu/projects/bioinformatics-tutorials)
+#' 3. Install idemp and cutadapt. 
 #'  - idemp can be found here: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp)
 #'  - cutadapt can be installed from here: [https://cutadapt.readthedocs.io/en/stable/installation.html](https://cutadapt.readthedocs.io/en/stable/installation.html)
-#' 3. Download the dada2-formatted reference database of your choice. Link to download here: [https://benjjneb.github.io/dada2/training.html](https://benjjneb.github.io/dada2/training.html)
+#' 4. Download the dada2-formatted reference database of your choice. Link to download here: [https://benjjneb.github.io/dada2/training.html](https://benjjneb.github.io/dada2/training.html)
 #'
 #' ## Set up (part 2) - You are logged in to Rstudio on server (or have it open on your computer) ##
 #' 
-#' Install DADA2 & other necessary packages. If this is your first time on Rstudio server, when you install a package you might get a prompt asking if you want to create your own library. Answer 'yes' twice in the console to continue.
+#' First open the R script in Rstudio. The R script is located in the tutorial folder you downloaded in the first step. You can navigate to the proper folder in Rstudio by clicking on the files tab and navigating to the location where you downloaded the github folder. Then clicking dada2_fiererlab -> dada2_tutorial_16S.R to open the R  script.
+#' 
+#' Now, install DADA2 & other necessary packages. If this is your first time on Rstudio server, when you install a package you might get a prompt asking if you want to create your own library. Answer 'yes' twice in the console to continue.
 #' 
 #' | <span> |
 #' | :--- |
@@ -272,7 +296,7 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 #' 
 #' Before chosing sequence variants, we want to trim reads where their quality scores begin to drop (the `truncLen` and `truncQ` values) and remove any low-quality reads that are left over after we have finished trimming (the `maxEE` value).
 #' 
-#' **You will want to change this depending on run chemistry and quality:** For 2x250 bp runs you can try truncLen=c(240,160) (as per the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles)) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, truncLen=c(240,200), if they do not.
+#' **You will want to change this depending on run chemistry and quality:** For 2x250 bp runs you can try truncLen=c(240,160) (as per the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles)) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, truncLen=c(240,200), if they do not. In truncLen=c(xxx,yyy), xxx refers to the forward read truncation length, yyy refers to the reverse read truncation length.
 #' 
 #' **For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: [https://benjjneb.github.io/dada2/ITS_workflow.html](https://benjjneb.github.io/dada2/ITS_workflow.html).
 #' 
