@@ -687,12 +687,17 @@ names(ddR) &lt;- sample.names
 # For each sample, get a list of merged and denoised sequences
 for(sam in sample.names) {
     cat(&quot;Processing:&quot;, sam, &quot;\n&quot;)
+    # Dereplicate forward reads
     derepF &lt;- derepFastq(filtFs[[sam]])
+    # Infer sequences for forward reads
     dadaF &lt;- dada(derepF, err=errF, multithread=TRUE)
     ddF[[sam]] &lt;- dadaF
+    # Dereplicate reverse reads
     derepR &lt;- derepFastq(filtRs[[sam]])
+    # Infer sequences for reverse reads
     dadaR &lt;- dada(derepR, err=errR, multithread=TRUE)
     ddR[[sam]] &lt;- dadaR
+    # Merge reads together
     merger &lt;- mergePairs(ddF[[sam]], derepF, ddR[[sam]], derepR)
     mergers[[sam]] &lt;- merger
 }
