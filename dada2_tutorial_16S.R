@@ -41,7 +41,8 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #' ```
 #' If there are ever updates to the tutorial on github, you can update the contents of this folder by typing:
 #' 
-#' ```bash    
+#' ```bash 
+#' cd dada2_fiererlab # change into the directory first
 #' git pull
 #' ```
 #' 
