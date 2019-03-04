@@ -26,7 +26,7 @@ ssh <your microbe user name>@microbe.colorado.edu
 
 #### For your first time:
 
-Setting up your password:
+*Setting up your password:*
 
 When you log in for the first time, you will have to set a new password. First, log in using your temporary password. The command prompt will then ask you to write a new password. Type it in once and hit return, then type it in again to verify. When you set a new password, make sure that it is something secure (i.e. has at least letters and numbers in it). Note, nothing will show up on the screen when you enter passwords.
 
@@ -342,7 +342,7 @@ It's important to get a feel for the quality of the data that we are using. To d
 
 
 ```r
-# If the number of samples is 20 or less, plot them all, otherwise, just plot 20
+# If the number of samples is 20 or less, plot them all, otherwise, just plot 20 randomly selected samples
 if( length(fastqFs) <= 20) {
   plotQualityProfile(paste0(subF.fp, "/", fastqFs))
   plotQualityProfile(paste0(subR.fp, "/", fastqRs))

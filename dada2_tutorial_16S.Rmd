@@ -28,7 +28,7 @@ ssh <your microbe user name>@microbe.colorado.edu
 
 #### For your first time:
 
-Setting up your password:
+*Setting up your password:*
 
 When you log in for the first time, you will have to set a new password. First, log in using your temporary password. The command prompt will then ask you to write a new password. Type it in once and hit return, then type it in again to verify. When you set a new password, make sure that it is something secure (i.e. has at least letters and numbers in it). Note, nothing will show up on the screen when you enter passwords.
 
@@ -332,7 +332,7 @@ It's important to get a feel for the quality of the data that we are using. To d
 >In gray-scale is a heat map of the frequency of each quality score at each base position. The median quality score at each position is shown by the green line, and the quartiles of the quality score distribution by the orange lines. The red line shows the scaled proportion of reads that extend to at least that position (this is more useful for other sequencing technologies, as Illumina reads are typically all the same lenghth, hence the flat red line).
 
 ````{r }
-# If the number of samples is 20 or less, plot them all, otherwise, just plot 20
+# If the number of samples is 20 or less, plot them all, otherwise, just plot 20 randomly selected samples
 if( length(fastqFs) <= 20) {
   plotQualityProfile(paste0(subF.fp, "/", fastqFs))
   plotQualityProfile(paste0(subR.fp, "/", fastqRs))
