@@ -119,7 +119,6 @@ system2(cutadapt, args = "--version") # Check by running shell command from R
 # Set path to shared data folder and contents
 data.fp <- "/data/shared/2019_02_20_MicrMethods_tutorial"
 
-
 # List all files in shared folder to check path
 list.files(data.fp)
 
@@ -141,7 +140,6 @@ R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz")
 #' for organizational purposes. 
 
 project.fp <- "/data/hollandh/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
-
 
 # Set up names of sub directories to stay organized
 preprocess.fp <- file.path(project.fp, "01_preprocess")
@@ -178,7 +176,7 @@ unassigned_2 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R2_001.
 system(unassigned_1)
 system(unassigned_2)
 
-# Rename files - gsub to get names in order!
+# Rename files - use gsub to get names in order!
 R1_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_"), "", 
                  list.files(demultiplex.fp, pattern="R1", full.names = TRUE))
 file.rename(list.files(demultiplex.fp, pattern="R1", full.names = TRUE), 
@@ -237,8 +235,7 @@ primerHits <- function(primer, fn) {
     return(sum(nhits > 0))
 }
 
-#' Before running cutadapt, we will look at primer detection
-#' for the first sample, as a check. There may be some primers here, we will remove them below using cutadapt.
+#' Before running cutadapt, we will look at primer detection for the first sample, as a check. There may be some primers here, we will remove them below using cutadapt.
 #' 
 rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.filtN[[1]]), 
       FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.filtN[[1]]), 
@@ -292,7 +289,7 @@ fnRs.Q <- file.path(subR.fp,  basename(fnRs))
 file.rename(from = fnFs.cut, to = fnFs.Q)
 file.rename(from = fnRs.cut, to = fnRs.Q)
 
-# File parsing
+# File parsing; create file names and make sure that forward and reverse files match
 filtpathF <- file.path(subF.fp, "filtered") # files go into preprocessed_F/filtered/
 filtpathR <- file.path(subR.fp, "filtered") # ...
 fastqFs <- sort(list.files(subF.fp, pattern="fastq.gz"))
@@ -303,13 +300,13 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 #' 
 #' Before chosing sequence variants, we want to trim reads where their quality scores begin to drop (the `truncLen` and `truncQ` values) and remove any low-quality reads that are left over after we have finished trimming (the `maxEE` value).
 #' 
-#' **You will want to change this depending on run chemistry and quality:** For 2x250 bp runs you can try truncLen=c(240,160) (as per the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles)) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, truncLen=c(240,200), if they do not. In truncLen=c(xxx,yyy), xxx refers to the forward read truncation length, yyy refers to the reverse read truncation length.
+#' **You will want to change this depending on run chemistry and quality:** For 2x250 bp runs you can try ```truncLen=c(240,160)``` (as per the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles)) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, ```truncLen=c(240,200)```, if they do not. In ```truncLen=c(xxx,yyy)```, ```xxx``` refers to the forward read truncation length, ```yyy``` refers to the reverse read truncation length.
 #' 
-#' **For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: [https://benjjneb.github.io/dada2/ITS_workflow.html](https://benjjneb.github.io/dada2/ITS_workflow.html).
+#' **For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the ```trunclen``` parameter. See here for more information and appropriate parameters for ITS data: [https://benjjneb.github.io/dada2/ITS_workflow.html](https://benjjneb.github.io/dada2/ITS_workflow.html).
 #' 
 #' *From dada2 tutorial:*
-#' >If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE.
-
+#' >If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE. 
+#' 
 #' #### Inspect read quality profiles
 #' It's important to get a feel for the quality of the data that we are using. To do this, we will plot the quality of some of the samples.
 #' 
@@ -328,7 +325,7 @@ if( length(fastqFs) <= 20) {
 
 fwd_qual_plots
 rev_qual_plots
-
+#'
 # write plots to disk
 saveRDS(fwd_qual_plots, paste0(filter.fp, "/fwd_qual_plots.rds"))
 saveRDS(rev_qual_plots, paste0(filter.fp, "/rev_qual_plots.rds"))
@@ -346,9 +343,10 @@ filt_out <- filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpa
               truncLen=c(150,140), maxEE=1, truncQ=11, maxN=0, rm.phix=TRUE,
               compress=TRUE, verbose=TRUE, multithread=TRUE)
 
-# look at the percentage of reads kept
+# look at how many reads were kept
 head(filt_out)
-# summary of filt_out
+
+# summary of samples in filt_out by percentage
 filt_out %>% 
   data.frame() %>% 
   mutate(Samples = rownames(.),
@@ -401,13 +399,13 @@ errR_plot <- plotErrors(errR, nominalQ=TRUE)
 
 errF_plot
 errR_plot
-
+#'
 # write to disk
 saveRDS(errF_plot, paste0(filtpathF, "/errF_plot.rds"))
 saveRDS(errR_plot, paste0(filtpathR, "/errR_plot.rds"))
 
 #' #### Dereplication, sequence inference, and merging of paired-end reads
-# make a list to hold the loop output
+# make lists to hold the loop output
 mergers <- vector("list", length(sample.names))
 names(mergers) <- sample.names
 ddF <- vector("list", length(sample.names))
@@ -450,13 +448,13 @@ saveRDS(seqtab, paste0(table.fp, "/seqtab.rds"))
 #' left-hand and right-hand segments from two more abundant "parent" sequences. After removing chimeras, we will use a taxonomy database to train a classifer-algorithm
 #' to assign names to our sequence variants.
 #' 
-#' For the tutorial 16S, we will assign taxonomy with Silva db v132, but you might want to use other databases for your data. Below are paths to some of the databases we use often. (If you are on your own computer you can download the database you need from this link https://benjjneb.github.io/dada2/training.html):
+#' For the tutorial 16S, we will assign taxonomy with Silva db v132, but you might want to use other databases for your data. Below are paths to some of the databases we use often. (If you are on your own computer you can download the database you need from this link [https://benjjneb.github.io/dada2/training.html](https://benjjneb.github.io/dada2/training.html):)
 #' 
-#' 16S bacteria and archaea (SILVA db): /db_files/dada2/silva_nr_v132_train_set.fa
-#'
-#' ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.fasta
+#'   - 16S bacteria and archaea (SILVA db): /db_files/dada2/silva_nr_v132_train_set.fa
 #' 
-#' 18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta
+#'   - ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.fasta
+#' 
+#'   - 18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta
 #' 
 
 # Read in RDS 
