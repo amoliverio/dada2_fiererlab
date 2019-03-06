@@ -15,7 +15,7 @@ We suggest opening the dada2 tutorial online to understand more about each step.
 
 ## Set up (part 1) - Steps before starting pipeline ##
 
-If you are running it through fierer lab "microbe" server:
+If you are running it through Fierer Lab "microbe" server:
 #### Logging in: 
 
 To use the microbe server, open a terminal window, and type and hit return:
@@ -33,17 +33,13 @@ When you log in for the first time, you will have to set a new password. First, 
 Important: Please be respectful and do not give your PW out to other people. The server is currently accessible to the whole world, so if your PW falls into the wrong hands, this will make a lot more work for the folks who administer the server.
 
 #### Downloading this tutorial from github
-Once you have logged in, you can download a copy of the tutorial into your directory on the server. To retrieve the folder with this tutorial from github directly to the server, type the following into your terminal and hit return.
+Once you have logged in, you can download a copy of the tutorial into your directory on the server. To retrieve the folder with this tutorial from github directly to the server, type the following into your terminal and hit return after each line.
 
 ```bash    
-git clone https://github.com/amoliverio/dada2_fiererlab.git
+wget https://github.com/amoliverio/dada2_fiererlab/archive/master.zip
+unzip master.zip
 ```
-If there are ever updates to the tutorial on github, you can update the contents of this folder by typing:
-
-```bash 
-cd dada2_fiererlab # change into the directory first
-git pull
-```
+If there are ever updates to the tutorial on github, you can update the contents of this folder by downloading the new version from the same link as above.
 
 
 #### Login to RStudio on the server 
@@ -81,6 +77,7 @@ BiocManager::install("dada2", version = "3.8")
 source("https://bioconductor.org/biocLite.R")
 biocLite("ShortRead")
 install.packages("dplyr")
+install.packages("tidyr")
 install.packages("ggplot2")
 ```
 
@@ -92,6 +89,7 @@ Load DADA2 and required packages
 library(dada2); packageVersion("dada2")
 ## [1] '1.10.1'
 library(ShortRead)
+library(tidyr)
 library(dplyr)
 library(ggplot2)
 ```
@@ -120,7 +118,6 @@ system2(cutadapt, args = "--version") # Check by running shell command from R
 
 # Set path to shared data folder and contents
 data.fp <- "/data/shared/2019_02_20_MicrMethods_tutorial"
-
 
 # List all files in shared folder to check path
 list.files(data.fp)
@@ -156,7 +153,6 @@ for organizational purposes.
 
 ```r
 project.fp <- "/data/hollandh/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
-
 
 # Set up names of sub directories to stay organized
 preprocess.fp <- file.path(project.fp, "01_preprocess")
@@ -253,22 +249,27 @@ unassigned_2 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R2_001.
 system(unassigned_1)
 system(unassigned_2)
 
-# Rename files - gsub to get names in order!
+# Rename files - use gsub to get names in order!
 R1_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_"), "", 
                  list.files(demultiplex.fp, pattern="R1", full.names = TRUE))
 file.rename(list.files(demultiplex.fp, pattern="R1", full.names = TRUE), 
             paste0(demultiplex.fp, "/R1_", R1_names))
-##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-## [10] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-## [19] TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+```
+
+<img src="figure/unnamed-chunk-5-1.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" width="98%" height="98%" />
+
+```
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [12] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [23] TRUE TRUE TRUE
 
 R2_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R2_001.fastq.gz_"), "", 
                  list.files(demultiplex.fp, pattern="R2", full.names = TRUE))
 file.rename(list.files(demultiplex.fp, pattern="R2", full.names = TRUE),
             paste0(demultiplex.fp, "/R2_", R2_names))
-##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-## [10] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-## [19] TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [12] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [23] TRUE TRUE TRUE
 
 # Get full paths for all files and save them for downstream analyses
 # Forward and reverse fastq filenames have format: 
@@ -288,7 +289,6 @@ fnRs.filtN <- file.path(preprocess.fp, "filtN", basename(fnRs))
 
 # Filter Ns from reads and put them into the filtN directory
 filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE) 
-## Error in names(answer) <- names1: 'names' attribute [25] must be the same length as the vector [24]
 # CHANGE multithread to FALSE on Windows (here and elsewhere in the program)
 ```
 
@@ -329,8 +329,7 @@ primerHits <- function(primer, fn) {
 }
 ```
 
-Before running cutadapt, we will look at primer detection
-for the first sample, as a check. There may be some primers here, we will remove them below using cutadapt.
+Before running cutadapt, we will look at primer detection for the first sample, as a check. There may be some primers here, we will remove them below using cutadapt.
 
 
 
@@ -401,13 +400,11 @@ dir.create(subR.fp)
 fnFs.Q <- file.path(subF.fp,  basename(fnFs)) 
 fnRs.Q <- file.path(subR.fp,  basename(fnRs))
 file.rename(from = fnFs.cut, to = fnFs.Q)
-##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-## [22] TRUE TRUE TRUE TRUE
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 file.rename(from = fnRs.cut, to = fnRs.Q)
-##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-## [22] TRUE TRUE TRUE TRUE
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 
-# File parsing
+# File parsing; create file names and make sure that forward and reverse files match
 filtpathF <- file.path(subF.fp, "filtered") # files go into preprocessed_F/filtered/
 filtpathR <- file.path(subR.fp, "filtered") # ...
 fastqFs <- sort(list.files(subF.fp, pattern="fastq.gz"))
@@ -419,12 +416,13 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 
 Before chosing sequence variants, we want to trim reads where their quality scores begin to drop (the `truncLen` and `truncQ` values) and remove any low-quality reads that are left over after we have finished trimming (the `maxEE` value).
 
-**You will want to change this depending on run chemistry and quality:** For 2x250 bp runs you can try truncLen=c(240,160) (as per the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles)) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, truncLen=c(240,200), if they do not. In truncLen=c(xxx,yyy), xxx refers to the forward read truncation length, yyy refers to the reverse read truncation length.
+**You will want to change this depending on run chemistry and quality:** For 2x250 bp runs you can try ```truncLen=c(240,160)``` (as per the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles)) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, ```truncLen=c(240,200)```, if they do not. In ```truncLen=c(xxx,yyy)```, ```xxx``` refers to the forward read truncation length, ```yyy``` refers to the reverse read truncation length.
 
-**For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: [https://benjjneb.github.io/dada2/ITS_workflow.html](https://benjjneb.github.io/dada2/ITS_workflow.html).
+**For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the ```trunclen``` parameter. See here for more information and appropriate parameters for ITS data: [https://benjjneb.github.io/dada2/ITS_workflow.html](https://benjjneb.github.io/dada2/ITS_workflow.html).
 
 *From dada2 tutorial:*
->If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE.
+>If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE. 
+
 #### Inspect read quality profiles
 It's important to get a feel for the quality of the data that we are using. To do this, we will plot the quality of some of the samples.
 
@@ -454,8 +452,10 @@ rev_qual_plots
 
 <img src="figure/unnamed-chunk-11-2.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" width="98%" height="98%" />
 
-```r
 
+
+
+```r
 # write plots to disk
 saveRDS(fwd_qual_plots, paste0(filter.fp, "/fwd_qual_plots.rds"))
 saveRDS(rev_qual_plots, paste0(filter.fp, "/rev_qual_plots.rds"))
@@ -475,7 +475,7 @@ filt_out <- filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpa
               truncLen=c(150,140), maxEE=1, truncQ=11, maxN=0, rm.phix=TRUE,
               compress=TRUE, verbose=TRUE, multithread=TRUE)
 
-# look at the percentage of reads kept
+# look at how many reads were kept
 head(filt_out)
 ##                            reads.in reads.out
 ## R1_ANT7.fastq.gz              40165     35325
@@ -484,7 +484,8 @@ head(filt_out)
 ## R1_BA1A5566_22_1C.fastq.gz    42238     37237
 ## R1_BA1A5566_45_1J.fastq.gz    31057     27081
 ## R1_BB1S.fastq.gz              34353     30309
-# summary of filt_out
+
+# summary of samples in filt_out by percentage
 filt_out %>% 
   data.frame() %>% 
   mutate(Samples = rownames(.),
@@ -552,16 +553,18 @@ errR_plot <- plotErrors(errR, nominalQ=TRUE)
 errF_plot
 ```
 
-<img src="figure/unnamed-chunk-15-1.png" title="plot of chunk unnamed-chunk-15" alt="plot of chunk unnamed-chunk-15" width="98%" height="98%" />
+<img src="figure/unnamed-chunk-16-1.png" title="plot of chunk unnamed-chunk-16" alt="plot of chunk unnamed-chunk-16" width="98%" height="98%" />
 
 ```r
 errR_plot
 ```
 
-<img src="figure/unnamed-chunk-15-2.png" title="plot of chunk unnamed-chunk-15" alt="plot of chunk unnamed-chunk-15" width="98%" height="98%" />
+<img src="figure/unnamed-chunk-16-2.png" title="plot of chunk unnamed-chunk-16" alt="plot of chunk unnamed-chunk-16" width="98%" height="98%" />
+
+
+
 
 ```r
-
 # write to disk
 saveRDS(errF_plot, paste0(filtpathF, "/errF_plot.rds"))
 saveRDS(errR_plot, paste0(filtpathR, "/errR_plot.rds"))
@@ -571,7 +574,7 @@ saveRDS(errR_plot, paste0(filtpathR, "/errR_plot.rds"))
 
 
 ```r
-# make a list to hold the loop output
+# make lists to hold the loop output
 mergers <- vector("list", length(sample.names))
 names(mergers) <- sample.names
 ddF <- vector("list", length(sample.names))
@@ -694,13 +697,13 @@ chimeras, we will search for rare sequence variants that can be reconstructed by
 left-hand and right-hand segments from two more abundant "parent" sequences. After removing chimeras, we will use a taxonomy database to train a classifer-algorithm
 to assign names to our sequence variants.
 
-For the tutorial 16S, we will assign taxonomy with Silva db v132, but you might want to use other databases for your data. Below are paths to some of the databases we use often. (If you are on your own computer you can download the database you need from this link https://benjjneb.github.io/dada2/training.html):
+For the tutorial 16S, we will assign taxonomy with Silva db v132, but you might want to use other databases for your data. Below are paths to some of the databases we use often. (If you are on your own computer you can download the database you need from this link [https://benjjneb.github.io/dada2/training.html](https://benjjneb.github.io/dada2/training.html):)
 
-16S bacteria and archaea (SILVA db): /db_files/dada2/silva_nr_v132_train_set.fa
+  - 16S bacteria and archaea (SILVA db): /db_files/dada2/silva_nr_v132_train_set.fa
 
-ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.fasta
+  - ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.fasta
 
-18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta
+  - 18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta
 
 
 
@@ -752,21 +755,16 @@ rownames(taxonomy) <- taxonomy$ESV_ID
 taxonomy_for_mctoolsr <- unite_(taxonomy, "taxonomy", 
                                 c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"),
                                 sep = ";")
-## Error in unite_(taxonomy, "taxonomy", c("Kingdom", "Phylum", "Class", : could not find function "unite_"
 
 # Merge taxonomy and table
 seqtab_wTax <- merge(seqtab.t, taxonomy_for_mctoolsr, by = 0)
-## Error in merge(seqtab.t, taxonomy_for_mctoolsr, by = 0): object 'taxonomy_for_mctoolsr' not found
 seqtab_wTax$ESV <- NULL 
-## Error in seqtab_wTax$ESV <- NULL: object 'seqtab_wTax' not found
 
 # Set name of table in mctoolsr format and save
 out_fp <- paste0(table.fp, "/seqtab_wTax_mctoolsr.txt")
 names(seqtab_wTax)[1] = "#ESV_ID"
-## Error in names(seqtab_wTax)[1] = "#ESV_ID": object 'seqtab_wTax' not found
 write("#Exported for mctoolsr", out_fp)
 suppressWarnings(write.table(seqtab_wTax, out_fp, sep = "\t", row.names = FALSE, append = TRUE))
-## Error in is.data.frame(x): object 'seqtab_wTax' not found
 
 # Also export files as .txt
 write.table(seqtab.t, file = paste0(table.fp, "/seqtab_final.txt"),
@@ -815,8 +813,10 @@ track_pct <- track %>%
 track_pct_avg <- track_pct %>% summarize_at(vars(ends_with("_pct")), 
                            list(avg = mean))
 head(track_pct_avg)
-##   filtered_pct_avg denoisedF_pct_avg denoisedR_pct_avg merged_pct_avg nonchim_pct_avg total_pct_avg
-## 1         87.67735          97.40454          98.05833       91.63946         98.6076      77.56848
+##   filtered_pct_avg denoisedF_pct_avg denoisedR_pct_avg merged_pct_avg
+## 1         87.67735          97.40454          98.05833       91.63946
+##   nonchim_pct_avg total_pct_avg
+## 1         98.6076      77.56848
 
 # Plotting each sample's reads through the pipeline
 track_plot <- track %>% 
@@ -843,16 +843,18 @@ track_plot <- track %>%
              y = mean(track[,6]), x = 6.5) +
   expand_limits(y = 1.1 * max(track[,2]), x = 7) +
   theme_classic()
-## Error in gather(., key = "Step", value = "Reads", -Sample): could not find function "gather"
 
 track_plot
-## Error in eval(expr, envir, enclos): object 'track_plot' not found
+```
+
+<img src="figure/unnamed-chunk-22-1.png" title="plot of chunk unnamed-chunk-22" alt="plot of chunk unnamed-chunk-22" width="98%" height="98%" />
+
+```r
 
 # Write results to disk
 saveRDS(track, paste0(project.fp, "/tracking_reads.rds"))
 saveRDS(track_pct, paste0(project.fp, "/tracking_reads_percentage.rds"))
 saveRDS(track_plot, paste0(project.fp, "/tracking_reads_summary_plot.rds"))
-## Error in saveRDS(track_plot, paste0(project.fp, "/tracking_reads_summary_plot.rds")): object 'track_plot' not found
 ```
 
 ## Final Steps
@@ -861,7 +863,6 @@ The table and taxonomy can be read into R with 'mctoolsr' package as below.
 
 
 ```r
-
 tax_table_fp = 'mypath/seqtab_wTax_mctoolsr.txt'
 map_fp = 'mypath/my_mapfile.txt' 
 input = load_taxa_table(tax_table_fp, map_fp)
@@ -876,7 +877,6 @@ After following this pipline, you will need to think about the following in down
 
 
 ```r
-
 input_filt <- filter_taxa_from_input(input, taxa_to_remove = c("Chloroplast","Mitochondria", "Eukaryota"))
 input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_remove = "NA")
 ```
@@ -885,7 +885,6 @@ input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_remo
 
 
 ```r
-
 input_filt <- single_rarefy(input = input_filt, depth = 5000) # CHANGE ME to desired depth.
 ```
 

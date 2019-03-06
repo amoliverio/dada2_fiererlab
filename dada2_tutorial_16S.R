@@ -86,6 +86,7 @@ source("https://bioconductor.org/biocLite.R")
 biocLite("ShortRead")
 install.packages("dplyr")
 install.packages("tidyr")
+install.packages("Hmisc")
 install.packages("ggplot2")
 
 #'
@@ -93,8 +94,9 @@ install.packages("ggplot2")
 
 library(dada2); packageVersion("dada2")
 library(ShortRead)
-library(tidyr)
 library(dplyr)
+library(tidyr)
+library(Hmisc)
 library(ggplot2)
 
 #' Once the packages are installed, you can check to make sure the auxillary
@@ -467,7 +469,7 @@ seqtab.nochim <- removeBimeraDenovo(st.all, method="consensus", multithread=TRUE
 100*sum(seqtab.nochim)/sum(seqtab)
 
 # Assign taxonomy
-tax <- assignTaxonomy(seqtab, "/db_files/dada2/silva_nr_v132_train_set.fa",
+tax <- assignTaxonomy(seqtab, "/db_files/dada2/silva_nr_v132_train_set.fa", tryRC = TRUE,
                       multithread=TRUE)
 
 # Write results to disk
