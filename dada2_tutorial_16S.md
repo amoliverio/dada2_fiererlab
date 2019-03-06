@@ -90,6 +90,7 @@ Load DADA2 and required packages
 
 ```r
 library(dada2); packageVersion("dada2")
+## [1] '1.10.1'
 library(ShortRead)
 library(dplyr)
 library(ggplot2)
@@ -123,6 +124,16 @@ data.fp <- "/data/shared/2019_02_20_MicrMethods_tutorial"
 
 # List all files in shared folder to check path
 list.files(data.fp)
+##  [1] "barcode_demultiplex_short.txt"                                                
+##  [2] "CompletedJobInfo.xml"                                                         
+##  [3] "GenerateFASTQRunStatistics.xml"                                               
+##  [4] "Molecular_Methods_18_515fBC_16S_Mapping_File_SHORT_vFinal_Fierer_10252018.txt"
+##  [5] "other_files"                                                                  
+##  [6] "RunInfo.xml"                                                                  
+##  [7] "runParameters.xml"                                                            
+##  [8] "Undetermined_S0_L001_I1_001.fastq.gz"                                         
+##  [9] "Undetermined_S0_L001_R1_001.fastq.gz"                                         
+## [10] "Undetermined_S0_L001_R2_001.fastq.gz"
 
 # Set file paths for barcodes file, map file, and fastqs
     # Barcodes need to have 'N' on the end of each 12bp sequence for compatability
@@ -144,7 +155,7 @@ for organizational purposes.
 
 
 ```r
-project.fp <- "/data/YOUR_USERNAME/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
+project.fp <- "/data/hollandh/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
 
 
 # Set up names of sub directories to stay organized
@@ -168,6 +179,60 @@ system2(idemp, args = flags)
 
 # Look at output of demultiplexing
 list.files(demultiplex.fp)
+##  [1] "Undetermined_S0_L001_I1_001.fastq.gz.decode"                 
+##  [2] "Undetermined_S0_L001_I1_001.fastq.gz.decode.stat"            
+##  [3] "Undetermined_S0_L001_R1_001.fastq.gz_ANT7.fastq.gz"          
+##  [4] "Undetermined_S0_L001_R1_001.fastq.gz_ANT8.fastq.gz"          
+##  [5] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_10_1D.fastq.gz"
+##  [6] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_22_1C.fastq.gz"
+##  [7] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_45_1J.fastq.gz"
+##  [8] "Undetermined_S0_L001_R1_001.fastq.gz_BB1S.fastq.gz"          
+##  [9] "Undetermined_S0_L001_R1_001.fastq.gz_BB1W.fastq.gz"          
+## [10] "Undetermined_S0_L001_R1_001.fastq.gz_BNS1.fastq.gz"          
+## [11] "Undetermined_S0_L001_R1_001.fastq.gz_BNS2.fastq.gz"          
+## [12] "Undetermined_S0_L001_R1_001.fastq.gz_C2S.fastq.gz"           
+## [13] "Undetermined_S0_L001_R1_001.fastq.gz_C2W.fastq.gz"           
+## [14] "Undetermined_S0_L001_R1_001.fastq.gz_CM2A_10_9C.fastq.gz"    
+## [15] "Undetermined_S0_L001_R1_001.fastq.gz_CM2A_22_9J.fastq.gz"    
+## [16] "Undetermined_S0_L001_R1_001.fastq.gz_COL11.fastq.gz"         
+## [17] "Undetermined_S0_L001_R1_001.fastq.gz_COL12.fastq.gz"         
+## [18] "Undetermined_S0_L001_R1_001.fastq.gz_COL3.fastq.gz"          
+## [19] "Undetermined_S0_L001_R1_001.fastq.gz_COL4.fastq.gz"          
+## [20] "Undetermined_S0_L001_R1_001.fastq.gz_DT3S.fastq.gz"          
+## [21] "Undetermined_S0_L001_R1_001.fastq.gz_DT3W.fastq.gz"          
+## [22] "Undetermined_S0_L001_R1_001.fastq.gz_OM18_BC.fastq.gz"       
+## [23] "Undetermined_S0_L001_R1_001.fastq.gz_OM18_BJ.fastq.gz"       
+## [24] "Undetermined_S0_L001_R1_001.fastq.gz_unsigned.fastq.gz"      
+## [25] "Undetermined_S0_L001_R1_001.fastq.gz_WAB105_22_6J.fastq.gz"  
+## [26] "Undetermined_S0_L001_R1_001.fastq.gz_WAB105_45_6D.fastq.gz"  
+## [27] "Undetermined_S0_L001_R1_001.fastq.gz_WAB188_10_4D.fastq.gz"  
+## [28] "Undetermined_S0_L001_R1_001.fastq.gz_WAB71_45_3D.fastq.gz"   
+## [29] "Undetermined_S0_L001_R2_001.fastq.gz_ANT7.fastq.gz"          
+## [30] "Undetermined_S0_L001_R2_001.fastq.gz_ANT8.fastq.gz"          
+## [31] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_10_1D.fastq.gz"
+## [32] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_22_1C.fastq.gz"
+## [33] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_45_1J.fastq.gz"
+## [34] "Undetermined_S0_L001_R2_001.fastq.gz_BB1S.fastq.gz"          
+## [35] "Undetermined_S0_L001_R2_001.fastq.gz_BB1W.fastq.gz"          
+## [36] "Undetermined_S0_L001_R2_001.fastq.gz_BNS1.fastq.gz"          
+## [37] "Undetermined_S0_L001_R2_001.fastq.gz_BNS2.fastq.gz"          
+## [38] "Undetermined_S0_L001_R2_001.fastq.gz_C2S.fastq.gz"           
+## [39] "Undetermined_S0_L001_R2_001.fastq.gz_C2W.fastq.gz"           
+## [40] "Undetermined_S0_L001_R2_001.fastq.gz_CM2A_10_9C.fastq.gz"    
+## [41] "Undetermined_S0_L001_R2_001.fastq.gz_CM2A_22_9J.fastq.gz"    
+## [42] "Undetermined_S0_L001_R2_001.fastq.gz_COL11.fastq.gz"         
+## [43] "Undetermined_S0_L001_R2_001.fastq.gz_COL12.fastq.gz"         
+## [44] "Undetermined_S0_L001_R2_001.fastq.gz_COL3.fastq.gz"          
+## [45] "Undetermined_S0_L001_R2_001.fastq.gz_COL4.fastq.gz"          
+## [46] "Undetermined_S0_L001_R2_001.fastq.gz_DT3S.fastq.gz"          
+## [47] "Undetermined_S0_L001_R2_001.fastq.gz_DT3W.fastq.gz"          
+## [48] "Undetermined_S0_L001_R2_001.fastq.gz_OM18_BC.fastq.gz"       
+## [49] "Undetermined_S0_L001_R2_001.fastq.gz_OM18_BJ.fastq.gz"       
+## [50] "Undetermined_S0_L001_R2_001.fastq.gz_unsigned.fastq.gz"      
+## [51] "Undetermined_S0_L001_R2_001.fastq.gz_WAB105_22_6J.fastq.gz"  
+## [52] "Undetermined_S0_L001_R2_001.fastq.gz_WAB105_45_6D.fastq.gz"  
+## [53] "Undetermined_S0_L001_R2_001.fastq.gz_WAB188_10_4D.fastq.gz"  
+## [54] "Undetermined_S0_L001_R2_001.fastq.gz_WAB71_45_3D.fastq.gz"
 ```
 
 | <span> |
@@ -193,11 +258,17 @@ R1_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_"
                  list.files(demultiplex.fp, pattern="R1", full.names = TRUE))
 file.rename(list.files(demultiplex.fp, pattern="R1", full.names = TRUE), 
             paste0(demultiplex.fp, "/R1_", R1_names))
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [10] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [19] TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 
 R2_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R2_001.fastq.gz_"), "", 
                  list.files(demultiplex.fp, pattern="R2", full.names = TRUE))
 file.rename(list.files(demultiplex.fp, pattern="R2", full.names = TRUE),
             paste0(demultiplex.fp, "/R2_", R2_names))
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [10] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [19] TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 
 # Get full paths for all files and save them for downstream analyses
 # Forward and reverse fastq filenames have format: 
@@ -217,6 +288,7 @@ fnRs.filtN <- file.path(preprocess.fp, "filtN", basename(fnRs))
 
 # Filter Ns from reads and put them into the filtN directory
 filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE) 
+## Error in names(answer) <- names1: 'names' attribute [25] must be the same length as the vector [24]
 # CHANGE multithread to FALSE on Windows (here and elsewhere in the program)
 ```
 
@@ -244,6 +316,10 @@ allOrients <- function(primer) {
 FWD.orients <- allOrients(FWD)
 REV.orients <- allOrients(REV)
 FWD.orients
+##               Forward            Complement 
+## "GTGYCAGCMGCCGCGGTAA" "CACRGTCGKCGGCGCCATT" 
+##               Reverse               RevComp 
+## "AATGGCGCCGMCGACYGTG" "TTACCGCGGCKGCTGRCAC"
 
 # Write a function that counts how many time primers appear in a sequence
 primerHits <- function(primer, fn) {
@@ -263,6 +339,11 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.filtN[[1]]),
       FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.filtN[[1]]), 
       REV.ForwardReads = sapply(REV.orients, primerHits, fn = fnFs.filtN[[1]]), 
       REV.ReverseReads = sapply(REV.orients, primerHits, fn = fnRs.filtN[[1]]))
+##                  Forward Complement Reverse RevComp
+## FWD.ForwardReads       2          0       0       0
+## FWD.ReverseReads       0          0       0      35
+## REV.ForwardReads       0          0       0      56
+## REV.ReverseReads       0          0       0       0
 ```
 
 #### Remove primers with cutadapt and assess the output
@@ -298,6 +379,11 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.cut[[1]]),
       FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.cut[[1]]), 
       REV.ForwardReads = sapply(REV.orients, primerHits, fn = fnFs.cut[[1]]), 
       REV.ReverseReads = sapply(REV.orients, primerHits, fn = fnRs.cut[[1]]))
+##                  Forward Complement Reverse RevComp
+## FWD.ForwardReads       0          0       0       0
+## FWD.ReverseReads       0          0       0       0
+## REV.ForwardReads       0          0       0       0
+## REV.ReverseReads       0          0       0       0
 ```
 
 # Now start DADA2 pipeline
@@ -315,7 +401,11 @@ dir.create(subR.fp)
 fnFs.Q <- file.path(subF.fp,  basename(fnFs)) 
 fnRs.Q <- file.path(subR.fp,  basename(fnRs))
 file.rename(from = fnFs.cut, to = fnFs.Q)
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [22] TRUE TRUE TRUE TRUE
 file.rename(from = fnRs.cut, to = fnRs.Q)
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [22] TRUE TRUE TRUE TRUE
 
 # File parsing
 filtpathF <- file.path(subF.fp, "filtered") # files go into preprocessed_F/filtered/
@@ -354,7 +444,17 @@ if( length(fastqFs) <= 20) {
 }
 
 fwd_qual_plots
+```
+
+<img src="figure/unnamed-chunk-11-1.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" width="98%" height="98%" />
+
+```r
 rev_qual_plots
+```
+
+<img src="figure/unnamed-chunk-11-2.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" width="98%" height="98%" />
+
+```r
 
 # write plots to disk
 saveRDS(fwd_qual_plots, paste0(filter.fp, "/fwd_qual_plots.rds"))
@@ -377,6 +477,13 @@ filt_out <- filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpa
 
 # look at the percentage of reads kept
 head(filt_out)
+##                            reads.in reads.out
+## R1_ANT7.fastq.gz              40165     35325
+## R1_ANT8.fastq.gz              25526     23028
+## R1_BA1A5566_10_1D.fastq.gz    50515     44631
+## R1_BA1A5566_22_1C.fastq.gz    42238     37237
+## R1_BA1A5566_45_1J.fastq.gz    31057     27081
+## R1_BB1S.fastq.gz              34353     30309
 # summary of filt_out
 filt_out %>% 
   data.frame() %>% 
@@ -387,6 +494,8 @@ filt_out %>%
             median_remaining = paste0(round(median(percent_kept), 2), "%"),
             mean_remaining = paste0(round(mean(percent_kept), 2), "%"), 
             max_remaining = paste0(round(max(percent_kept), 2), "%"))
+##   min_remaining median_remaining mean_remaining max_remaining
+## 1        76.33%           87.86%         87.68%        90.85%
 ```
 
 ### 2. INFER sequence variants
@@ -425,9 +534,11 @@ set.seed(100) # set seed to ensure that randomized steps are replicatable
 
 # Learn forward error rates
 errF <- learnErrors(filtFs, nbases=1e8, multithread=TRUE)
+## 100285500 total bases in 668570 reads from 24 samples will be used for learning the error rates.
 
 # Learn reverse error rates
 errR <- learnErrors(filtRs, nbases=1e8, multithread=TRUE)
+## 98930580 total bases in 706647 reads from 25 samples will be used for learning the error rates.
 ```
 
 #### Plot Error Rates
@@ -439,7 +550,17 @@ errF_plot <- plotErrors(errF, nominalQ=TRUE)
 errR_plot <- plotErrors(errR, nominalQ=TRUE)
 
 errF_plot
+```
+
+<img src="figure/unnamed-chunk-15-1.png" title="plot of chunk unnamed-chunk-15" alt="plot of chunk unnamed-chunk-15" width="98%" height="98%" />
+
+```r
 errR_plot
+```
+
+<img src="figure/unnamed-chunk-15-2.png" title="plot of chunk unnamed-chunk-15" alt="plot of chunk unnamed-chunk-15" width="98%" height="98%" />
+
+```r
 
 # write to disk
 saveRDS(errF_plot, paste0(filtpathF, "/errF_plot.rds"))
@@ -475,6 +596,81 @@ for(sam in sample.names) {
     merger <- mergePairs(ddF[[sam]], derepF, ddR[[sam]], derepR)
     mergers[[sam]] <- merger
 }
+## Processing: ANT7 
+## Sample 1 - 35325 reads in 13771 unique sequences.
+## Sample 1 - 35325 reads in 12445 unique sequences.
+## Processing: ANT8 
+## Sample 1 - 23028 reads in 9427 unique sequences.
+## Sample 1 - 23028 reads in 8455 unique sequences.
+## Processing: BA1A5566_10_1D 
+## Sample 1 - 44631 reads in 9425 unique sequences.
+## Sample 1 - 44631 reads in 8788 unique sequences.
+## Processing: BA1A5566_22_1C 
+## Sample 1 - 37237 reads in 7686 unique sequences.
+## Sample 1 - 37237 reads in 6791 unique sequences.
+## Processing: BA1A5566_45_1J 
+## Sample 1 - 27081 reads in 5702 unique sequences.
+## Sample 1 - 27081 reads in 4650 unique sequences.
+## Processing: BB1S 
+## Sample 1 - 30309 reads in 9402 unique sequences.
+## Sample 1 - 30309 reads in 8195 unique sequences.
+## Processing: BB1W 
+## Sample 1 - 34459 reads in 7473 unique sequences.
+## Sample 1 - 34459 reads in 5894 unique sequences.
+## Processing: BNS1 
+## Sample 1 - 3416 reads in 720 unique sequences.
+## Sample 1 - 3416 reads in 625 unique sequences.
+## Processing: BNS2 
+## Sample 1 - 15266 reads in 3158 unique sequences.
+## Sample 1 - 15266 reads in 2845 unique sequences.
+## Processing: C2S 
+## Sample 1 - 33614 reads in 11811 unique sequences.
+## Sample 1 - 33614 reads in 10168 unique sequences.
+## Processing: C2W 
+## Sample 1 - 36311 reads in 6588 unique sequences.
+## Sample 1 - 36311 reads in 4756 unique sequences.
+## Processing: CM2A_10_9C 
+## Sample 1 - 31169 reads in 3985 unique sequences.
+## Sample 1 - 31169 reads in 3233 unique sequences.
+## Processing: CM2A_22_9J 
+## Sample 1 - 27499 reads in 4126 unique sequences.
+## Sample 1 - 27499 reads in 3430 unique sequences.
+## Processing: COL11 
+## Sample 1 - 27672 reads in 12837 unique sequences.
+## Sample 1 - 27672 reads in 11692 unique sequences.
+## Processing: COL12 
+## Sample 1 - 21930 reads in 10539 unique sequences.
+## Sample 1 - 21930 reads in 9472 unique sequences.
+## Processing: COL3 
+## Sample 1 - 35470 reads in 16585 unique sequences.
+## Sample 1 - 35470 reads in 15005 unique sequences.
+## Processing: COL4 
+## Sample 1 - 28667 reads in 13454 unique sequences.
+## Sample 1 - 28667 reads in 12090 unique sequences.
+## Processing: DT3S 
+## Sample 1 - 31992 reads in 10400 unique sequences.
+## Sample 1 - 31992 reads in 9314 unique sequences.
+## Processing: DT3W 
+## Sample 1 - 38187 reads in 7962 unique sequences.
+## Sample 1 - 38187 reads in 6035 unique sequences.
+## Processing: OM18_BC 
+## Sample 1 - 4171 reads in 965 unique sequences.
+## Sample 1 - 4171 reads in 824 unique sequences.
+## Processing: OM18_BJ 
+## Sample 1 - 345 reads in 98 unique sequences.
+## Sample 1 - 345 reads in 81 unique sequences.
+## Processing: WAB105_22_6J 
+## Sample 1 - 40501 reads in 7319 unique sequences.
+## Sample 1 - 40501 reads in 6388 unique sequences.
+## Processing: WAB105_45_6D 
+## Sample 1 - 33594 reads in 6118 unique sequences.
+## Sample 1 - 33594 reads in 5549 unique sequences.
+## Processing: WAB188_10_4D 
+## Sample 1 - 26696 reads in 4008 unique sequences.
+## Sample 1 - 26696 reads in 3289 unique sequences.
+## Processing: WAB71_45_3D 
+## Sample 1 - 38077 reads in 7700 unique sequences.
+## Sample 1 - 38077 reads in 7276 unique sequences.
 
 rm(derepF); rm(derepR)
 ```
@@ -517,6 +713,7 @@ seqtab.nochim <- removeBimeraDenovo(st.all, method="consensus", multithread=TRUE
 
 # Print percentage of our seqences that were chimeric.
 100*sum(seqtab.nochim)/sum(seqtab)
+## [1] 98.31469
 
 # Assign taxonomy
 tax <- assignTaxonomy(seqtab, "/db_files/dada2/silva_nr_v132_train_set.fa",
@@ -555,16 +752,21 @@ rownames(taxonomy) <- taxonomy$ESV_ID
 taxonomy_for_mctoolsr <- unite_(taxonomy, "taxonomy", 
                                 c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"),
                                 sep = ";")
+## Error in unite_(taxonomy, "taxonomy", c("Kingdom", "Phylum", "Class", : could not find function "unite_"
 
 # Merge taxonomy and table
 seqtab_wTax <- merge(seqtab.t, taxonomy_for_mctoolsr, by = 0)
+## Error in merge(seqtab.t, taxonomy_for_mctoolsr, by = 0): object 'taxonomy_for_mctoolsr' not found
 seqtab_wTax$ESV <- NULL 
+## Error in seqtab_wTax$ESV <- NULL: object 'seqtab_wTax' not found
 
 # Set name of table in mctoolsr format and save
 out_fp <- paste0(table.fp, "/seqtab_wTax_mctoolsr.txt")
 names(seqtab_wTax)[1] = "#ESV_ID"
+## Error in names(seqtab_wTax)[1] = "#ESV_ID": object 'seqtab_wTax' not found
 write("#Exported for mctoolsr", out_fp)
 suppressWarnings(write.table(seqtab_wTax, out_fp, sep = "\t", row.names = FALSE, append = TRUE))
+## Error in is.data.frame(x): object 'seqtab_wTax' not found
 
 # Also export files as .txt
 write.table(seqtab.t, file = paste0(table.fp, "/seqtab_final.txt"),
@@ -589,6 +791,13 @@ track <- cbind(filt_out,
 colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
 rownames(track) <- sample.names
 head(track)
+##                input filtered denoisedF denoisedR merged nonchim
+## ANT7           40165    35325     33793     33942  28426   28319
+## ANT8           25526    23028     21756     21931  17693   17598
+## BA1A5566_10_1D 50515    44631     44207     44148  43079   41737
+## BA1A5566_22_1C 42238    37237     36826     36905  35888   34227
+## BA1A5566_45_1J 31057    27081     26743     26839  26141   23554
+## BB1S           34353    30309     29313     29568  26257   26129
 
 # tracking reads by percentage
 track_pct <- track %>% 
@@ -606,6 +815,8 @@ track_pct <- track %>%
 track_pct_avg <- track_pct %>% summarize_at(vars(ends_with("_pct")), 
                            list(avg = mean))
 head(track_pct_avg)
+##   filtered_pct_avg denoisedF_pct_avg denoisedR_pct_avg merged_pct_avg nonchim_pct_avg total_pct_avg
+## 1         87.67735          97.40454          98.05833       91.63946         98.6076      77.56848
 
 # Plotting each sample's reads through the pipeline
 track_plot <- track %>% 
@@ -632,13 +843,16 @@ track_plot <- track %>%
              y = mean(track[,6]), x = 6.5) +
   expand_limits(y = 1.1 * max(track[,2]), x = 7) +
   theme_classic()
+## Error in gather(., key = "Step", value = "Reads", -Sample): could not find function "gather"
 
 track_plot
+## Error in eval(expr, envir, enclos): object 'track_plot' not found
 
 # Write results to disk
 saveRDS(track, paste0(project.fp, "/tracking_reads.rds"))
 saveRDS(track_pct, paste0(project.fp, "/tracking_reads_percentage.rds"))
 saveRDS(track_plot, paste0(project.fp, "/tracking_reads_summary_plot.rds"))
+## Error in saveRDS(track_plot, paste0(project.fp, "/tracking_reads_summary_plot.rds")): object 'track_plot' not found
 ```
 
 ## Final Steps
@@ -647,6 +861,7 @@ The table and taxonomy can be read into R with 'mctoolsr' package as below.
 
 
 ```r
+
 tax_table_fp = 'mypath/seqtab_wTax_mctoolsr.txt'
 map_fp = 'mypath/my_mapfile.txt' 
 input = load_taxa_table(tax_table_fp, map_fp)
@@ -661,6 +876,7 @@ After following this pipline, you will need to think about the following in down
 
 
 ```r
+
 input_filt <- filter_taxa_from_input(input, taxa_to_remove = c("Chloroplast","Mitochondria", "Eukaryota"))
 input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_remove = "NA")
 ```
@@ -669,6 +885,7 @@ input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_remo
 
 
 ```r
+
 input_filt <- single_rarefy(input = input_filt, depth = 5000) # CHANGE ME to desired depth.
 ```
 

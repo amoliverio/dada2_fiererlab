@@ -1,7 +1,16 @@
 #'# dada2 tutorial with MiSeq dataset for Fierer Lab 
 
 #+ setup, include=FALSE
-knitr::opts_chunk$set(eval = FALSE, include = TRUE)
+# some setup options for outputing markdown files; feel free to ignore these
+knitr::opts_chunk$set(eval = TRUE, 
+                      include = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE,
+                      collapse = TRUE,
+                      dpi = 300,
+                      fig.dim = c(9, 9),
+                      out.width = '98%',
+                      out.height = '98%')
 
 #' This version runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.
 #' 
@@ -16,7 +25,7 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #' 
 #' ## Set up (part 1) - Steps before starting pipeline ##
 #' 
-#' If you are running it through fierer lab "microbe" server:
+#' If you are running it through Fierer Lab "microbe" server:
 #' #### Logging in: 
 #' 
 #' To use the microbe server, open a terminal window, and type and hit return:
@@ -73,13 +82,14 @@ knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 #' | **WARNING:** This installation may take a long time, so only run this code if these packages are not already installed! |
 #' | <span> |
 #'
-
+#+ package installation, eval = FALSE, include=TRUE
 install.packages("BiocManager")
 BiocManager::install("dada2", version = "3.8")
 
 source("https://bioconductor.org/biocLite.R")
 biocLite("ShortRead")
 install.packages("dplyr")
+install.packages("tidyr")
 install.packages("ggplot2")
 
 #'
@@ -87,6 +97,7 @@ install.packages("ggplot2")
 
 library(dada2); packageVersion("dada2")
 library(ShortRead)
+library(tidyr)
 library(dplyr)
 library(ggplot2)
 
@@ -133,7 +144,7 @@ R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz")
 #' you do not need to create the subdirectories but they are nice to have
 #' for organizational purposes. 
 
-project.fp <- "/data/YOUR_USERNAME/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
+project.fp <- "/data/hollandh/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
 
 
 # Set up names of sub directories to stay organized
@@ -148,7 +159,6 @@ table.fp <- file.path(project.fp, "03_tabletax")
 #' 
 #' #### Call the demultiplexing script
 #' Demultiplexing splits your reads out into separate files based on the barcodes associated with each sample. 
-
 flags <- paste("-b", barcode.fp, "-I1", I1.fp, "-R1", R1.fp, "-R2", R2.fp, "-o", demultiplex.fp) 
 system2(idemp, args = flags) 
 
@@ -163,7 +173,7 @@ list.files(demultiplex.fp)
 
 #' #### Clean up the output from idemp
 #'
- 
+
 # Change names of unassignable reads so they are not included in downstream processing
 unassigned_1 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_unsigned.fastq.gz",
                        " ", demultiplex.fp, "/Unassigned_reads1.fastq.gz")
@@ -582,6 +592,7 @@ saveRDS(track_plot, paste0(project.fp, "/tracking_reads_summary_plot.rds"))
 #' You can now transfer over the output files onto your local computer. 
 #' The table and taxonomy can be read into R with 'mctoolsr' package as below. 
 
+#+ downstream options 1, eval = FALSE, include=TRUE
 tax_table_fp = 'mypath/seqtab_wTax_mctoolsr.txt'
 map_fp = 'mypath/my_mapfile.txt' 
 input = load_taxa_table(tax_table_fp, map_fp)
@@ -593,9 +604,11 @@ input = load_taxa_table(tax_table_fp, map_fp)
 #' 2. Remove reads assigned as eukaryotes
 #' 3. Remove reads that are unassigned at domain level
 
+#+ downstream options 2, eval = FALSE, include=TRUE
 input_filt <- filter_taxa_from_input(input, taxa_to_remove = c("Chloroplast","Mitochondria", "Eukaryota"))
 input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_remove = "NA")
 
 #' 4. Normalize or rarefy your ESV table
 
+#+ downstream options 3, eval = FALSE, include=TRUE
 input_filt <- single_rarefy(input = input_filt, depth = 5000) # CHANGE ME to desired depth.
