@@ -43,17 +43,13 @@ knitr::opts_chunk$set(eval = TRUE,
 #' Important: Please be respectful and do not give your PW out to other people. The server is currently accessible to the whole world, so if your PW falls into the wrong hands, this will make a lot more work for the folks who administer the server.
 #' 
 #' #### Downloading this tutorial from github
-#' Once you have logged in, you can download a copy of the tutorial into your directory on the server. To retrieve the folder with this tutorial from github directly to the server, type the following into your terminal and hit return.
+#' Once you have logged in, you can download a copy of the tutorial into your directory on the server. To retrieve the folder with this tutorial from github directly to the server, type the following into your terminal and hit return after each line.
 #' 
 #' ```bash    
-#' git clone https://github.com/amoliverio/dada2_fiererlab.git
+#' wget https://github.com/amoliverio/dada2_fiererlab/archive/master.zip
+#' unzip master.zip
 #' ```
-#' If there are ever updates to the tutorial on github, you can update the contents of this folder by typing:
-#' 
-#' ```bash 
-#' cd dada2_fiererlab # change into the directory first
-#' git pull
-#' ```
+#' If there are ever updates to the tutorial on github, you can update the contents of this folder by downloading the new version from the same link as above.
 #' 
 #' 
 #' #### Login to RStudio on the server 
