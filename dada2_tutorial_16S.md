@@ -15,7 +15,7 @@ We suggest opening the dada2 tutorial online to understand more about each step.
 
 ## Set up (part 1) - Steps before starting pipeline ##
 
-If you are running it through fierer lab "microbe" server:
+If you are running it through Fierer Lab "microbe" server:
 #### Logging in: 
 
 To use the microbe server, open a terminal window, and type and hit return:
@@ -33,17 +33,13 @@ When you log in for the first time, you will have to set a new password. First, 
 Important: Please be respectful and do not give your PW out to other people. The server is currently accessible to the whole world, so if your PW falls into the wrong hands, this will make a lot more work for the folks who administer the server.
 
 #### Downloading this tutorial from github
-Once you have logged in, you can download a copy of the tutorial into your directory on the server. To retrieve the folder with this tutorial from github directly to the server, type the following into your terminal and hit return.
+Once you have logged in, you can download a copy of the tutorial into your directory on the server. To retrieve the folder with this tutorial from github directly to the server, type the following into your terminal and hit return after each line.
 
 ```bash    
-git clone https://github.com/amoliverio/dada2_fiererlab.git
+wget https://github.com/amoliverio/dada2_fiererlab/archive/master.zip
+unzip master.zip
 ```
-If there are ever updates to the tutorial on github, you can update the contents of this folder by typing:
-
-```bash 
-cd dada2_fiererlab # change into the directory first
-git pull
-```
+If there are ever updates to the tutorial on github, you can update the contents of this folder by downloading the new version from the same link as above.
 
 
 #### Login to RStudio on the server 
@@ -81,6 +77,8 @@ BiocManager::install("dada2", version = "3.8")
 source("https://bioconductor.org/biocLite.R")
 biocLite("ShortRead")
 install.packages("dplyr")
+install.packages("tidyr")
+install.packages("Hmisc")
 install.packages("ggplot2")
 ```
 
@@ -90,8 +88,11 @@ Load DADA2 and required packages
 
 ```r
 library(dada2); packageVersion("dada2")
+## [1] '1.10.1'
 library(ShortRead)
 library(dplyr)
+library(tidyr)
+library(Hmisc)
 library(ggplot2)
 ```
 
@@ -120,9 +121,18 @@ system2(cutadapt, args = "--version") # Check by running shell command from R
 # Set path to shared data folder and contents
 data.fp <- "/data/shared/2019_02_20_MicrMethods_tutorial"
 
-
 # List all files in shared folder to check path
 list.files(data.fp)
+##  [1] "barcode_demultiplex_short.txt"                                                
+##  [2] "CompletedJobInfo.xml"                                                         
+##  [3] "GenerateFASTQRunStatistics.xml"                                               
+##  [4] "Molecular_Methods_18_515fBC_16S_Mapping_File_SHORT_vFinal_Fierer_10252018.txt"
+##  [5] "other_files"                                                                  
+##  [6] "RunInfo.xml"                                                                  
+##  [7] "runParameters.xml"                                                            
+##  [8] "Undetermined_S0_L001_I1_001.fastq.gz"                                         
+##  [9] "Undetermined_S0_L001_R1_001.fastq.gz"                                         
+## [10] "Undetermined_S0_L001_R2_001.fastq.gz"
 
 # Set file paths for barcodes file, map file, and fastqs
     # Barcodes need to have 'N' on the end of each 12bp sequence for compatability
@@ -146,7 +156,6 @@ for organizational purposes.
 ```r
 project.fp <- "/data/YOUR_USERNAME/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
 
-
 # Set up names of sub directories to stay organized
 preprocess.fp <- file.path(project.fp, "01_preprocess")
     demultiplex.fp <- file.path(preprocess.fp, "demultiplexed")
@@ -168,6 +177,60 @@ system2(idemp, args = flags)
 
 # Look at output of demultiplexing
 list.files(demultiplex.fp)
+##  [1] "Undetermined_S0_L001_I1_001.fastq.gz.decode"                 
+##  [2] "Undetermined_S0_L001_I1_001.fastq.gz.decode.stat"            
+##  [3] "Undetermined_S0_L001_R1_001.fastq.gz_ANT7.fastq.gz"          
+##  [4] "Undetermined_S0_L001_R1_001.fastq.gz_ANT8.fastq.gz"          
+##  [5] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_10_1D.fastq.gz"
+##  [6] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_22_1C.fastq.gz"
+##  [7] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_45_1J.fastq.gz"
+##  [8] "Undetermined_S0_L001_R1_001.fastq.gz_BB1S.fastq.gz"          
+##  [9] "Undetermined_S0_L001_R1_001.fastq.gz_BB1W.fastq.gz"          
+## [10] "Undetermined_S0_L001_R1_001.fastq.gz_BNS1.fastq.gz"          
+## [11] "Undetermined_S0_L001_R1_001.fastq.gz_BNS2.fastq.gz"          
+## [12] "Undetermined_S0_L001_R1_001.fastq.gz_C2S.fastq.gz"           
+## [13] "Undetermined_S0_L001_R1_001.fastq.gz_C2W.fastq.gz"           
+## [14] "Undetermined_S0_L001_R1_001.fastq.gz_CM2A_10_9C.fastq.gz"    
+## [15] "Undetermined_S0_L001_R1_001.fastq.gz_CM2A_22_9J.fastq.gz"    
+## [16] "Undetermined_S0_L001_R1_001.fastq.gz_COL11.fastq.gz"         
+## [17] "Undetermined_S0_L001_R1_001.fastq.gz_COL12.fastq.gz"         
+## [18] "Undetermined_S0_L001_R1_001.fastq.gz_COL3.fastq.gz"          
+## [19] "Undetermined_S0_L001_R1_001.fastq.gz_COL4.fastq.gz"          
+## [20] "Undetermined_S0_L001_R1_001.fastq.gz_DT3S.fastq.gz"          
+## [21] "Undetermined_S0_L001_R1_001.fastq.gz_DT3W.fastq.gz"          
+## [22] "Undetermined_S0_L001_R1_001.fastq.gz_OM18_BC.fastq.gz"       
+## [23] "Undetermined_S0_L001_R1_001.fastq.gz_OM18_BJ.fastq.gz"       
+## [24] "Undetermined_S0_L001_R1_001.fastq.gz_unsigned.fastq.gz"      
+## [25] "Undetermined_S0_L001_R1_001.fastq.gz_WAB105_22_6J.fastq.gz"  
+## [26] "Undetermined_S0_L001_R1_001.fastq.gz_WAB105_45_6D.fastq.gz"  
+## [27] "Undetermined_S0_L001_R1_001.fastq.gz_WAB188_10_4D.fastq.gz"  
+## [28] "Undetermined_S0_L001_R1_001.fastq.gz_WAB71_45_3D.fastq.gz"   
+## [29] "Undetermined_S0_L001_R2_001.fastq.gz_ANT7.fastq.gz"          
+## [30] "Undetermined_S0_L001_R2_001.fastq.gz_ANT8.fastq.gz"          
+## [31] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_10_1D.fastq.gz"
+## [32] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_22_1C.fastq.gz"
+## [33] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_45_1J.fastq.gz"
+## [34] "Undetermined_S0_L001_R2_001.fastq.gz_BB1S.fastq.gz"          
+## [35] "Undetermined_S0_L001_R2_001.fastq.gz_BB1W.fastq.gz"          
+## [36] "Undetermined_S0_L001_R2_001.fastq.gz_BNS1.fastq.gz"          
+## [37] "Undetermined_S0_L001_R2_001.fastq.gz_BNS2.fastq.gz"          
+## [38] "Undetermined_S0_L001_R2_001.fastq.gz_C2S.fastq.gz"           
+## [39] "Undetermined_S0_L001_R2_001.fastq.gz_C2W.fastq.gz"           
+## [40] "Undetermined_S0_L001_R2_001.fastq.gz_CM2A_10_9C.fastq.gz"    
+## [41] "Undetermined_S0_L001_R2_001.fastq.gz_CM2A_22_9J.fastq.gz"    
+## [42] "Undetermined_S0_L001_R2_001.fastq.gz_COL11.fastq.gz"         
+## [43] "Undetermined_S0_L001_R2_001.fastq.gz_COL12.fastq.gz"         
+## [44] "Undetermined_S0_L001_R2_001.fastq.gz_COL3.fastq.gz"          
+## [45] "Undetermined_S0_L001_R2_001.fastq.gz_COL4.fastq.gz"          
+## [46] "Undetermined_S0_L001_R2_001.fastq.gz_DT3S.fastq.gz"          
+## [47] "Undetermined_S0_L001_R2_001.fastq.gz_DT3W.fastq.gz"          
+## [48] "Undetermined_S0_L001_R2_001.fastq.gz_OM18_BC.fastq.gz"       
+## [49] "Undetermined_S0_L001_R2_001.fastq.gz_OM18_BJ.fastq.gz"       
+## [50] "Undetermined_S0_L001_R2_001.fastq.gz_unsigned.fastq.gz"      
+## [51] "Undetermined_S0_L001_R2_001.fastq.gz_WAB105_22_6J.fastq.gz"  
+## [52] "Undetermined_S0_L001_R2_001.fastq.gz_WAB105_45_6D.fastq.gz"  
+## [53] "Undetermined_S0_L001_R2_001.fastq.gz_WAB188_10_4D.fastq.gz"  
+## [54] "Undetermined_S0_L001_R2_001.fastq.gz_WAB71_45_3D.fastq.gz"
 ```
 
 | <span> |
@@ -188,16 +251,20 @@ unassigned_2 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R2_001.
 system(unassigned_1)
 system(unassigned_2)
 
-# Rename files - gsub to get names in order!
+# Rename files - use gsub to get names in order!
 R1_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_"), "", 
                  list.files(demultiplex.fp, pattern="R1", full.names = TRUE))
 file.rename(list.files(demultiplex.fp, pattern="R1", full.names = TRUE), 
             paste0(demultiplex.fp, "/R1_", R1_names))
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [15] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 
 R2_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R2_001.fastq.gz_"), "", 
                  list.files(demultiplex.fp, pattern="R2", full.names = TRUE))
 file.rename(list.files(demultiplex.fp, pattern="R2", full.names = TRUE),
             paste0(demultiplex.fp, "/R2_", R2_names))
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [15] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 
 # Get full paths for all files and save them for downstream analyses
 # Forward and reverse fastq filenames have format: 
@@ -244,6 +311,10 @@ allOrients <- function(primer) {
 FWD.orients <- allOrients(FWD)
 REV.orients <- allOrients(REV)
 FWD.orients
+##               Forward            Complement               Reverse 
+## "GTGYCAGCMGCCGCGGTAA" "CACRGTCGKCGGCGCCATT" "AATGGCGCCGMCGACYGTG" 
+##               RevComp 
+## "TTACCGCGGCKGCTGRCAC"
 
 # Write a function that counts how many time primers appear in a sequence
 primerHits <- function(primer, fn) {
@@ -253,8 +324,7 @@ primerHits <- function(primer, fn) {
 }
 ```
 
-Before running cutadapt, we will look at primer detection
-for the first sample, as a check. There may be some primers here, we will remove them below using cutadapt.
+Before running cutadapt, we will look at primer detection for the first sample, as a check. There may be some primers here, we will remove them below using cutadapt.
 
 
 
@@ -263,6 +333,11 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.filtN[[1]]),
       FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.filtN[[1]]), 
       REV.ForwardReads = sapply(REV.orients, primerHits, fn = fnFs.filtN[[1]]), 
       REV.ReverseReads = sapply(REV.orients, primerHits, fn = fnRs.filtN[[1]]))
+##                  Forward Complement Reverse RevComp
+## FWD.ForwardReads       2          0       0       0
+## FWD.ReverseReads       0          0       0      35
+## REV.ForwardReads       0          0       0      56
+## REV.ReverseReads       0          0       0       0
 ```
 
 #### Remove primers with cutadapt and assess the output
@@ -298,6 +373,11 @@ rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.cut[[1]]),
       FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.cut[[1]]), 
       REV.ForwardReads = sapply(REV.orients, primerHits, fn = fnFs.cut[[1]]), 
       REV.ReverseReads = sapply(REV.orients, primerHits, fn = fnRs.cut[[1]]))
+##                  Forward Complement Reverse RevComp
+## FWD.ForwardReads       0          0       0       0
+## FWD.ReverseReads       0          0       0       0
+## REV.ForwardReads       0          0       0       0
+## REV.ReverseReads       0          0       0       0
 ```
 
 # Now start DADA2 pipeline
@@ -315,9 +395,13 @@ dir.create(subR.fp)
 fnFs.Q <- file.path(subF.fp,  basename(fnFs)) 
 fnRs.Q <- file.path(subR.fp,  basename(fnRs))
 file.rename(from = fnFs.cut, to = fnFs.Q)
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [15] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 file.rename(from = fnRs.cut, to = fnRs.Q)
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [15] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 
-# File parsing
+# File parsing; create file names and make sure that forward and reverse files match
 filtpathF <- file.path(subF.fp, "filtered") # files go into preprocessed_F/filtered/
 filtpathR <- file.path(subR.fp, "filtered") # ...
 fastqFs <- sort(list.files(subF.fp, pattern="fastq.gz"))
@@ -329,12 +413,13 @@ if(length(fastqFs) != length(fastqRs)) stop("Forward and reverse files do not ma
 
 Before chosing sequence variants, we want to trim reads where their quality scores begin to drop (the `truncLen` and `truncQ` values) and remove any low-quality reads that are left over after we have finished trimming (the `maxEE` value).
 
-**You will want to change this depending on run chemistry and quality:** For 2x250 bp runs you can try truncLen=c(240,160) (as per the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles)) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, truncLen=c(240,200), if they do not. In truncLen=c(xxx,yyy), xxx refers to the forward read truncation length, yyy refers to the reverse read truncation length.
+**You will want to change this depending on run chemistry and quality:** For 2x250 bp runs you can try ```truncLen=c(240,160)``` (as per the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html#inspect-read-quality-profiles)) if your reverse reads drop off in quality. Or you may want to choose a higher value, for example, ```truncLen=c(240,200)```, if they do not. In ```truncLen=c(xxx,yyy)```, ```xxx``` refers to the forward read truncation length, ```yyy``` refers to the reverse read truncation length.
 
-**For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the trunclen parameter. See here for more information and appropriate parameters for ITS data: [https://benjjneb.github.io/dada2/ITS_workflow.html](https://benjjneb.github.io/dada2/ITS_workflow.html).
+**For ITS data:** Due to the expected variable read lengths in ITS data you should run this command without the ```trunclen``` parameter. See here for more information and appropriate parameters for ITS data: [https://benjjneb.github.io/dada2/ITS_workflow.html](https://benjjneb.github.io/dada2/ITS_workflow.html).
 
 *From dada2 tutorial:*
->If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE.
+>If there is only one part of any amplicon bioinformatics workflow on which you spend time considering the parameters, it should be filtering! The parameters ... are not set in stone, and should be changed if they don’t work for your data. If too few reads are passing the filter, increase maxEE and/or reduce truncQ. If quality drops sharply at the end of your reads, reduce truncLen. If your reads are high quality and you want to reduce computation time in the sample inference step, reduce  maxEE. 
+
 #### Inspect read quality profiles
 It's important to get a feel for the quality of the data that we are using. To do this, we will plot the quality of some of the samples.
 
@@ -354,8 +439,20 @@ if( length(fastqFs) <= 20) {
 }
 
 fwd_qual_plots
-rev_qual_plots
+```
 
+<img src="figure/unnamed-chunk-11-1.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" width="98%" height="98%" />
+
+```r
+rev_qual_plots
+```
+
+<img src="figure/unnamed-chunk-11-2.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" width="98%" height="98%" />
+
+
+
+
+```r
 # write plots to disk
 saveRDS(fwd_qual_plots, paste0(filter.fp, "/fwd_qual_plots.rds"))
 saveRDS(rev_qual_plots, paste0(filter.fp, "/rev_qual_plots.rds"))
@@ -375,9 +472,17 @@ filt_out <- filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpa
               truncLen=c(150,140), maxEE=1, truncQ=11, maxN=0, rm.phix=TRUE,
               compress=TRUE, verbose=TRUE, multithread=TRUE)
 
-# look at the percentage of reads kept
+# look at how many reads were kept
 head(filt_out)
-# summary of filt_out
+##                            reads.in reads.out
+## R1_ANT7.fastq.gz              40165     35325
+## R1_ANT8.fastq.gz              25526     23028
+## R1_BA1A5566_10_1D.fastq.gz    50515     44631
+## R1_BA1A5566_22_1C.fastq.gz    42238     37237
+## R1_BA1A5566_45_1J.fastq.gz    31057     27081
+## R1_BB1S.fastq.gz              34353     30309
+
+# summary of samples in filt_out by percentage
 filt_out %>% 
   data.frame() %>% 
   mutate(Samples = rownames(.),
@@ -387,6 +492,8 @@ filt_out %>%
             median_remaining = paste0(round(median(percent_kept), 2), "%"),
             mean_remaining = paste0(round(mean(percent_kept), 2), "%"), 
             max_remaining = paste0(round(max(percent_kept), 2), "%"))
+##   min_remaining median_remaining mean_remaining max_remaining
+## 1        76.33%           87.86%         87.68%        90.85%
 ```
 
 ### 2. INFER sequence variants
@@ -425,9 +532,11 @@ set.seed(100) # set seed to ensure that randomized steps are replicatable
 
 # Learn forward error rates
 errF <- learnErrors(filtFs, nbases=1e8, multithread=TRUE)
+## 100285500 total bases in 668570 reads from 24 samples will be used for learning the error rates.
 
 # Learn reverse error rates
 errR <- learnErrors(filtRs, nbases=1e8, multithread=TRUE)
+## 98930580 total bases in 706647 reads from 25 samples will be used for learning the error rates.
 ```
 
 #### Plot Error Rates
@@ -439,8 +548,20 @@ errF_plot <- plotErrors(errF, nominalQ=TRUE)
 errR_plot <- plotErrors(errR, nominalQ=TRUE)
 
 errF_plot
-errR_plot
+```
 
+<img src="figure/unnamed-chunk-16-1.png" title="plot of chunk unnamed-chunk-16" alt="plot of chunk unnamed-chunk-16" width="98%" height="98%" />
+
+```r
+errR_plot
+```
+
+<img src="figure/unnamed-chunk-16-2.png" title="plot of chunk unnamed-chunk-16" alt="plot of chunk unnamed-chunk-16" width="98%" height="98%" />
+
+
+
+
+```r
 # write to disk
 saveRDS(errF_plot, paste0(filtpathF, "/errF_plot.rds"))
 saveRDS(errR_plot, paste0(filtpathR, "/errR_plot.rds"))
@@ -450,7 +571,7 @@ saveRDS(errR_plot, paste0(filtpathR, "/errR_plot.rds"))
 
 
 ```r
-# make a list to hold the loop output
+# make lists to hold the loop output
 mergers <- vector("list", length(sample.names))
 names(mergers) <- sample.names
 ddF <- vector("list", length(sample.names))
@@ -475,6 +596,81 @@ for(sam in sample.names) {
     merger <- mergePairs(ddF[[sam]], derepF, ddR[[sam]], derepR)
     mergers[[sam]] <- merger
 }
+## Processing: ANT7 
+## Sample 1 - 35325 reads in 13771 unique sequences.
+## Sample 1 - 35325 reads in 12445 unique sequences.
+## Processing: ANT8 
+## Sample 1 - 23028 reads in 9427 unique sequences.
+## Sample 1 - 23028 reads in 8455 unique sequences.
+## Processing: BA1A5566_10_1D 
+## Sample 1 - 44631 reads in 9425 unique sequences.
+## Sample 1 - 44631 reads in 8788 unique sequences.
+## Processing: BA1A5566_22_1C 
+## Sample 1 - 37237 reads in 7686 unique sequences.
+## Sample 1 - 37237 reads in 6791 unique sequences.
+## Processing: BA1A5566_45_1J 
+## Sample 1 - 27081 reads in 5702 unique sequences.
+## Sample 1 - 27081 reads in 4650 unique sequences.
+## Processing: BB1S 
+## Sample 1 - 30309 reads in 9402 unique sequences.
+## Sample 1 - 30309 reads in 8195 unique sequences.
+## Processing: BB1W 
+## Sample 1 - 34459 reads in 7473 unique sequences.
+## Sample 1 - 34459 reads in 5894 unique sequences.
+## Processing: BNS1 
+## Sample 1 - 3416 reads in 720 unique sequences.
+## Sample 1 - 3416 reads in 625 unique sequences.
+## Processing: BNS2 
+## Sample 1 - 15266 reads in 3158 unique sequences.
+## Sample 1 - 15266 reads in 2845 unique sequences.
+## Processing: C2S 
+## Sample 1 - 33614 reads in 11811 unique sequences.
+## Sample 1 - 33614 reads in 10168 unique sequences.
+## Processing: C2W 
+## Sample 1 - 36311 reads in 6588 unique sequences.
+## Sample 1 - 36311 reads in 4756 unique sequences.
+## Processing: CM2A_10_9C 
+## Sample 1 - 31169 reads in 3985 unique sequences.
+## Sample 1 - 31169 reads in 3233 unique sequences.
+## Processing: CM2A_22_9J 
+## Sample 1 - 27499 reads in 4126 unique sequences.
+## Sample 1 - 27499 reads in 3430 unique sequences.
+## Processing: COL11 
+## Sample 1 - 27672 reads in 12837 unique sequences.
+## Sample 1 - 27672 reads in 11692 unique sequences.
+## Processing: COL12 
+## Sample 1 - 21930 reads in 10539 unique sequences.
+## Sample 1 - 21930 reads in 9472 unique sequences.
+## Processing: COL3 
+## Sample 1 - 35470 reads in 16585 unique sequences.
+## Sample 1 - 35470 reads in 15005 unique sequences.
+## Processing: COL4 
+## Sample 1 - 28667 reads in 13454 unique sequences.
+## Sample 1 - 28667 reads in 12090 unique sequences.
+## Processing: DT3S 
+## Sample 1 - 31992 reads in 10400 unique sequences.
+## Sample 1 - 31992 reads in 9314 unique sequences.
+## Processing: DT3W 
+## Sample 1 - 38187 reads in 7962 unique sequences.
+## Sample 1 - 38187 reads in 6035 unique sequences.
+## Processing: OM18_BC 
+## Sample 1 - 4171 reads in 965 unique sequences.
+## Sample 1 - 4171 reads in 824 unique sequences.
+## Processing: OM18_BJ 
+## Sample 1 - 345 reads in 98 unique sequences.
+## Sample 1 - 345 reads in 81 unique sequences.
+## Processing: WAB105_22_6J 
+## Sample 1 - 40501 reads in 7319 unique sequences.
+## Sample 1 - 40501 reads in 6388 unique sequences.
+## Processing: WAB105_45_6D 
+## Sample 1 - 33594 reads in 6118 unique sequences.
+## Sample 1 - 33594 reads in 5549 unique sequences.
+## Processing: WAB188_10_4D 
+## Sample 1 - 26696 reads in 4008 unique sequences.
+## Sample 1 - 26696 reads in 3289 unique sequences.
+## Processing: WAB71_45_3D 
+## Sample 1 - 38077 reads in 7700 unique sequences.
+## Sample 1 - 38077 reads in 7276 unique sequences.
 
 rm(derepF); rm(derepR)
 ```
@@ -498,13 +694,13 @@ chimeras, we will search for rare sequence variants that can be reconstructed by
 left-hand and right-hand segments from two more abundant "parent" sequences. After removing chimeras, we will use a taxonomy database to train a classifer-algorithm
 to assign names to our sequence variants.
 
-For the tutorial 16S, we will assign taxonomy with Silva db v132, but you might want to use other databases for your data. Below are paths to some of the databases we use often. (If you are on your own computer you can download the database you need from this link https://benjjneb.github.io/dada2/training.html):
+For the tutorial 16S, we will assign taxonomy with Silva db v132, but you might want to use other databases for your data. Below are paths to some of the databases we use often. (If you are on your own computer you can download the database you need from this link [https://benjjneb.github.io/dada2/training.html](https://benjjneb.github.io/dada2/training.html):)
 
-16S bacteria and archaea (SILVA db): /db_files/dada2/silva_nr_v132_train_set.fa
+  - 16S bacteria and archaea (SILVA db): /db_files/dada2/silva_nr_v132_train_set.fa
 
-ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.fasta
+  - ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.fasta
 
-18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta
+  - 18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta
 
 
 
@@ -517,9 +713,10 @@ seqtab.nochim <- removeBimeraDenovo(st.all, method="consensus", multithread=TRUE
 
 # Print percentage of our seqences that were chimeric.
 100*sum(seqtab.nochim)/sum(seqtab)
+## [1] 98.31469
 
 # Assign taxonomy
-tax <- assignTaxonomy(seqtab, "/db_files/dada2/silva_nr_v132_train_set.fa",
+tax <- assignTaxonomy(seqtab, "/db_files/dada2/silva_nr_v132_train_set.fa", tryRC = TRUE,
                       multithread=TRUE)
 
 # Write results to disk
@@ -589,6 +786,13 @@ track <- cbind(filt_out,
 colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
 rownames(track) <- sample.names
 head(track)
+##                input filtered denoisedF denoisedR merged nonchim
+## ANT7           40165    35325     33793     33942  28426   28319
+## ANT8           25526    23028     21756     21931  17693   17598
+## BA1A5566_10_1D 50515    44631     44207     44148  43079   41737
+## BA1A5566_22_1C 42238    37237     36826     36905  35888   34227
+## BA1A5566_45_1J 31057    27081     26743     26839  26141   23554
+## BB1S           34353    30309     29313     29568  26257   26129
 
 # tracking reads by percentage
 track_pct <- track %>% 
@@ -606,6 +810,10 @@ track_pct <- track %>%
 track_pct_avg <- track_pct %>% summarize_at(vars(ends_with("_pct")), 
                            list(avg = mean))
 head(track_pct_avg)
+##   filtered_pct_avg denoisedF_pct_avg denoisedR_pct_avg merged_pct_avg
+## 1         87.67735          97.40454          98.05833       91.63946
+##   nonchim_pct_avg total_pct_avg
+## 1         98.6076      77.56848
 
 # Plotting each sample's reads through the pipeline
 track_plot <- track %>% 
@@ -617,8 +825,8 @@ track_plot <- track %>%
   ggplot(aes(x = Step, y = Reads)) +
   geom_line(aes(group = Sample), alpha = 0.2) +
   geom_point(alpha = 0.5, position = position_jitter(width = 0)) + 
-  stat_summary(fun.y = mean, geom = "line", group = 1, color = "steelblue", size = 1, alpha = 0.5) +
-  stat_summary(fun.y = mean, geom = "point", group = 1, color = "steelblue", size = 2) +
+  stat_summary(fun.y = median, geom = "line", group = 1, color = "steelblue", size = 1, alpha = 0.5) +
+  stat_summary(fun.y = median, geom = "point", group = 1, color = "steelblue", size = 2, alpha = 0.5) +
   stat_summary(fun.data = median_hilow, fun.args = list(conf.int = 0.5), 
                geom = "ribbon", group = 1, fill = "steelblue", alpha = 0.2) +
   geom_label(data = t(track_pct_avg[1:5]) %>% data.frame() %>% 
@@ -634,6 +842,11 @@ track_plot <- track %>%
   theme_classic()
 
 track_plot
+```
+
+<img src="figure/unnamed-chunk-22-1.png" title="plot of chunk unnamed-chunk-22" alt="plot of chunk unnamed-chunk-22" width="98%" height="98%" />
+
+```r
 
 # Write results to disk
 saveRDS(track, paste0(project.fp, "/tracking_reads.rds"))
