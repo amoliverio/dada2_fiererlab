@@ -465,15 +465,15 @@ st.all <- readRDS(paste0(table.fp, "/seqtab.rds"))
 # Remove chimeras
 seqtab.nochim <- removeBimeraDenovo(st.all, method="consensus", multithread=TRUE)
 
-# Print percentage of our seqences that were chimeric.
+# Print percentage of our seqences that were not chimeric.
 100*sum(seqtab.nochim)/sum(seqtab)
 
 # Assign taxonomy
-tax <- assignTaxonomy(seqtab, "/db_files/dada2/silva_nr_v132_train_set.fa", tryRC = TRUE,
+tax <- assignTaxonomy(seqtab.nochim, "/db_files/dada2/silva_nr_v132_train_set.fa", tryRC = TRUE,
                       multithread=TRUE)
 
 # Write results to disk
-saveRDS(seqtab, paste0(table.fp, "/seqtab_final.rds"))
+saveRDS(seqtab.nochim, paste0(table.fp, "/seqtab_final.rds"))
 saveRDS(tax, paste0(table.fp, "/tax_final.rds"))
 
 #' ### 4. Optional - FORMAT OUTPUT to obtain ESV IDs and repset, and input for mctoolsr
@@ -482,7 +482,7 @@ saveRDS(tax, paste0(table.fp, "/tax_final.rds"))
 #' sequences for each ESV. 
 
 # Flip table
-seqtab.t <- as.data.frame(t(seqtab))
+seqtab.t <- as.data.frame(t(seqtab.nochim))
 
 # Pull out ESV repset
 rep_set_ESVs <- as.data.frame(rownames(seqtab.t))
