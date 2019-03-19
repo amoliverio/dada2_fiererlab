@@ -159,7 +159,7 @@ for organizational purposes.
 
 
 ```r
-project.fp <- "/data/hollandh/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
+project.fp <- "/data/YOUR_USERNAME/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
 
 # Set up names of sub directories to stay organized
 preprocess.fp <- file.path(project.fp, "01_preprocess")
@@ -776,7 +776,7 @@ writeRepSetFasta<-function(data, filename){
   close(fileConn)
 }
 
-# Arrange the taxonomy dataframe for the writeFasta function
+# Arrange the taxonomy dataframe for the writeRepSetFasta function
 taxonomy_for_fasta <- taxonomy %>%
   unite("TaxString", c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"), 
         sep = ";", remove = FALSE) %>%
@@ -785,6 +785,7 @@ taxonomy_for_fasta <- taxonomy %>%
   select(ESV, name) %>%
   rename(seq = ESV)
 
+# write fasta file
 writeRepSetFasta(taxonomy_for_fasta, paste0(table.fp, "/repset.fasta"))
 
 # Merge taxonomy and table
