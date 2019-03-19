@@ -87,13 +87,18 @@ Load DADA2 and required packages
 
 
 ```r
-library(dada2); packageVersion("dada2")
+library(dada2); packageVersion("dada2") # the dada2 pipeline
 ## [1] '1.10.1'
-library(ShortRead)
-library(dplyr)
-library(tidyr)
-library(Hmisc)
-library(ggplot2)
+library(ShortRead); packageVersion("ShortRead") # dada2 depends on this
+## [1] '1.38.0'
+library(dplyr); packageVersion("dplyr") # for manipulating data
+## [1] '0.8.0.1'
+library(tidyr); packageVersion("tidyr") # for creating the final graph at the end of the pipeline
+## [1] '0.8.2'
+library(Hmisc); packageVersion("Hmisc") # for creating the final graph at the end of the pipeline
+## [1] '4.2.0'
+library(ggplot2); packageVersion("ggplot2") # for creating the final graph at the end of the pipeline
+## [1] '3.1.0'
 ```
 
 Once the packages are installed, you can check to make sure the auxillary
@@ -250,21 +255,26 @@ unassigned_2 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R2_001.
                        " ", demultiplex.fp, "/Unassigned_reads2.fastq.gz")
 system(unassigned_1)
 system(unassigned_2)
+```
+
+<img src="figure/unnamed-chunk-5-1.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" width="98%" height="98%" />
+
+```r
 
 # Rename files - use gsub to get names in order!
 R1_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_"), "", 
                  list.files(demultiplex.fp, pattern="R1", full.names = TRUE))
 file.rename(list.files(demultiplex.fp, pattern="R1", full.names = TRUE), 
             paste0(demultiplex.fp, "/R1_", R1_names))
-##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-## [15] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [17] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 
 R2_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R2_001.fastq.gz_"), "", 
                  list.files(demultiplex.fp, pattern="R2", full.names = TRUE))
 file.rename(list.files(demultiplex.fp, pattern="R2", full.names = TRUE),
             paste0(demultiplex.fp, "/R2_", R2_names))
-##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-## [15] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [17] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 
 # Get full paths for all files and save them for downstream analyses
 # Forward and reverse fastq filenames have format: 
@@ -395,11 +405,11 @@ dir.create(subR.fp)
 fnFs.Q <- file.path(subF.fp,  basename(fnFs)) 
 fnRs.Q <- file.path(subR.fp,  basename(fnRs))
 file.rename(from = fnFs.cut, to = fnFs.Q)
-##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-## [15] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [17] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 file.rename(from = fnRs.cut, to = fnRs.Q)
-##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-## [15] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [17] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 
 # File parsing; create file names and make sure that forward and reverse files match
 filtpathF <- file.path(subF.fp, "filtered") # files go into preprocessed_F/filtered/
@@ -711,16 +721,16 @@ st.all <- readRDS(paste0(table.fp, "/seqtab.rds"))
 # Remove chimeras
 seqtab.nochim <- removeBimeraDenovo(st.all, method="consensus", multithread=TRUE)
 
-# Print percentage of our seqences that were chimeric.
+# Print percentage of our seqences that were not chimeric.
 100*sum(seqtab.nochim)/sum(seqtab)
 ## [1] 98.31469
 
 # Assign taxonomy
-tax <- assignTaxonomy(seqtab, "/db_files/dada2/silva_nr_v132_train_set.fa", tryRC = TRUE,
+tax <- assignTaxonomy(seqtab.nochim, "/db_files/dada2/silva_nr_v132_train_set.fa", tryRC = TRUE,
                       multithread=TRUE)
 
 # Write results to disk
-saveRDS(seqtab, paste0(table.fp, "/seqtab_final.rds"))
+saveRDS(seqtab.nochim, paste0(table.fp, "/seqtab_final.rds"))
 saveRDS(tax, paste0(table.fp, "/tax_final.rds"))
 ```
 
@@ -732,7 +742,7 @@ sequences for each ESV.
 
 ```r
 # Flip table
-seqtab.t <- as.data.frame(t(seqtab))
+seqtab.t <- as.data.frame(t(seqtab.nochim))
 
 # Pull out ESV repset
 rep_set_ESVs <- as.data.frame(rownames(seqtab.t))
@@ -752,6 +762,31 @@ rownames(taxonomy) <- taxonomy$ESV_ID
 taxonomy_for_mctoolsr <- unite_(taxonomy, "taxonomy", 
                                 c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"),
                                 sep = ";")
+
+# Write repset to fasta file
+# create a function that writes fasta sequences
+writeRepSetFasta<-function(data, filename){
+  fastaLines = c()
+  for (rowNum in 1:nrow(data)){
+    fastaLines = c(fastaLines, as.character(paste(">", data[rowNum,"name"], sep = "")))
+    fastaLines = c(fastaLines,as.character(data[rowNum,"seq"]))
+  }
+  fileConn<-file(filename)
+  writeLines(fastaLines, fileConn)
+  close(fileConn)
+}
+
+# Arrange the taxonomy dataframe for the writeRepSetFasta function
+taxonomy_for_fasta <- taxonomy %>%
+  unite("TaxString", c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"), 
+        sep = ";", remove = FALSE) %>%
+  unite("name", c("ESV_ID", "TaxString"), 
+        sep = " ", remove = TRUE) %>%
+  select(ESV, name) %>%
+  rename(seq = ESV)
+
+# write fasta file
+writeRepSetFasta(taxonomy_for_fasta, paste0(table.fp, "/repset.fasta"))
 
 # Merge taxonomy and table
 seqtab_wTax <- merge(seqtab.t, taxonomy_for_mctoolsr, by = 0)
@@ -810,10 +845,10 @@ track_pct <- track %>%
 track_pct_avg <- track_pct %>% summarize_at(vars(ends_with("_pct")), 
                            list(avg = mean))
 head(track_pct_avg)
-##   filtered_pct_avg denoisedF_pct_avg denoisedR_pct_avg merged_pct_avg
-## 1         87.67735          97.40454          98.05833       91.63946
-##   nonchim_pct_avg total_pct_avg
-## 1         98.6076      77.56848
+##   filtered_pct_avg denoisedF_pct_avg denoisedR_pct_avg merged_pct_avg nonchim_pct_avg
+## 1         87.67735          97.40454          98.05833       91.63946         98.6076
+##   total_pct_avg
+## 1      77.56848
 
 # Plotting each sample's reads through the pipeline
 track_plot <- track %>% 
@@ -846,8 +881,10 @@ track_plot
 
 <img src="figure/unnamed-chunk-22-1.png" title="plot of chunk unnamed-chunk-22" alt="plot of chunk unnamed-chunk-22" width="98%" height="98%" />
 
-```r
 
+
+
+```r
 # Write results to disk
 saveRDS(track, paste0(project.fp, "/tracking_reads.rds"))
 saveRDS(track_pct, paste0(project.fp, "/tracking_reads_percentage.rds"))

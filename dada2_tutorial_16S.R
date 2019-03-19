@@ -92,12 +92,12 @@ install.packages("ggplot2")
 #'
 #' Load DADA2 and required packages
 
-library(dada2); packageVersion("dada2")
-library(ShortRead)
-library(dplyr)
-library(tidyr)
-library(Hmisc)
-library(ggplot2)
+library(dada2); packageVersion("dada2") # the dada2 pipeline
+library(ShortRead); packageVersion("ShortRead") # dada2 depends on this
+library(dplyr); packageVersion("dplyr") # for manipulating data
+library(tidyr); packageVersion("tidyr") # for creating the final graph at the end of the pipeline
+library(Hmisc); packageVersion("Hmisc") # for creating the final graph at the end of the pipeline
+library(ggplot2); packageVersion("ggplot2") # for creating the final graph at the end of the pipeline
 
 #' Once the packages are installed, you can check to make sure the auxillary
 #' software is working and set up some of the variables that you will need 
@@ -502,6 +502,31 @@ rownames(taxonomy) <- taxonomy$ESV_ID
 taxonomy_for_mctoolsr <- unite_(taxonomy, "taxonomy", 
                                 c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"),
                                 sep = ";")
+
+# Write repset to fasta file
+# create a function that writes fasta sequences
+writeRepSetFasta<-function(data, filename){
+  fastaLines = c()
+  for (rowNum in 1:nrow(data)){
+    fastaLines = c(fastaLines, as.character(paste(">", data[rowNum,"name"], sep = "")))
+    fastaLines = c(fastaLines,as.character(data[rowNum,"seq"]))
+  }
+  fileConn<-file(filename)
+  writeLines(fastaLines, fileConn)
+  close(fileConn)
+}
+
+# Arrange the taxonomy dataframe for the writeRepSetFasta function
+taxonomy_for_fasta <- taxonomy %>%
+  unite("TaxString", c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"), 
+        sep = ";", remove = FALSE) %>%
+  unite("name", c("ESV_ID", "TaxString"), 
+        sep = " ", remove = TRUE) %>%
+  select(ESV, name) %>%
+  rename(seq = ESV)
+
+# write fasta file
+writeRepSetFasta(taxonomy_for_fasta, paste0(table.fp, "/repset.fasta"))
 
 # Merge taxonomy and table
 seqtab_wTax <- merge(seqtab.t, taxonomy_for_mctoolsr, by = 0)
