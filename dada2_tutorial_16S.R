@@ -143,7 +143,7 @@ R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz")
 #' you do not need to create the subdirectories but they are nice to have
 #' for organizational purposes. 
 
-project.fp <- "/data/hollandh/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
+project.fp <- "/data/YOUR_USERNAME/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
 
 # Set up names of sub directories to stay organized
 preprocess.fp <- file.path(project.fp, "01_preprocess")
