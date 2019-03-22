@@ -99,7 +99,7 @@ library(dplyr); packageVersion("dplyr") # for manipulating data
 library(tidyr); packageVersion("tidyr") # for creating the final graph at the end of the pipeline
 library(Hmisc); packageVersion("Hmisc") # for creating the final graph at the end of the pipeline
 library(ggplot2); packageVersion("ggplot2") # for creating the final graph at the end of the pipeline
-library(plotly); packageVersion("plotly") #enables creation of interactive graphs, especially helpful for quality plots
+library(plotly); packageVersion("plotly") # enables creation of interactive graphs, especially helpful for quality plots
 
 #' Once the packages are installed, you can check to make sure the auxillary
 #' software is working and set up some of the variables that you will need 
@@ -143,7 +143,7 @@ R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz")
 #' you do not need to create the subdirectories but they are nice to have
 #' for organizational purposes. 
 
-project.fp <- "/data/YOUR_USERNAME/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
+project.fp <- "/data/hollandh/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
 
 # Set up names of sub directories to stay organized
 preprocess.fp <- file.path(project.fp, "01_preprocess")
@@ -330,7 +330,8 @@ if( length(fastqFs) <= 20) {
 fwd_qual_plots
 rev_qual_plots
 
-# To make these quality plots interactive, just call the plots through plotly
+#+ plotly quality plots, eval = FALSE, include=TRUE
+# Or, to make these quality plots interactive, just call the plots through plotly
 ggplotly(fwd_qual_plots)
 ggplotly(rev_qual_plots)
 
