@@ -80,6 +80,7 @@ install.packages("dplyr")
 install.packages("tidyr")
 install.packages("Hmisc")
 install.packages("ggplot2")
+install.packages("plotly")
 ```
 
 
@@ -99,6 +100,8 @@ library(Hmisc); packageVersion("Hmisc") # for creating the final graph at the en
 ## [1] '4.2.0'
 library(ggplot2); packageVersion("ggplot2") # for creating the final graph at the end of the pipeline
 ## [1] '3.1.0'
+library(plotly); packageVersion("plotly") # enables creation of interactive graphs, especially helpful for quality plots
+## [1] '4.8.0'
 ```
 
 Once the packages are installed, you can check to make sure the auxillary
@@ -182,60 +185,112 @@ system2(idemp, args = flags)
 
 # Look at output of demultiplexing
 list.files(demultiplex.fp)
-##  [1] "Undetermined_S0_L001_I1_001.fastq.gz.decode"                 
-##  [2] "Undetermined_S0_L001_I1_001.fastq.gz.decode.stat"            
-##  [3] "Undetermined_S0_L001_R1_001.fastq.gz_ANT7.fastq.gz"          
-##  [4] "Undetermined_S0_L001_R1_001.fastq.gz_ANT8.fastq.gz"          
-##  [5] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_10_1D.fastq.gz"
-##  [6] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_22_1C.fastq.gz"
-##  [7] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_45_1J.fastq.gz"
-##  [8] "Undetermined_S0_L001_R1_001.fastq.gz_BB1S.fastq.gz"          
-##  [9] "Undetermined_S0_L001_R1_001.fastq.gz_BB1W.fastq.gz"          
-## [10] "Undetermined_S0_L001_R1_001.fastq.gz_BNS1.fastq.gz"          
-## [11] "Undetermined_S0_L001_R1_001.fastq.gz_BNS2.fastq.gz"          
-## [12] "Undetermined_S0_L001_R1_001.fastq.gz_C2S.fastq.gz"           
-## [13] "Undetermined_S0_L001_R1_001.fastq.gz_C2W.fastq.gz"           
-## [14] "Undetermined_S0_L001_R1_001.fastq.gz_CM2A_10_9C.fastq.gz"    
-## [15] "Undetermined_S0_L001_R1_001.fastq.gz_CM2A_22_9J.fastq.gz"    
-## [16] "Undetermined_S0_L001_R1_001.fastq.gz_COL11.fastq.gz"         
-## [17] "Undetermined_S0_L001_R1_001.fastq.gz_COL12.fastq.gz"         
-## [18] "Undetermined_S0_L001_R1_001.fastq.gz_COL3.fastq.gz"          
-## [19] "Undetermined_S0_L001_R1_001.fastq.gz_COL4.fastq.gz"          
-## [20] "Undetermined_S0_L001_R1_001.fastq.gz_DT3S.fastq.gz"          
-## [21] "Undetermined_S0_L001_R1_001.fastq.gz_DT3W.fastq.gz"          
-## [22] "Undetermined_S0_L001_R1_001.fastq.gz_OM18_BC.fastq.gz"       
-## [23] "Undetermined_S0_L001_R1_001.fastq.gz_OM18_BJ.fastq.gz"       
-## [24] "Undetermined_S0_L001_R1_001.fastq.gz_unsigned.fastq.gz"      
-## [25] "Undetermined_S0_L001_R1_001.fastq.gz_WAB105_22_6J.fastq.gz"  
-## [26] "Undetermined_S0_L001_R1_001.fastq.gz_WAB105_45_6D.fastq.gz"  
-## [27] "Undetermined_S0_L001_R1_001.fastq.gz_WAB188_10_4D.fastq.gz"  
-## [28] "Undetermined_S0_L001_R1_001.fastq.gz_WAB71_45_3D.fastq.gz"   
-## [29] "Undetermined_S0_L001_R2_001.fastq.gz_ANT7.fastq.gz"          
-## [30] "Undetermined_S0_L001_R2_001.fastq.gz_ANT8.fastq.gz"          
-## [31] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_10_1D.fastq.gz"
-## [32] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_22_1C.fastq.gz"
-## [33] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_45_1J.fastq.gz"
-## [34] "Undetermined_S0_L001_R2_001.fastq.gz_BB1S.fastq.gz"          
-## [35] "Undetermined_S0_L001_R2_001.fastq.gz_BB1W.fastq.gz"          
-## [36] "Undetermined_S0_L001_R2_001.fastq.gz_BNS1.fastq.gz"          
-## [37] "Undetermined_S0_L001_R2_001.fastq.gz_BNS2.fastq.gz"          
-## [38] "Undetermined_S0_L001_R2_001.fastq.gz_C2S.fastq.gz"           
-## [39] "Undetermined_S0_L001_R2_001.fastq.gz_C2W.fastq.gz"           
-## [40] "Undetermined_S0_L001_R2_001.fastq.gz_CM2A_10_9C.fastq.gz"    
-## [41] "Undetermined_S0_L001_R2_001.fastq.gz_CM2A_22_9J.fastq.gz"    
-## [42] "Undetermined_S0_L001_R2_001.fastq.gz_COL11.fastq.gz"         
-## [43] "Undetermined_S0_L001_R2_001.fastq.gz_COL12.fastq.gz"         
-## [44] "Undetermined_S0_L001_R2_001.fastq.gz_COL3.fastq.gz"          
-## [45] "Undetermined_S0_L001_R2_001.fastq.gz_COL4.fastq.gz"          
-## [46] "Undetermined_S0_L001_R2_001.fastq.gz_DT3S.fastq.gz"          
-## [47] "Undetermined_S0_L001_R2_001.fastq.gz_DT3W.fastq.gz"          
-## [48] "Undetermined_S0_L001_R2_001.fastq.gz_OM18_BC.fastq.gz"       
-## [49] "Undetermined_S0_L001_R2_001.fastq.gz_OM18_BJ.fastq.gz"       
-## [50] "Undetermined_S0_L001_R2_001.fastq.gz_unsigned.fastq.gz"      
-## [51] "Undetermined_S0_L001_R2_001.fastq.gz_WAB105_22_6J.fastq.gz"  
-## [52] "Undetermined_S0_L001_R2_001.fastq.gz_WAB105_45_6D.fastq.gz"  
-## [53] "Undetermined_S0_L001_R2_001.fastq.gz_WAB188_10_4D.fastq.gz"  
-## [54] "Undetermined_S0_L001_R2_001.fastq.gz_WAB71_45_3D.fastq.gz"
+##   [1] "R1_ANT7.fastq.gz"                                            
+##   [2] "R1_ANT8.fastq.gz"                                            
+##   [3] "R1_BA1A5566_10_1D.fastq.gz"                                  
+##   [4] "R1_BA1A5566_22_1C.fastq.gz"                                  
+##   [5] "R1_BA1A5566_45_1J.fastq.gz"                                  
+##   [6] "R1_BB1S.fastq.gz"                                            
+##   [7] "R1_BB1W.fastq.gz"                                            
+##   [8] "R1_BNS1.fastq.gz"                                            
+##   [9] "R1_BNS2.fastq.gz"                                            
+##  [10] "R1_C2S.fastq.gz"                                             
+##  [11] "R1_C2W.fastq.gz"                                             
+##  [12] "R1_CM2A_10_9C.fastq.gz"                                      
+##  [13] "R1_CM2A_22_9J.fastq.gz"                                      
+##  [14] "R1_COL11.fastq.gz"                                           
+##  [15] "R1_COL12.fastq.gz"                                           
+##  [16] "R1_COL3.fastq.gz"                                            
+##  [17] "R1_COL4.fastq.gz"                                            
+##  [18] "R1_DT3S.fastq.gz"                                            
+##  [19] "R1_DT3W.fastq.gz"                                            
+##  [20] "R1_OM18_BC.fastq.gz"                                         
+##  [21] "R1_OM18_BJ.fastq.gz"                                         
+##  [22] "R1_WAB105_22_6J.fastq.gz"                                    
+##  [23] "R1_WAB105_45_6D.fastq.gz"                                    
+##  [24] "R1_WAB188_10_4D.fastq.gz"                                    
+##  [25] "R1_WAB71_45_3D.fastq.gz"                                     
+##  [26] "R2_ANT7.fastq.gz"                                            
+##  [27] "R2_ANT8.fastq.gz"                                            
+##  [28] "R2_BA1A5566_10_1D.fastq.gz"                                  
+##  [29] "R2_BA1A5566_22_1C.fastq.gz"                                  
+##  [30] "R2_BA1A5566_45_1J.fastq.gz"                                  
+##  [31] "R2_BB1S.fastq.gz"                                            
+##  [32] "R2_BB1W.fastq.gz"                                            
+##  [33] "R2_BNS1.fastq.gz"                                            
+##  [34] "R2_BNS2.fastq.gz"                                            
+##  [35] "R2_C2S.fastq.gz"                                             
+##  [36] "R2_C2W.fastq.gz"                                             
+##  [37] "R2_CM2A_10_9C.fastq.gz"                                      
+##  [38] "R2_CM2A_22_9J.fastq.gz"                                      
+##  [39] "R2_COL11.fastq.gz"                                           
+##  [40] "R2_COL12.fastq.gz"                                           
+##  [41] "R2_COL3.fastq.gz"                                            
+##  [42] "R2_COL4.fastq.gz"                                            
+##  [43] "R2_DT3S.fastq.gz"                                            
+##  [44] "R2_DT3W.fastq.gz"                                            
+##  [45] "R2_OM18_BC.fastq.gz"                                         
+##  [46] "R2_OM18_BJ.fastq.gz"                                         
+##  [47] "R2_WAB105_22_6J.fastq.gz"                                    
+##  [48] "R2_WAB105_45_6D.fastq.gz"                                    
+##  [49] "R2_WAB188_10_4D.fastq.gz"                                    
+##  [50] "R2_WAB71_45_3D.fastq.gz"                                     
+##  [51] "Unassigned_reads1.fastq.gz"                                  
+##  [52] "Unassigned_reads2.fastq.gz"                                  
+##  [53] "Undetermined_S0_L001_I1_001.fastq.gz.decode"                 
+##  [54] "Undetermined_S0_L001_I1_001.fastq.gz.decode.stat"            
+##  [55] "Undetermined_S0_L001_R1_001.fastq.gz_ANT7.fastq.gz"          
+##  [56] "Undetermined_S0_L001_R1_001.fastq.gz_ANT8.fastq.gz"          
+##  [57] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_10_1D.fastq.gz"
+##  [58] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_22_1C.fastq.gz"
+##  [59] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_45_1J.fastq.gz"
+##  [60] "Undetermined_S0_L001_R1_001.fastq.gz_BB1S.fastq.gz"          
+##  [61] "Undetermined_S0_L001_R1_001.fastq.gz_BB1W.fastq.gz"          
+##  [62] "Undetermined_S0_L001_R1_001.fastq.gz_BNS1.fastq.gz"          
+##  [63] "Undetermined_S0_L001_R1_001.fastq.gz_BNS2.fastq.gz"          
+##  [64] "Undetermined_S0_L001_R1_001.fastq.gz_C2S.fastq.gz"           
+##  [65] "Undetermined_S0_L001_R1_001.fastq.gz_C2W.fastq.gz"           
+##  [66] "Undetermined_S0_L001_R1_001.fastq.gz_CM2A_10_9C.fastq.gz"    
+##  [67] "Undetermined_S0_L001_R1_001.fastq.gz_CM2A_22_9J.fastq.gz"    
+##  [68] "Undetermined_S0_L001_R1_001.fastq.gz_COL11.fastq.gz"         
+##  [69] "Undetermined_S0_L001_R1_001.fastq.gz_COL12.fastq.gz"         
+##  [70] "Undetermined_S0_L001_R1_001.fastq.gz_COL3.fastq.gz"          
+##  [71] "Undetermined_S0_L001_R1_001.fastq.gz_COL4.fastq.gz"          
+##  [72] "Undetermined_S0_L001_R1_001.fastq.gz_DT3S.fastq.gz"          
+##  [73] "Undetermined_S0_L001_R1_001.fastq.gz_DT3W.fastq.gz"          
+##  [74] "Undetermined_S0_L001_R1_001.fastq.gz_OM18_BC.fastq.gz"       
+##  [75] "Undetermined_S0_L001_R1_001.fastq.gz_OM18_BJ.fastq.gz"       
+##  [76] "Undetermined_S0_L001_R1_001.fastq.gz_unsigned.fastq.gz"      
+##  [77] "Undetermined_S0_L001_R1_001.fastq.gz_WAB105_22_6J.fastq.gz"  
+##  [78] "Undetermined_S0_L001_R1_001.fastq.gz_WAB105_45_6D.fastq.gz"  
+##  [79] "Undetermined_S0_L001_R1_001.fastq.gz_WAB188_10_4D.fastq.gz"  
+##  [80] "Undetermined_S0_L001_R1_001.fastq.gz_WAB71_45_3D.fastq.gz"   
+##  [81] "Undetermined_S0_L001_R2_001.fastq.gz_ANT7.fastq.gz"          
+##  [82] "Undetermined_S0_L001_R2_001.fastq.gz_ANT8.fastq.gz"          
+##  [83] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_10_1D.fastq.gz"
+##  [84] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_22_1C.fastq.gz"
+##  [85] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_45_1J.fastq.gz"
+##  [86] "Undetermined_S0_L001_R2_001.fastq.gz_BB1S.fastq.gz"          
+##  [87] "Undetermined_S0_L001_R2_001.fastq.gz_BB1W.fastq.gz"          
+##  [88] "Undetermined_S0_L001_R2_001.fastq.gz_BNS1.fastq.gz"          
+##  [89] "Undetermined_S0_L001_R2_001.fastq.gz_BNS2.fastq.gz"          
+##  [90] "Undetermined_S0_L001_R2_001.fastq.gz_C2S.fastq.gz"           
+##  [91] "Undetermined_S0_L001_R2_001.fastq.gz_C2W.fastq.gz"           
+##  [92] "Undetermined_S0_L001_R2_001.fastq.gz_CM2A_10_9C.fastq.gz"    
+##  [93] "Undetermined_S0_L001_R2_001.fastq.gz_CM2A_22_9J.fastq.gz"    
+##  [94] "Undetermined_S0_L001_R2_001.fastq.gz_COL11.fastq.gz"         
+##  [95] "Undetermined_S0_L001_R2_001.fastq.gz_COL12.fastq.gz"         
+##  [96] "Undetermined_S0_L001_R2_001.fastq.gz_COL3.fastq.gz"          
+##  [97] "Undetermined_S0_L001_R2_001.fastq.gz_COL4.fastq.gz"          
+##  [98] "Undetermined_S0_L001_R2_001.fastq.gz_DT3S.fastq.gz"          
+##  [99] "Undetermined_S0_L001_R2_001.fastq.gz_DT3W.fastq.gz"          
+## [100] "Undetermined_S0_L001_R2_001.fastq.gz_OM18_BC.fastq.gz"       
+## [101] "Undetermined_S0_L001_R2_001.fastq.gz_OM18_BJ.fastq.gz"       
+## [102] "Undetermined_S0_L001_R2_001.fastq.gz_unsigned.fastq.gz"      
+## [103] "Undetermined_S0_L001_R2_001.fastq.gz_WAB105_22_6J.fastq.gz"  
+## [104] "Undetermined_S0_L001_R2_001.fastq.gz_WAB105_45_6D.fastq.gz"  
+## [105] "Undetermined_S0_L001_R2_001.fastq.gz_WAB188_10_4D.fastq.gz"  
+## [106] "Undetermined_S0_L001_R2_001.fastq.gz_WAB71_45_3D.fastq.gz"
 ```
 
 | <span> |
@@ -255,26 +310,27 @@ unassigned_2 <- paste0("mv", " ", demultiplex.fp, "/Undetermined_S0_L001_R2_001.
                        " ", demultiplex.fp, "/Unassigned_reads2.fastq.gz")
 system(unassigned_1)
 system(unassigned_2)
-```
-
-<img src="figure/unnamed-chunk-5-1.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" width="98%" height="98%" />
-
-```r
 
 # Rename files - use gsub to get names in order!
 R1_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_"), "", 
                  list.files(demultiplex.fp, pattern="R1", full.names = TRUE))
 file.rename(list.files(demultiplex.fp, pattern="R1", full.names = TRUE), 
             paste0(demultiplex.fp, "/R1_", R1_names))
-##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-## [17] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+##  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## [12] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## [23] FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+## [34]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+## [45]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
 
 R2_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R2_001.fastq.gz_"), "", 
                  list.files(demultiplex.fp, pattern="R2", full.names = TRUE))
 file.rename(list.files(demultiplex.fp, pattern="R2", full.names = TRUE),
             paste0(demultiplex.fp, "/R2_", R2_names))
-##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-## [17] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+##  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## [12] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## [23] FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+## [34]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+## [45]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
 
 # Get full paths for all files and save them for downstream analyses
 # Forward and reverse fastq filenames have format: 
@@ -405,11 +461,11 @@ dir.create(subR.fp)
 fnFs.Q <- file.path(subF.fp,  basename(fnFs)) 
 fnRs.Q <- file.path(subR.fp,  basename(fnRs))
 file.rename(from = fnFs.cut, to = fnFs.Q)
-##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-## [17] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [15] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 file.rename(from = fnRs.cut, to = fnRs.Q)
-##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-## [17] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [15] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 
 # File parsing; create file names and make sure that forward and reverse files match
 filtpathF <- file.path(subF.fp, "filtered") # files go into preprocessed_F/filtered/
@@ -458,6 +514,12 @@ rev_qual_plots
 ```
 
 <img src="figure/unnamed-chunk-11-2.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" width="98%" height="98%" />
+
+```r
+# Or, to make these quality plots interactive, just call the plots through plotly
+ggplotly(fwd_qual_plots)
+ggplotly(rev_qual_plots)
+```
 
 
 
@@ -845,10 +907,10 @@ track_pct <- track %>%
 track_pct_avg <- track_pct %>% summarize_at(vars(ends_with("_pct")), 
                            list(avg = mean))
 head(track_pct_avg)
-##   filtered_pct_avg denoisedF_pct_avg denoisedR_pct_avg merged_pct_avg nonchim_pct_avg
-## 1         87.67735          97.40454          98.05833       91.63946         98.6076
-##   total_pct_avg
-## 1      77.56848
+##   filtered_pct_avg denoisedF_pct_avg denoisedR_pct_avg merged_pct_avg
+## 1         87.67735          97.40454          98.05833       91.63946
+##   nonchim_pct_avg total_pct_avg
+## 1         98.6076      77.56848
 
 # Plotting each sample's reads through the pipeline
 track_plot <- track %>% 

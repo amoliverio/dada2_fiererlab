@@ -88,6 +88,7 @@ install.packages("dplyr")
 install.packages("tidyr")
 install.packages("Hmisc")
 install.packages("ggplot2")
+install.packages("plotly")
 
 #'
 #' Load DADA2 and required packages
@@ -98,6 +99,7 @@ library(dplyr); packageVersion("dplyr") # for manipulating data
 library(tidyr); packageVersion("tidyr") # for creating the final graph at the end of the pipeline
 library(Hmisc); packageVersion("Hmisc") # for creating the final graph at the end of the pipeline
 library(ggplot2); packageVersion("ggplot2") # for creating the final graph at the end of the pipeline
+library(plotly); packageVersion("plotly") # enables creation of interactive graphs, especially helpful for quality plots
 
 #' Once the packages are installed, you can check to make sure the auxillary
 #' software is working and set up some of the variables that you will need 
@@ -327,6 +329,12 @@ if( length(fastqFs) <= 20) {
 
 fwd_qual_plots
 rev_qual_plots
+
+#+ plotly quality plots, eval = FALSE, include=TRUE
+# Or, to make these quality plots interactive, just call the plots through plotly
+ggplotly(fwd_qual_plots)
+ggplotly(rev_qual_plots)
+
 #'
 # write plots to disk
 saveRDS(fwd_qual_plots, paste0(filter.fp, "/fwd_qual_plots.rds"))
