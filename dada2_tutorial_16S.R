@@ -343,6 +343,11 @@ ggplotly(rev_qual_plots)
 saveRDS(fwd_qual_plots, paste0(filter.fp, "/fwd_qual_plots.rds"))
 saveRDS(rev_qual_plots, paste0(filter.fp, "/rev_qual_plots.rds"))
 
+ggsave(plot = fwd_qual_plots, filename = paste0(filter.fp, "/fwd_qual_plots.png"), 
+       width = 10, height = 10, dpi = "retina")
+ggsave(plot = rev_qual_plots, filename = paste0(filter.fp, "/rev_qual_plots.png"), 
+       width = 10, height = 10, dpi = "retina")
+
 
 #' #### Filter the data
 #'
@@ -369,6 +374,28 @@ filt_out %>%
             median_remaining = paste0(round(median(percent_kept), 2), "%"),
             mean_remaining = paste0(round(mean(percent_kept), 2), "%"), 
             max_remaining = paste0(round(max(percent_kept), 2), "%"))
+
+#' Plot the quality of the filtered fastq files.
+# figure out which samples, if any, have been filtered out
+remaining_samplesF <-  fastqFs[rand_samples][
+  which(fastqFs[rand_samples] %in% list.files(filtpathF))] # keep only samples that haven't been filtered out
+remaining_samplesR <-  fastqRs[rand_samples][
+  which(fastqRs[rand_samples] %in% list.files(filtpathR))] # keep only samples that haven't been filtered out
+fwd_qual_plots_filt <- plotQualityProfile(paste0(filtpathF, "/", remaining_samplesF))
+rev_qual_plots_filt <- plotQualityProfile(paste0(filtpathR, "/", remaining_samplesR))
+
+fwd_qual_plots_filt
+rev_qual_plots_filt
+
+# write plots to disk
+saveRDS(fwd_qual_plots_filt, paste0(filter.fp, "/fwd_qual_plots_filt.rds"))
+saveRDS(rev_qual_plots_filt, paste0(filter.fp, "/rev_qual_plots_filt.rds"))
+
+ggsave(plot = fwd_qual_plots_filt, filename = paste0(filter.fp, "/fwd_qual_plots_filt.png"), 
+       width = 10, height = 10, dpi = "retina")
+ggsave(plot = rev_qual_plots_filt, filename = paste0(filter.fp, "/rev_qual_plots_filt.png"), 
+       width = 10, height = 10, dpi = "retina")
+
 
 #' ### 2. INFER sequence variants
 #' In this part of the pipeline dada2 will learn to distinguish error from biological 
