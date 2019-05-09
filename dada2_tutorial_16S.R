@@ -514,31 +514,31 @@ tax <- assignTaxonomy(seqtab.nochim, "/db_files/dada2/silva_nr_v132_train_set.fa
 saveRDS(seqtab.nochim, paste0(table.fp, "/seqtab_final.rds"))
 saveRDS(tax, paste0(table.fp, "/tax_final.rds"))
 
-#' ### 4. Optional - FORMAT OUTPUT to obtain ESV IDs and repset, and input for mctoolsr
-#' For convenience sake, we will now rename our ESVs with numbers, output our 
+#' ### 4. Optional - FORMAT OUTPUT to obtain ASV IDs and repset, and input for mctoolsr
+#' For convenience sake, we will now rename our ASVs with numbers, output our 
 #' results as a traditional taxa table, and create a matrix with the representative
-#' sequences for each ESV. 
+#' sequences for each ASV. 
 
 # Flip table
 seqtab.t <- as.data.frame(t(seqtab.nochim))
 
-# Pull out ESV repset
-rep_set_ESVs <- as.data.frame(rownames(seqtab.t))
-rep_set_ESVs <- mutate(rep_set_ESVs, ESV_ID = 1:n())
-rep_set_ESVs$ESV_ID <- sub("^", "ESV_", rep_set_ESVs$ESV_ID)
-rep_set_ESVs$ESV <- rep_set_ESVs$`rownames(seqtab.t)` 
-rep_set_ESVs$`rownames(seqtab.t)` <- NULL
+# Pull out ASV repset
+rep_set_ASVs <- as.data.frame(rownames(seqtab.t))
+rep_set_ASVs <- mutate(rep_set_ASVs, ASV_ID = 1:n())
+rep_set_ASVs$ASV_ID <- sub("^", "ASV_", rep_set_ASVs$ASV_ID)
+rep_set_ASVs$ASV <- rep_set_ASVs$`rownames(seqtab.t)` 
+rep_set_ASVs$`rownames(seqtab.t)` <- NULL
 
-# Add ESV numbers to table
-rownames(seqtab.t) <- rep_set_ESVs$ESV_ID
+# Add ASV numbers to table
+rownames(seqtab.t) <- rep_set_ASVs$ASV_ID
 
-# Add ESV numbers to taxonomy
+# Add ASV numbers to taxonomy
 taxonomy <- as.data.frame(tax)
-taxonomy$ESV <- as.factor(rownames(taxonomy))
-taxonomy <- merge(rep_set_ESVs, taxonomy, by = "ESV")
-rownames(taxonomy) <- taxonomy$ESV_ID
+taxonomy$ASV <- as.factor(rownames(taxonomy))
+taxonomy <- merge(rep_set_ASVs, taxonomy, by = "ASV")
+rownames(taxonomy) <- taxonomy$ASV_ID
 taxonomy_for_mctoolsr <- unite_(taxonomy, "taxonomy", 
-                                c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"),
+                                c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ASV_ID"),
                                 sep = ";")
 
 # Write repset to fasta file
@@ -556,23 +556,23 @@ writeRepSetFasta<-function(data, filename){
 
 # Arrange the taxonomy dataframe for the writeRepSetFasta function
 taxonomy_for_fasta <- taxonomy %>%
-  unite("TaxString", c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"), 
+  unite("TaxString", c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ASV_ID"), 
         sep = ";", remove = FALSE) %>%
-  unite("name", c("ESV_ID", "TaxString"), 
+  unite("name", c("ASV_ID", "TaxString"), 
         sep = " ", remove = TRUE) %>%
-  select(ESV, name) %>%
-  rename(seq = ESV)
+  select(ASV, name) %>%
+  rename(seq = ASV)
 
 # write fasta file
 writeRepSetFasta(taxonomy_for_fasta, paste0(table.fp, "/repset.fasta"))
 
 # Merge taxonomy and table
 seqtab_wTax <- merge(seqtab.t, taxonomy_for_mctoolsr, by = 0)
-seqtab_wTax$ESV <- NULL 
+seqtab_wTax$ASV <- NULL 
 
 # Set name of table in mctoolsr format and save
 out_fp <- paste0(table.fp, "/seqtab_wTax_mctoolsr.txt")
-names(seqtab_wTax)[1] = "#ESV_ID"
+names(seqtab_wTax)[1] = "#ASV_ID"
 write("#Exported for mctoolsr", out_fp)
 suppressWarnings(write.table(seqtab_wTax, out_fp, sep = "\t", row.names = FALSE, append = TRUE))
 
@@ -584,9 +584,9 @@ write.table(tax, file = paste0(table.fp, "/tax_final.txt"),
 
 #' ### Summary of output files:
 #' 1. seqtab_final.txt - A tab-delimited sequence-by-sample (i.e. OTU) table 
-#' 2. tax_final.txt - a tab-demilimited file showing the relationship between ESVs, ESV IDs, and their taxonomy 
-#' 3. seqtab_wTax_mctoolsr.txt - a tab-delimited file with ESVs as rows, samples as columns and the final column showing the taxonomy of the ESV ID 
-#' 4. repset.fasta - a fasta file with the representative sequence of each ESV. Fasta headers are the ESV ID and taxonomy string.  
+#' 2. tax_final.txt - a tab-demilimited file showing the relationship between ASVs, ASV IDs, and their taxonomy 
+#' 3. seqtab_wTax_mctoolsr.txt - a tab-delimited file with ASVs as rows, samples as columns and the final column showing the taxonomy of the ASV ID 
+#' 4. repset.fasta - a fasta file with the representative sequence of each ASV. Fasta headers are the ASV ID and taxonomy string.  
 #'
 #'
 #' ### 5. Summary of reads throughout pipeline
@@ -695,7 +695,7 @@ input = load_taxa_table(tax_table_fp, map_fp)
 input_filt <- filter_taxa_from_input(input, taxa_to_remove = c("Chloroplast","Mitochondria", "Eukaryota"))
 input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 2, taxa_to_remove = "NA")
 
-#' 4. Normalize or rarefy your ESV table
+#' 4. Normalize or rarefy your ASV table
 
 #+ downstream options 3, eval = FALSE, include=TRUE
 input_filt <- single_rarefy(input = input_filt, depth = 5000) # CHANGE ME to desired depth.
