@@ -637,7 +637,7 @@ input = load_taxa_table(tax_table_fp, map_fp)
 
 #+ downstream options 2, eval = FALSE, include=TRUE
 input_filt <- filter_taxa_from_input(input, taxa_to_remove = c("Chloroplast","Mitochondria", "Eukaryota"))
-input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_remove = "NA")
+input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 2, taxa_to_remove = "NA")
 
 #' 4. Normalize or rarefy your ESV table
 
