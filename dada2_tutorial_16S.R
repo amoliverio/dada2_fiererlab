@@ -582,6 +582,13 @@ write.table(seqtab.t, file = paste0(table.fp, "/seqtab_final.txt"),
 write.table(tax, file = paste0(table.fp, "/tax_final.txt"), 
             sep = "\t", row.names = TRUE, col.names = NA)
 
+#' ### Summary of output files:
+#' 1. seqtab_final.txt - A tab-delimited sequence-by-sample (i.e. OTU) table 
+#' 2. tax_final.txt - a tab-demilimited file showing the relationship between ESVs, ESV IDs, and their taxonomy 
+#' 3. seqtab_wTax_mctoolsr.txt - a tab-delimited file with ESVs as rows, samples as columns and the final column showing the taxonomy of the ESV ID 
+#' 4. repset.fasta - a fasta file with the representative sequence of each ESV. Fasta headers are the ESV ID and taxonomy string.  
+#'
+#'
 #' ### 5. Summary of reads throughout pipeline
 #' Here we track the reads throughout the pipeline to see if any step is resulting in a greater-than-expected loss of reads. If a step is showing a greater than expected loss of reads, it is a good idea to go back to that step and troubleshoot why reads are dropping out. The dada2 tutorial has more details about what can be changed at each step. 
 #' 
