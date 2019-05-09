@@ -587,31 +587,52 @@ write.table(tax, file = paste0(table.fp, "/tax_final.txt"),
 #' 
 getN <- function(x) sum(getUniques(x)) # function to grab sequence counts from output objects
 # tracking reads by counts
-track <- cbind(filt_out, 
-               sapply(ddF[sample.names], getN), 
-               sapply(ddR[sample.names], getN), 
-               sapply(mergers, getN), 
-               rowSums(seqtab.nochim))
-colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
-rownames(track) <- sample.names
+filt_out_track <- filt_out %>%
+  data.frame() %>%
+  mutate(Sample = gsub("(R1\\_)(.{1,})(\\.fastq\\.gz)","\\2",rownames(.))) %>%
+  rename(input = reads.in, filtered = reads.out)
+rownames(filt_out_track) <- filt_out_track$Sample
+
+ddF_track <- data.frame(denoisedF = sapply(ddF[sample.names], getN)) %>%
+  mutate(Sample = row.names(.))
+ddR_track <- data.frame(denoisedR = sapply(ddR[sample.names], getN)) %>%
+  mutate(Sample = row.names(.))
+merge_track <- data.frame(merged = sapply(mergers, getN)) %>%
+  mutate(Sample = row.names(.))
+chim_track <- data.frame(nonchim = rowSums(seqtab.nochim)) %>%
+  mutate(Sample = row.names(.))
+
+
+track <- left_join(filt_out_track, ddF_track, by = "Sample") %>%
+  left_join(ddR_track, by = "Sample") %>%
+  left_join(merge_track, by = "Sample") %>%
+  left_join(chim_track, by = "Sample") %>%
+  replace(., is.na(.), 0) %>%
+  select(Sample, everything())
+row.names(track) <- track$Sample
 head(track)
 
 # tracking reads by percentage
 track_pct <- track %>% 
   data.frame() %>%
   mutate(Sample = rownames(.),
-         filtered_pct = 100 * (filtered/input),
-         denoisedF_pct = 100 * (denoisedF/filtered),
-         denoisedR_pct = 100 * (denoisedR/filtered),
-         merged_pct = 100 * merged/((denoisedF + denoisedR)/2),
-         nonchim_pct = 100 * (nonchim/merged),
-         total_pct = 100 * nonchim/input) %>%
+         filtered_pct = ifelse(filtered == 0, 0, 100 * (filtered/input)),
+         denoisedF_pct = ifelse(denoisedF == 0, 0, 100 * (denoisedF/filtered)),
+         denoisedR_pct = ifelse(denoisedR == 0, 0, 100 * (denoisedR/filtered)),
+         merged_pct = ifelse(merged == 0, 0, 100 * merged/((denoisedF + denoisedR)/2)),
+         nonchim_pct = ifelse(nonchim == 0, 0, 100 * (nonchim/merged)),
+         total_pct = ifelse(nonchim == 0, 0, 100 * nonchim/input)) %>%
   select(Sample, ends_with("_pct"))
 
 # summary stats of tracked reads averaged across samples
 track_pct_avg <- track_pct %>% summarize_at(vars(ends_with("_pct")), 
-                           list(avg = mean))
+                                            list(avg = mean))
 head(track_pct_avg)
+
+track_pct_med <- track_pct %>% summarize_at(vars(ends_with("_pct")), 
+                                            list(avg = stats::median))
+head(track_pct_avg)
+head(track_pct_med)
 
 # Plotting each sample's reads through the pipeline
 track_plot <- track %>% 
