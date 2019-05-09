@@ -464,7 +464,7 @@ saveRDS(seqtab, paste0(table.fp, "/seqtab.rds"))
 #' 
 #'   - 16S bacteria and archaea (SILVA db): /db_files/dada2/silva_nr_v132_train_set.fa
 #' 
-#'   - ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.fasta
+#'   - ITS fungi (UNITE db): /db_files/dada2/sh_general_release_dynamic_02.02.2019.fasta
 #' 
 #'   - 18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta
 #' 
