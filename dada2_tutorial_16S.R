@@ -1,5 +1,5 @@
 #'# dada2 tutorial with MiSeq dataset for Fierer Lab 
-
+#' *This tutorial created by Angela Oliverio and Hannah Holland-Moritz, and updated May 13th, 2019.*
 #+ setup, include=FALSE
 # some setup options for outputing markdown files; feel free to ignore these
 knitr::opts_chunk$set(eval = TRUE, 
@@ -12,7 +12,7 @@ knitr::opts_chunk$set(eval = TRUE,
                       out.width = '98%',
                       out.height = '98%')
 
-#' This version runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.
+#' This pipeline runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.
 #' 
 #' We suggest opening the dada2 tutorial online to understand more about each step. The original pipeline on which this tutorial is based can be found here: [https://benjjneb.github.io/dada2/bigdata_paired.html](https://benjjneb.github.io/dada2/bigdata_paired.html)
 #'    
@@ -46,7 +46,7 @@ knitr::opts_chunk$set(eval = TRUE,
 #' Once you have logged in, you can download a copy of the tutorial into your directory on the server. To retrieve the folder with this tutorial from github directly to the server, type the following into your terminal and hit return after each line.
 #' 
 #' ```bash    
-#' wget https://github.com/amoliverio/dada2_fiererlab/archive/master.zip
+#' wget https://github.com/fiererlab/dada2_fiererlab/archive/master.zip
 #' unzip master.zip
 #' ```
 #' If there are ever updates to the tutorial on github, you can update the contents of this folder by downloading the new version from the same link as above.
@@ -60,7 +60,7 @@ knitr::opts_chunk$set(eval = TRUE,
 #' 
 #' If you are running it on your own computer (runs slower!):
 #' 
-#' 1. Download this tutorial from github. Go to [the homepage](https://github.com/amoliverio/dada2_fiererlab), and click the green "Clone or download" button. Then click "Download ZIP", to save it to your computer. Unzip the file to access the R-script.
+#' 1. Download this tutorial from github. Go to [the homepage](https://github.com/fiererlab/dada2_fiererlab/dada2_fiererlab), and click the green "Clone or download" button. Then click "Download ZIP", to save it to your computer. Unzip the file to access the R-script.
 #' 2. Download the tutorial data from here [http://cme.colorado.edu/projects/bioinformatics-tutorials](http://cme.colorado.edu/projects/bioinformatics-tutorials)
 #' 3. Install idemp and cutadapt. 
 #'     - idemp can be found here: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp)
@@ -145,7 +145,7 @@ R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz")
 #' you do not need to create the subdirectories but they are nice to have
 #' for organizational purposes. 
 
-project.fp <- "/data/YOUR_USERNAME/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
+project.fp <- "/data/hollandh/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
 
 # Set up names of sub directories to stay organized
 preprocess.fp <- file.path(project.fp, "01_preprocess")
