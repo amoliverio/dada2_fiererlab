@@ -165,7 +165,7 @@ for organizational purposes.
 
 
 ```r
-project.fp <- "/data/hollandh/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
+project.fp <- "/data/YOUR_USERNAME/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
 
 # Set up names of sub directories to stay organized
 preprocess.fp <- file.path(project.fp, "01_preprocess")
