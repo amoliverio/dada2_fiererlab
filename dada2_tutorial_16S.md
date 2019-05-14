@@ -1,8 +1,9 @@
 # dada2 tutorial with MiSeq dataset for Fierer Lab 
+*This tutorial created by Angela Oliverio and Hannah Holland-Moritz, and updated May 13th, 2019.*
 
 
 
-This version runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.
+This pipeline runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.
 
 We suggest opening the dada2 tutorial online to understand more about each step. The original pipeline on which this tutorial is based can be found here: [https://benjjneb.github.io/dada2/bigdata_paired.html](https://benjjneb.github.io/dada2/bigdata_paired.html)
    
@@ -36,7 +37,7 @@ Important: Please be respectful and do not give your PW out to other people. The
 Once you have logged in, you can download a copy of the tutorial into your directory on the server. To retrieve the folder with this tutorial from github directly to the server, type the following into your terminal and hit return after each line.
 
 ```bash    
-wget https://github.com/amoliverio/dada2_fiererlab/archive/master.zip
+wget https://github.com/fiererlab/dada2_fiererlab/archive/master.zip
 unzip master.zip
 ```
 If there are ever updates to the tutorial on github, you can update the contents of this folder by downloading the new version from the same link as above.
@@ -50,7 +51,7 @@ If there are ever updates to the tutorial on github, you can update the contents
 
 If you are running it on your own computer (runs slower!):
 
-1. Download this tutorial from github. Go to [the homepage](https://github.com/amoliverio/dada2_fiererlab), and click the green "Clone or download" button. Then click "Download ZIP", to save it to your computer. Unzip the file to access the R-script.
+1. Download this tutorial from github. Go to [the homepage](https://github.com/fiererlab/dada2_fiererlab/dada2_fiererlab), and click the green "Clone or download" button. Then click "Download ZIP", to save it to your computer. Unzip the file to access the R-script.
 2. Download the tutorial data from here [http://cme.colorado.edu/projects/bioinformatics-tutorials](http://cme.colorado.edu/projects/bioinformatics-tutorials)
 3. Install idemp and cutadapt. 
     - idemp can be found here: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp)
@@ -153,8 +154,10 @@ R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz")
 
 | <span> |
 | :--- | 
-| **NOTE:** idemp relies on having a match in length between the index file and and the barcode sequences. Since the index file includes a extra linker basepair, you should append the barcode sequences with "N" to make sure each is 13bp long. |
+| **NOTE:** idemp relies on having a match in length between the index file and and the barcode sequences. Since the index file usually includes a extra linker basepair (making it 13bp long), you should append the barcode sequences with "N" to make sure each is 13bp long. If you are not sure of the length of index reads, check with the sequencing center. If your index reads are 12bp long, you do NOT need to add an "N". |
 | <span> |
+
+**For ITS Sequences:** Depending on how your sequences were run, your barcodes may need to be reverse-complemented. Here is a link to a handy tool, that can help you reverse complement your barcodes: [http://arep.med.harvard.edu/labgc/adnan/projects/Utilities/revcomp.html](http://arep.med.harvard.edu/labgc/adnan/projects/Utilities/revcomp.html)
 
 Set up file paths in YOUR directory where you want data; 
 you do not need to create the subdirectories but they are nice to have
@@ -185,112 +188,60 @@ system2(idemp, args = flags)
 
 # Look at output of demultiplexing
 list.files(demultiplex.fp)
-##   [1] "R1_ANT7.fastq.gz"                                            
-##   [2] "R1_ANT8.fastq.gz"                                            
-##   [3] "R1_BA1A5566_10_1D.fastq.gz"                                  
-##   [4] "R1_BA1A5566_22_1C.fastq.gz"                                  
-##   [5] "R1_BA1A5566_45_1J.fastq.gz"                                  
-##   [6] "R1_BB1S.fastq.gz"                                            
-##   [7] "R1_BB1W.fastq.gz"                                            
-##   [8] "R1_BNS1.fastq.gz"                                            
-##   [9] "R1_BNS2.fastq.gz"                                            
-##  [10] "R1_C2S.fastq.gz"                                             
-##  [11] "R1_C2W.fastq.gz"                                             
-##  [12] "R1_CM2A_10_9C.fastq.gz"                                      
-##  [13] "R1_CM2A_22_9J.fastq.gz"                                      
-##  [14] "R1_COL11.fastq.gz"                                           
-##  [15] "R1_COL12.fastq.gz"                                           
-##  [16] "R1_COL3.fastq.gz"                                            
-##  [17] "R1_COL4.fastq.gz"                                            
-##  [18] "R1_DT3S.fastq.gz"                                            
-##  [19] "R1_DT3W.fastq.gz"                                            
-##  [20] "R1_OM18_BC.fastq.gz"                                         
-##  [21] "R1_OM18_BJ.fastq.gz"                                         
-##  [22] "R1_WAB105_22_6J.fastq.gz"                                    
-##  [23] "R1_WAB105_45_6D.fastq.gz"                                    
-##  [24] "R1_WAB188_10_4D.fastq.gz"                                    
-##  [25] "R1_WAB71_45_3D.fastq.gz"                                     
-##  [26] "R2_ANT7.fastq.gz"                                            
-##  [27] "R2_ANT8.fastq.gz"                                            
-##  [28] "R2_BA1A5566_10_1D.fastq.gz"                                  
-##  [29] "R2_BA1A5566_22_1C.fastq.gz"                                  
-##  [30] "R2_BA1A5566_45_1J.fastq.gz"                                  
-##  [31] "R2_BB1S.fastq.gz"                                            
-##  [32] "R2_BB1W.fastq.gz"                                            
-##  [33] "R2_BNS1.fastq.gz"                                            
-##  [34] "R2_BNS2.fastq.gz"                                            
-##  [35] "R2_C2S.fastq.gz"                                             
-##  [36] "R2_C2W.fastq.gz"                                             
-##  [37] "R2_CM2A_10_9C.fastq.gz"                                      
-##  [38] "R2_CM2A_22_9J.fastq.gz"                                      
-##  [39] "R2_COL11.fastq.gz"                                           
-##  [40] "R2_COL12.fastq.gz"                                           
-##  [41] "R2_COL3.fastq.gz"                                            
-##  [42] "R2_COL4.fastq.gz"                                            
-##  [43] "R2_DT3S.fastq.gz"                                            
-##  [44] "R2_DT3W.fastq.gz"                                            
-##  [45] "R2_OM18_BC.fastq.gz"                                         
-##  [46] "R2_OM18_BJ.fastq.gz"                                         
-##  [47] "R2_WAB105_22_6J.fastq.gz"                                    
-##  [48] "R2_WAB105_45_6D.fastq.gz"                                    
-##  [49] "R2_WAB188_10_4D.fastq.gz"                                    
-##  [50] "R2_WAB71_45_3D.fastq.gz"                                     
-##  [51] "Unassigned_reads1.fastq.gz"                                  
-##  [52] "Unassigned_reads2.fastq.gz"                                  
-##  [53] "Undetermined_S0_L001_I1_001.fastq.gz.decode"                 
-##  [54] "Undetermined_S0_L001_I1_001.fastq.gz.decode.stat"            
-##  [55] "Undetermined_S0_L001_R1_001.fastq.gz_ANT7.fastq.gz"          
-##  [56] "Undetermined_S0_L001_R1_001.fastq.gz_ANT8.fastq.gz"          
-##  [57] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_10_1D.fastq.gz"
-##  [58] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_22_1C.fastq.gz"
-##  [59] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_45_1J.fastq.gz"
-##  [60] "Undetermined_S0_L001_R1_001.fastq.gz_BB1S.fastq.gz"          
-##  [61] "Undetermined_S0_L001_R1_001.fastq.gz_BB1W.fastq.gz"          
-##  [62] "Undetermined_S0_L001_R1_001.fastq.gz_BNS1.fastq.gz"          
-##  [63] "Undetermined_S0_L001_R1_001.fastq.gz_BNS2.fastq.gz"          
-##  [64] "Undetermined_S0_L001_R1_001.fastq.gz_C2S.fastq.gz"           
-##  [65] "Undetermined_S0_L001_R1_001.fastq.gz_C2W.fastq.gz"           
-##  [66] "Undetermined_S0_L001_R1_001.fastq.gz_CM2A_10_9C.fastq.gz"    
-##  [67] "Undetermined_S0_L001_R1_001.fastq.gz_CM2A_22_9J.fastq.gz"    
-##  [68] "Undetermined_S0_L001_R1_001.fastq.gz_COL11.fastq.gz"         
-##  [69] "Undetermined_S0_L001_R1_001.fastq.gz_COL12.fastq.gz"         
-##  [70] "Undetermined_S0_L001_R1_001.fastq.gz_COL3.fastq.gz"          
-##  [71] "Undetermined_S0_L001_R1_001.fastq.gz_COL4.fastq.gz"          
-##  [72] "Undetermined_S0_L001_R1_001.fastq.gz_DT3S.fastq.gz"          
-##  [73] "Undetermined_S0_L001_R1_001.fastq.gz_DT3W.fastq.gz"          
-##  [74] "Undetermined_S0_L001_R1_001.fastq.gz_OM18_BC.fastq.gz"       
-##  [75] "Undetermined_S0_L001_R1_001.fastq.gz_OM18_BJ.fastq.gz"       
-##  [76] "Undetermined_S0_L001_R1_001.fastq.gz_unsigned.fastq.gz"      
-##  [77] "Undetermined_S0_L001_R1_001.fastq.gz_WAB105_22_6J.fastq.gz"  
-##  [78] "Undetermined_S0_L001_R1_001.fastq.gz_WAB105_45_6D.fastq.gz"  
-##  [79] "Undetermined_S0_L001_R1_001.fastq.gz_WAB188_10_4D.fastq.gz"  
-##  [80] "Undetermined_S0_L001_R1_001.fastq.gz_WAB71_45_3D.fastq.gz"   
-##  [81] "Undetermined_S0_L001_R2_001.fastq.gz_ANT7.fastq.gz"          
-##  [82] "Undetermined_S0_L001_R2_001.fastq.gz_ANT8.fastq.gz"          
-##  [83] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_10_1D.fastq.gz"
-##  [84] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_22_1C.fastq.gz"
-##  [85] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_45_1J.fastq.gz"
-##  [86] "Undetermined_S0_L001_R2_001.fastq.gz_BB1S.fastq.gz"          
-##  [87] "Undetermined_S0_L001_R2_001.fastq.gz_BB1W.fastq.gz"          
-##  [88] "Undetermined_S0_L001_R2_001.fastq.gz_BNS1.fastq.gz"          
-##  [89] "Undetermined_S0_L001_R2_001.fastq.gz_BNS2.fastq.gz"          
-##  [90] "Undetermined_S0_L001_R2_001.fastq.gz_C2S.fastq.gz"           
-##  [91] "Undetermined_S0_L001_R2_001.fastq.gz_C2W.fastq.gz"           
-##  [92] "Undetermined_S0_L001_R2_001.fastq.gz_CM2A_10_9C.fastq.gz"    
-##  [93] "Undetermined_S0_L001_R2_001.fastq.gz_CM2A_22_9J.fastq.gz"    
-##  [94] "Undetermined_S0_L001_R2_001.fastq.gz_COL11.fastq.gz"         
-##  [95] "Undetermined_S0_L001_R2_001.fastq.gz_COL12.fastq.gz"         
-##  [96] "Undetermined_S0_L001_R2_001.fastq.gz_COL3.fastq.gz"          
-##  [97] "Undetermined_S0_L001_R2_001.fastq.gz_COL4.fastq.gz"          
-##  [98] "Undetermined_S0_L001_R2_001.fastq.gz_DT3S.fastq.gz"          
-##  [99] "Undetermined_S0_L001_R2_001.fastq.gz_DT3W.fastq.gz"          
-## [100] "Undetermined_S0_L001_R2_001.fastq.gz_OM18_BC.fastq.gz"       
-## [101] "Undetermined_S0_L001_R2_001.fastq.gz_OM18_BJ.fastq.gz"       
-## [102] "Undetermined_S0_L001_R2_001.fastq.gz_unsigned.fastq.gz"      
-## [103] "Undetermined_S0_L001_R2_001.fastq.gz_WAB105_22_6J.fastq.gz"  
-## [104] "Undetermined_S0_L001_R2_001.fastq.gz_WAB105_45_6D.fastq.gz"  
-## [105] "Undetermined_S0_L001_R2_001.fastq.gz_WAB188_10_4D.fastq.gz"  
-## [106] "Undetermined_S0_L001_R2_001.fastq.gz_WAB71_45_3D.fastq.gz"
+##  [1] "Undetermined_S0_L001_I1_001.fastq.gz.decode"                 
+##  [2] "Undetermined_S0_L001_I1_001.fastq.gz.decode.stat"            
+##  [3] "Undetermined_S0_L001_R1_001.fastq.gz_ANT7.fastq.gz"          
+##  [4] "Undetermined_S0_L001_R1_001.fastq.gz_ANT8.fastq.gz"          
+##  [5] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_10_1D.fastq.gz"
+##  [6] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_22_1C.fastq.gz"
+##  [7] "Undetermined_S0_L001_R1_001.fastq.gz_BA1A5566_45_1J.fastq.gz"
+##  [8] "Undetermined_S0_L001_R1_001.fastq.gz_BB1S.fastq.gz"          
+##  [9] "Undetermined_S0_L001_R1_001.fastq.gz_BB1W.fastq.gz"          
+## [10] "Undetermined_S0_L001_R1_001.fastq.gz_BNS1.fastq.gz"          
+## [11] "Undetermined_S0_L001_R1_001.fastq.gz_BNS2.fastq.gz"          
+## [12] "Undetermined_S0_L001_R1_001.fastq.gz_C2S.fastq.gz"           
+## [13] "Undetermined_S0_L001_R1_001.fastq.gz_C2W.fastq.gz"           
+## [14] "Undetermined_S0_L001_R1_001.fastq.gz_CM2A_10_9C.fastq.gz"    
+## [15] "Undetermined_S0_L001_R1_001.fastq.gz_CM2A_22_9J.fastq.gz"    
+## [16] "Undetermined_S0_L001_R1_001.fastq.gz_COL11.fastq.gz"         
+## [17] "Undetermined_S0_L001_R1_001.fastq.gz_COL12.fastq.gz"         
+## [18] "Undetermined_S0_L001_R1_001.fastq.gz_COL3.fastq.gz"          
+## [19] "Undetermined_S0_L001_R1_001.fastq.gz_COL4.fastq.gz"          
+## [20] "Undetermined_S0_L001_R1_001.fastq.gz_DT3S.fastq.gz"          
+## [21] "Undetermined_S0_L001_R1_001.fastq.gz_DT3W.fastq.gz"          
+## [22] "Undetermined_S0_L001_R1_001.fastq.gz_OM18_BC.fastq.gz"       
+## [23] "Undetermined_S0_L001_R1_001.fastq.gz_OM18_BJ.fastq.gz"       
+## [24] "Undetermined_S0_L001_R1_001.fastq.gz_unsigned.fastq.gz"      
+## [25] "Undetermined_S0_L001_R1_001.fastq.gz_WAB105_22_6J.fastq.gz"  
+## [26] "Undetermined_S0_L001_R1_001.fastq.gz_WAB105_45_6D.fastq.gz"  
+## [27] "Undetermined_S0_L001_R1_001.fastq.gz_WAB188_10_4D.fastq.gz"  
+## [28] "Undetermined_S0_L001_R1_001.fastq.gz_WAB71_45_3D.fastq.gz"   
+## [29] "Undetermined_S0_L001_R2_001.fastq.gz_ANT7.fastq.gz"          
+## [30] "Undetermined_S0_L001_R2_001.fastq.gz_ANT8.fastq.gz"          
+## [31] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_10_1D.fastq.gz"
+## [32] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_22_1C.fastq.gz"
+## [33] "Undetermined_S0_L001_R2_001.fastq.gz_BA1A5566_45_1J.fastq.gz"
+## [34] "Undetermined_S0_L001_R2_001.fastq.gz_BB1S.fastq.gz"          
+## [35] "Undetermined_S0_L001_R2_001.fastq.gz_BB1W.fastq.gz"          
+## [36] "Undetermined_S0_L001_R2_001.fastq.gz_BNS1.fastq.gz"          
+## [37] "Undetermined_S0_L001_R2_001.fastq.gz_BNS2.fastq.gz"          
+## [38] "Undetermined_S0_L001_R2_001.fastq.gz_C2S.fastq.gz"           
+## [39] "Undetermined_S0_L001_R2_001.fastq.gz_C2W.fastq.gz"           
+## [40] "Undetermined_S0_L001_R2_001.fastq.gz_CM2A_10_9C.fastq.gz"    
+## [41] "Undetermined_S0_L001_R2_001.fastq.gz_CM2A_22_9J.fastq.gz"    
+## [42] "Undetermined_S0_L001_R2_001.fastq.gz_COL11.fastq.gz"         
+## [43] "Undetermined_S0_L001_R2_001.fastq.gz_COL12.fastq.gz"         
+## [44] "Undetermined_S0_L001_R2_001.fastq.gz_COL3.fastq.gz"          
+## [45] "Undetermined_S0_L001_R2_001.fastq.gz_COL4.fastq.gz"          
+## [46] "Undetermined_S0_L001_R2_001.fastq.gz_DT3S.fastq.gz"          
+## [47] "Undetermined_S0_L001_R2_001.fastq.gz_DT3W.fastq.gz"          
+## [48] "Undetermined_S0_L001_R2_001.fastq.gz_OM18_BC.fastq.gz"       
+## [49] "Undetermined_S0_L001_R2_001.fastq.gz_OM18_BJ.fastq.gz"       
+## [50] "Undetermined_S0_L001_R2_001.fastq.gz_unsigned.fastq.gz"      
+## [51] "Undetermined_S0_L001_R2_001.fastq.gz_WAB105_22_6J.fastq.gz"  
+## [52] "Undetermined_S0_L001_R2_001.fastq.gz_WAB105_45_6D.fastq.gz"  
+## [53] "Undetermined_S0_L001_R2_001.fastq.gz_WAB188_10_4D.fastq.gz"  
+## [54] "Undetermined_S0_L001_R2_001.fastq.gz_WAB71_45_3D.fastq.gz"
 ```
 
 | <span> |
@@ -316,21 +267,15 @@ R1_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R1_001.fastq.gz_"
                  list.files(demultiplex.fp, pattern="R1", full.names = TRUE))
 file.rename(list.files(demultiplex.fp, pattern="R1", full.names = TRUE), 
             paste0(demultiplex.fp, "/R1_", R1_names))
-##  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
-## [12] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
-## [23] FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-## [34]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-## [45]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [15] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 
 R2_names <- gsub(paste0(demultiplex.fp, "/Undetermined_S0_L001_R2_001.fastq.gz_"), "", 
                  list.files(demultiplex.fp, pattern="R2", full.names = TRUE))
 file.rename(list.files(demultiplex.fp, pattern="R2", full.names = TRUE),
             paste0(demultiplex.fp, "/R2_", R2_names))
-##  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
-## [12] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
-## [23] FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-## [34]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-## [45]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [15] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 
 # Get full paths for all files and save them for downstream analyses
 # Forward and reverse fastq filenames have format: 
@@ -356,6 +301,7 @@ filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE)
 #### Prepare the primers sequences and custom functions for analyzing the results from cutadapt
 Assign the primers you used to "FWD" and "REV" below. Note primers should be not be reverse complemented ahead of time. Our tutorial data uses 515f and 806br those are the primers below. Change if you sequenced with other primers.
 
+**For ITS data:** ```CTTGGTCATTTAGAGGAAGTAA``` is the ITS forward primer sequence (ITS1F) and ```GCTGCGTTCTTCATCGATGC``` is ITS reverse primer sequence (ITS2)
 
 
 ```r
@@ -528,6 +474,11 @@ ggplotly(rev_qual_plots)
 # write plots to disk
 saveRDS(fwd_qual_plots, paste0(filter.fp, "/fwd_qual_plots.rds"))
 saveRDS(rev_qual_plots, paste0(filter.fp, "/rev_qual_plots.rds"))
+
+ggsave(plot = fwd_qual_plots, filename = paste0(filter.fp, "/fwd_qual_plots.png"), 
+       width = 10, height = 10, dpi = "retina")
+ggsave(plot = rev_qual_plots, filename = paste0(filter.fp, "/rev_qual_plots.png"), 
+       width = 10, height = 10, dpi = "retina")
 ```
 
 #### Filter the data
@@ -566,6 +517,41 @@ filt_out %>%
             max_remaining = paste0(round(max(percent_kept), 2), "%"))
 ##   min_remaining median_remaining mean_remaining max_remaining
 ## 1        76.33%           87.86%         87.68%        90.85%
+```
+
+Plot the quality of the filtered fastq files.
+
+
+```r
+# figure out which samples, if any, have been filtered out
+remaining_samplesF <-  fastqFs[rand_samples][
+  which(fastqFs[rand_samples] %in% list.files(filtpathF))] # keep only samples that haven't been filtered out
+remaining_samplesR <-  fastqRs[rand_samples][
+  which(fastqRs[rand_samples] %in% list.files(filtpathR))] # keep only samples that haven't been filtered out
+fwd_qual_plots_filt <- plotQualityProfile(paste0(filtpathF, "/", remaining_samplesF))
+rev_qual_plots_filt <- plotQualityProfile(paste0(filtpathR, "/", remaining_samplesR))
+
+fwd_qual_plots_filt
+```
+
+<img src="figure/unnamed-chunk-14-1.png" title="plot of chunk unnamed-chunk-14" alt="plot of chunk unnamed-chunk-14" width="98%" height="98%" />
+
+```r
+rev_qual_plots_filt
+```
+
+<img src="figure/unnamed-chunk-14-2.png" title="plot of chunk unnamed-chunk-14" alt="plot of chunk unnamed-chunk-14" width="98%" height="98%" />
+
+```r
+
+# write plots to disk
+saveRDS(fwd_qual_plots_filt, paste0(filter.fp, "/fwd_qual_plots_filt.rds"))
+saveRDS(rev_qual_plots_filt, paste0(filter.fp, "/rev_qual_plots_filt.rds"))
+
+ggsave(plot = fwd_qual_plots_filt, filename = paste0(filter.fp, "/fwd_qual_plots_filt.png"), 
+       width = 10, height = 10, dpi = "retina")
+ggsave(plot = rev_qual_plots_filt, filename = paste0(filter.fp, "/rev_qual_plots_filt.png"), 
+       width = 10, height = 10, dpi = "retina")
 ```
 
 ### 2. INFER sequence variants
@@ -622,13 +608,13 @@ errR_plot <- plotErrors(errR, nominalQ=TRUE)
 errF_plot
 ```
 
-<img src="figure/unnamed-chunk-16-1.png" title="plot of chunk unnamed-chunk-16" alt="plot of chunk unnamed-chunk-16" width="98%" height="98%" />
+<img src="figure/unnamed-chunk-17-1.png" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" width="98%" height="98%" />
 
 ```r
 errR_plot
 ```
 
-<img src="figure/unnamed-chunk-16-2.png" title="plot of chunk unnamed-chunk-16" alt="plot of chunk unnamed-chunk-16" width="98%" height="98%" />
+<img src="figure/unnamed-chunk-17-2.png" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" width="98%" height="98%" />
 
 
 
@@ -770,7 +756,7 @@ For the tutorial 16S, we will assign taxonomy with Silva db v132, but you might 
 
   - 16S bacteria and archaea (SILVA db): /db_files/dada2/silva_nr_v132_train_set.fa
 
-  - ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.fasta
+  - ITS fungi (UNITE db): /db_files/dada2/sh_general_release_dynamic_02.02.2019.fasta
 
   - 18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta
 
@@ -796,33 +782,33 @@ saveRDS(seqtab.nochim, paste0(table.fp, "/seqtab_final.rds"))
 saveRDS(tax, paste0(table.fp, "/tax_final.rds"))
 ```
 
-### 4. Optional - FORMAT OUTPUT to obtain ESV IDs and repset, and input for mctoolsr
-For convenience sake, we will now rename our ESVs with numbers, output our 
+### 4. Optional - FORMAT OUTPUT to obtain ASV IDs and repset, and input for mctoolsr
+For convenience sake, we will now rename our ASVs with numbers, output our 
 results as a traditional taxa table, and create a matrix with the representative
-sequences for each ESV. 
+sequences for each ASV. 
 
 
 ```r
 # Flip table
 seqtab.t <- as.data.frame(t(seqtab.nochim))
 
-# Pull out ESV repset
-rep_set_ESVs <- as.data.frame(rownames(seqtab.t))
-rep_set_ESVs <- mutate(rep_set_ESVs, ESV_ID = 1:n())
-rep_set_ESVs$ESV_ID <- sub("^", "ESV_", rep_set_ESVs$ESV_ID)
-rep_set_ESVs$ESV <- rep_set_ESVs$`rownames(seqtab.t)` 
-rep_set_ESVs$`rownames(seqtab.t)` <- NULL
+# Pull out ASV repset
+rep_set_ASVs <- as.data.frame(rownames(seqtab.t))
+rep_set_ASVs <- mutate(rep_set_ASVs, ASV_ID = 1:n())
+rep_set_ASVs$ASV_ID <- sub("^", "ASV_", rep_set_ASVs$ASV_ID)
+rep_set_ASVs$ASV <- rep_set_ASVs$`rownames(seqtab.t)` 
+rep_set_ASVs$`rownames(seqtab.t)` <- NULL
 
-# Add ESV numbers to table
-rownames(seqtab.t) <- rep_set_ESVs$ESV_ID
+# Add ASV numbers to table
+rownames(seqtab.t) <- rep_set_ASVs$ASV_ID
 
-# Add ESV numbers to taxonomy
+# Add ASV numbers to taxonomy
 taxonomy <- as.data.frame(tax)
-taxonomy$ESV <- as.factor(rownames(taxonomy))
-taxonomy <- merge(rep_set_ESVs, taxonomy, by = "ESV")
-rownames(taxonomy) <- taxonomy$ESV_ID
+taxonomy$ASV <- as.factor(rownames(taxonomy))
+taxonomy <- merge(rep_set_ASVs, taxonomy, by = "ASV")
+rownames(taxonomy) <- taxonomy$ASV_ID
 taxonomy_for_mctoolsr <- unite_(taxonomy, "taxonomy", 
-                                c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"),
+                                c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ASV_ID"),
                                 sep = ";")
 
 # Write repset to fasta file
@@ -840,23 +826,23 @@ writeRepSetFasta<-function(data, filename){
 
 # Arrange the taxonomy dataframe for the writeRepSetFasta function
 taxonomy_for_fasta <- taxonomy %>%
-  unite("TaxString", c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"), 
+  unite("TaxString", c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ASV_ID"), 
         sep = ";", remove = FALSE) %>%
-  unite("name", c("ESV_ID", "TaxString"), 
+  unite("name", c("ASV_ID", "TaxString"), 
         sep = " ", remove = TRUE) %>%
-  select(ESV, name) %>%
-  rename(seq = ESV)
+  select(ASV, name) %>%
+  rename(seq = ASV)
 
 # write fasta file
 writeRepSetFasta(taxonomy_for_fasta, paste0(table.fp, "/repset.fasta"))
 
 # Merge taxonomy and table
 seqtab_wTax <- merge(seqtab.t, taxonomy_for_mctoolsr, by = 0)
-seqtab_wTax$ESV <- NULL 
+seqtab_wTax$ASV <- NULL 
 
 # Set name of table in mctoolsr format and save
 out_fp <- paste0(table.fp, "/seqtab_wTax_mctoolsr.txt")
-names(seqtab_wTax)[1] = "#ESV_ID"
+names(seqtab_wTax)[1] = "#ASV_ID"
 write("#Exported for mctoolsr", out_fp)
 suppressWarnings(write.table(seqtab_wTax, out_fp, sep = "\t", row.names = FALSE, append = TRUE))
 
@@ -867,6 +853,13 @@ write.table(tax, file = paste0(table.fp, "/tax_final.txt"),
             sep = "\t", row.names = TRUE, col.names = NA)
 ```
 
+### Summary of output files:
+1. seqtab_final.txt - A tab-delimited sequence-by-sample (i.e. OTU) table 
+2. tax_final.txt - a tab-demilimited file showing the relationship between ASVs, ASV IDs, and their taxonomy 
+3. seqtab_wTax_mctoolsr.txt - a tab-delimited file with ASVs as rows, samples as columns and the final column showing the taxonomy of the ASV ID 
+4. repset.fasta - a fasta file with the representative sequence of each ASV. Fasta headers are the ASV ID and taxonomy string.  
+
+
 ### 5. Summary of reads throughout pipeline
 Here we track the reads throughout the pipeline to see if any step is resulting in a greater-than-expected loss of reads. If a step is showing a greater than expected loss of reads, it is a good idea to go back to that step and troubleshoot why reads are dropping out. The dada2 tutorial has more details about what can be changed at each step. 
 
@@ -875,42 +868,78 @@ Here we track the reads throughout the pipeline to see if any step is resulting 
 ```r
 getN <- function(x) sum(getUniques(x)) # function to grab sequence counts from output objects
 # tracking reads by counts
-track <- cbind(filt_out, 
-               sapply(ddF[sample.names], getN), 
-               sapply(ddR[sample.names], getN), 
-               sapply(mergers, getN), 
-               rowSums(seqtab.nochim))
-colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
-rownames(track) <- sample.names
+filt_out_track <- filt_out %>%
+  data.frame() %>%
+  mutate(Sample = gsub("(R1\\_)(.{1,})(\\.fastq\\.gz)","\\2",rownames(.))) %>%
+  rename(input = reads.in, filtered = reads.out)
+rownames(filt_out_track) <- filt_out_track$Sample
+
+ddF_track <- data.frame(denoisedF = sapply(ddF[sample.names], getN)) %>%
+  mutate(Sample = row.names(.))
+ddR_track <- data.frame(denoisedR = sapply(ddR[sample.names], getN)) %>%
+  mutate(Sample = row.names(.))
+merge_track <- data.frame(merged = sapply(mergers, getN)) %>%
+  mutate(Sample = row.names(.))
+chim_track <- data.frame(nonchim = rowSums(seqtab.nochim)) %>%
+  mutate(Sample = row.names(.))
+
+
+track <- left_join(filt_out_track, ddF_track, by = "Sample") %>%
+  left_join(ddR_track, by = "Sample") %>%
+  left_join(merge_track, by = "Sample") %>%
+  left_join(chim_track, by = "Sample") %>%
+  replace(., is.na(.), 0) %>%
+  select(Sample, everything())
+row.names(track) <- track$Sample
 head(track)
-##                input filtered denoisedF denoisedR merged nonchim
-## ANT7           40165    35325     33793     33942  28426   28319
-## ANT8           25526    23028     21756     21931  17693   17598
-## BA1A5566_10_1D 50515    44631     44207     44148  43079   41737
-## BA1A5566_22_1C 42238    37237     36826     36905  35888   34227
-## BA1A5566_45_1J 31057    27081     26743     26839  26141   23554
-## BB1S           34353    30309     29313     29568  26257   26129
+##                        Sample input filtered denoisedF denoisedR merged
+## ANT7                     ANT7 40165    35325     33793     33942  28426
+## ANT8                     ANT8 25526    23028     21756     21931  17693
+## BA1A5566_10_1D BA1A5566_10_1D 50515    44631     44207     44148  43079
+## BA1A5566_22_1C BA1A5566_22_1C 42238    37237     36826     36905  35888
+## BA1A5566_45_1J BA1A5566_45_1J 31057    27081     26743     26839  26141
+## BB1S                     BB1S 34353    30309     29313     29568  26257
+##                nonchim
+## ANT7             28319
+## ANT8             17598
+## BA1A5566_10_1D   41737
+## BA1A5566_22_1C   34227
+## BA1A5566_45_1J   23554
+## BB1S             26129
 
 # tracking reads by percentage
 track_pct <- track %>% 
   data.frame() %>%
   mutate(Sample = rownames(.),
-         filtered_pct = 100 * (filtered/input),
-         denoisedF_pct = 100 * (denoisedF/filtered),
-         denoisedR_pct = 100 * (denoisedR/filtered),
-         merged_pct = 100 * merged/((denoisedF + denoisedR)/2),
-         nonchim_pct = 100 * (nonchim/merged),
-         total_pct = 100 * nonchim/input) %>%
+         filtered_pct = ifelse(filtered == 0, 0, 100 * (filtered/input)),
+         denoisedF_pct = ifelse(denoisedF == 0, 0, 100 * (denoisedF/filtered)),
+         denoisedR_pct = ifelse(denoisedR == 0, 0, 100 * (denoisedR/filtered)),
+         merged_pct = ifelse(merged == 0, 0, 100 * merged/((denoisedF + denoisedR)/2)),
+         nonchim_pct = ifelse(nonchim == 0, 0, 100 * (nonchim/merged)),
+         total_pct = ifelse(nonchim == 0, 0, 100 * nonchim/input)) %>%
   select(Sample, ends_with("_pct"))
 
 # summary stats of tracked reads averaged across samples
 track_pct_avg <- track_pct %>% summarize_at(vars(ends_with("_pct")), 
-                           list(avg = mean))
+                                            list(avg = mean))
 head(track_pct_avg)
 ##   filtered_pct_avg denoisedF_pct_avg denoisedR_pct_avg merged_pct_avg
 ## 1         87.67735          97.40454          98.05833       91.63946
 ##   nonchim_pct_avg total_pct_avg
 ## 1         98.6076      77.56848
+
+track_pct_med <- track_pct %>% summarize_at(vars(ends_with("_pct")), 
+                                            list(avg = stats::median))
+head(track_pct_avg)
+##   filtered_pct_avg denoisedF_pct_avg denoisedR_pct_avg merged_pct_avg
+## 1         87.67735          97.40454          98.05833       91.63946
+##   nonchim_pct_avg total_pct_avg
+## 1         98.6076      77.56848
+head(track_pct_med)
+##   filtered_pct_avg denoisedF_pct_avg denoisedR_pct_avg merged_pct_avg
+## 1         87.85648          98.89626          99.10638       97.46032
+##   nonchim_pct_avg total_pct_avg
+## 1        99.34421      80.70328
 
 # Plotting each sample's reads through the pipeline
 track_plot <- track %>% 
@@ -941,7 +970,7 @@ track_plot <- track %>%
 track_plot
 ```
 
-<img src="figure/unnamed-chunk-22-1.png" title="plot of chunk unnamed-chunk-22" alt="plot of chunk unnamed-chunk-22" width="98%" height="98%" />
+<img src="figure/unnamed-chunk-23-1.png" title="plot of chunk unnamed-chunk-23" alt="plot of chunk unnamed-chunk-23" width="98%" height="98%" />
 
 
 
@@ -974,10 +1003,10 @@ After following this pipline, you will need to think about the following in down
 
 ```r
 input_filt <- filter_taxa_from_input(input, taxa_to_remove = c("Chloroplast","Mitochondria", "Eukaryota"))
-input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_remove = "NA")
+input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 2, taxa_to_remove = "NA")
 ```
 
-4. Normalize or rarefy your ESV table
+4. Normalize or rarefy your ASV table
 
 
 ```r
