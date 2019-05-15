@@ -1,5 +1,5 @@
 #'# dada2 tutorial with MiSeq dataset for Fierer Lab 
-
+#' *This tutorial created by Angela Oliverio and Hannah Holland-Moritz, and updated May 13th, 2019.*
 #+ setup, include=FALSE
 # some setup options for outputing markdown files; feel free to ignore these
 knitr::opts_chunk$set(eval = TRUE, 
@@ -12,7 +12,7 @@ knitr::opts_chunk$set(eval = TRUE,
                       out.width = '98%',
                       out.height = '98%')
 
-#' This version runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.
+#' This pipeline runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.
 #' 
 #' We suggest opening the dada2 tutorial online to understand more about each step. The original pipeline on which this tutorial is based can be found here: [https://benjjneb.github.io/dada2/bigdata_paired.html](https://benjjneb.github.io/dada2/bigdata_paired.html)
 #'    
@@ -46,7 +46,7 @@ knitr::opts_chunk$set(eval = TRUE,
 #' Once you have logged in, you can download a copy of the tutorial into your directory on the server. To retrieve the folder with this tutorial from github directly to the server, type the following into your terminal and hit return after each line.
 #' 
 #' ```bash    
-#' wget https://github.com/amoliverio/dada2_fiererlab/archive/master.zip
+#' wget https://github.com/fiererlab/dada2_fiererlab/archive/master.zip
 #' unzip master.zip
 #' ```
 #' If there are ever updates to the tutorial on github, you can update the contents of this folder by downloading the new version from the same link as above.
@@ -60,7 +60,7 @@ knitr::opts_chunk$set(eval = TRUE,
 #' 
 #' If you are running it on your own computer (runs slower!):
 #' 
-#' 1. Download this tutorial from github. Go to [the homepage](https://github.com/amoliverio/dada2_fiererlab), and click the green "Clone or download" button. Then click "Download ZIP", to save it to your computer. Unzip the file to access the R-script.
+#' 1. Download this tutorial from github. Go to [the homepage](https://github.com/fiererlab/dada2_fiererlab/dada2_fiererlab), and click the green "Clone or download" button. Then click "Download ZIP", to save it to your computer. Unzip the file to access the R-script.
 #' 2. Download the tutorial data from here [http://cme.colorado.edu/projects/bioinformatics-tutorials](http://cme.colorado.edu/projects/bioinformatics-tutorials)
 #' 3. Install idemp and cutadapt. 
 #'     - idemp can be found here: [https://github.com/yhwu/idemp](https://github.com/yhwu/idemp)
@@ -136,8 +136,10 @@ R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz")
 
 #' | <span> |
 #' | :--- | 
-#' | **NOTE:** idemp relies on having a match in length between the index file and and the barcode sequences. Since the index file includes a extra linker basepair, you should append the barcode sequences with "N" to make sure each is 13bp long. |
+#' | **NOTE:** idemp relies on having a match in length between the index file and and the barcode sequences. Since the index file usually includes a extra linker basepair (making it 13bp long), you should append the barcode sequences with "N" to make sure each is 13bp long. If you are not sure of the length of index reads, check with the sequencing center. If your index reads are 12bp long, you do NOT need to add an "N". |
 #' | <span> |
+#' 
+#' **For ITS Sequences:** Depending on how your sequences were run, your barcodes may need to be reverse-complemented. Here is a link to a handy tool, that can help you reverse complement your barcodes: [http://arep.med.harvard.edu/labgc/adnan/projects/Utilities/revcomp.html](http://arep.med.harvard.edu/labgc/adnan/projects/Utilities/revcomp.html)
 #' 
 #' Set up file paths in YOUR directory where you want data; 
 #' you do not need to create the subdirectories but they are nice to have
@@ -212,6 +214,7 @@ filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE)
 #' #### Prepare the primers sequences and custom functions for analyzing the results from cutadapt
 #' Assign the primers you used to "FWD" and "REV" below. Note primers should be not be reverse complemented ahead of time. Our tutorial data uses 515f and 806br those are the primers below. Change if you sequenced with other primers.
 #' 
+#' **For ITS data:** ```CTTGGTCATTTAGAGGAAGTAA``` is the ITS forward primer sequence (ITS1F) and ```GCTGCGTTCTTCATCGATGC``` is ITS reverse primer sequence (ITS2)
 
 # Set up the primer sequences to pass along to cutadapt
 FWD <- "GTGYCAGCMGCCGCGGTAA"  ## CHANGE ME # this is 515f
@@ -340,6 +343,11 @@ ggplotly(rev_qual_plots)
 saveRDS(fwd_qual_plots, paste0(filter.fp, "/fwd_qual_plots.rds"))
 saveRDS(rev_qual_plots, paste0(filter.fp, "/rev_qual_plots.rds"))
 
+ggsave(plot = fwd_qual_plots, filename = paste0(filter.fp, "/fwd_qual_plots.png"), 
+       width = 10, height = 10, dpi = "retina")
+ggsave(plot = rev_qual_plots, filename = paste0(filter.fp, "/rev_qual_plots.png"), 
+       width = 10, height = 10, dpi = "retina")
+
 
 #' #### Filter the data
 #'
@@ -366,6 +374,28 @@ filt_out %>%
             median_remaining = paste0(round(median(percent_kept), 2), "%"),
             mean_remaining = paste0(round(mean(percent_kept), 2), "%"), 
             max_remaining = paste0(round(max(percent_kept), 2), "%"))
+
+#' Plot the quality of the filtered fastq files.
+# figure out which samples, if any, have been filtered out
+remaining_samplesF <-  fastqFs[rand_samples][
+  which(fastqFs[rand_samples] %in% list.files(filtpathF))] # keep only samples that haven't been filtered out
+remaining_samplesR <-  fastqRs[rand_samples][
+  which(fastqRs[rand_samples] %in% list.files(filtpathR))] # keep only samples that haven't been filtered out
+fwd_qual_plots_filt <- plotQualityProfile(paste0(filtpathF, "/", remaining_samplesF))
+rev_qual_plots_filt <- plotQualityProfile(paste0(filtpathR, "/", remaining_samplesR))
+
+fwd_qual_plots_filt
+rev_qual_plots_filt
+
+# write plots to disk
+saveRDS(fwd_qual_plots_filt, paste0(filter.fp, "/fwd_qual_plots_filt.rds"))
+saveRDS(rev_qual_plots_filt, paste0(filter.fp, "/rev_qual_plots_filt.rds"))
+
+ggsave(plot = fwd_qual_plots_filt, filename = paste0(filter.fp, "/fwd_qual_plots_filt.png"), 
+       width = 10, height = 10, dpi = "retina")
+ggsave(plot = rev_qual_plots_filt, filename = paste0(filter.fp, "/rev_qual_plots_filt.png"), 
+       width = 10, height = 10, dpi = "retina")
+
 
 #' ### 2. INFER sequence variants
 #' In this part of the pipeline dada2 will learn to distinguish error from biological 
@@ -462,7 +492,7 @@ saveRDS(seqtab, paste0(table.fp, "/seqtab.rds"))
 #' 
 #'   - 16S bacteria and archaea (SILVA db): /db_files/dada2/silva_nr_v132_train_set.fa
 #' 
-#'   - ITS fungi (UNITE db): /db_files/dada2/unite_general_release_dynamic_02.02.2019.fasta
+#'   - ITS fungi (UNITE db): /db_files/dada2/sh_general_release_dynamic_02.02.2019.fasta
 #' 
 #'   - 18S protists (PR2 db): /db_files/dada2/pr2_version_4.11.1_dada2.fasta
 #' 
@@ -484,31 +514,31 @@ tax <- assignTaxonomy(seqtab.nochim, "/db_files/dada2/silva_nr_v132_train_set.fa
 saveRDS(seqtab.nochim, paste0(table.fp, "/seqtab_final.rds"))
 saveRDS(tax, paste0(table.fp, "/tax_final.rds"))
 
-#' ### 4. Optional - FORMAT OUTPUT to obtain ESV IDs and repset, and input for mctoolsr
-#' For convenience sake, we will now rename our ESVs with numbers, output our 
+#' ### 4. Optional - FORMAT OUTPUT to obtain ASV IDs and repset, and input for mctoolsr
+#' For convenience sake, we will now rename our ASVs with numbers, output our 
 #' results as a traditional taxa table, and create a matrix with the representative
-#' sequences for each ESV. 
+#' sequences for each ASV. 
 
 # Flip table
 seqtab.t <- as.data.frame(t(seqtab.nochim))
 
-# Pull out ESV repset
-rep_set_ESVs <- as.data.frame(rownames(seqtab.t))
-rep_set_ESVs <- mutate(rep_set_ESVs, ESV_ID = 1:n())
-rep_set_ESVs$ESV_ID <- sub("^", "ESV_", rep_set_ESVs$ESV_ID)
-rep_set_ESVs$ESV <- rep_set_ESVs$`rownames(seqtab.t)` 
-rep_set_ESVs$`rownames(seqtab.t)` <- NULL
+# Pull out ASV repset
+rep_set_ASVs <- as.data.frame(rownames(seqtab.t))
+rep_set_ASVs <- mutate(rep_set_ASVs, ASV_ID = 1:n())
+rep_set_ASVs$ASV_ID <- sub("^", "ASV_", rep_set_ASVs$ASV_ID)
+rep_set_ASVs$ASV <- rep_set_ASVs$`rownames(seqtab.t)` 
+rep_set_ASVs$`rownames(seqtab.t)` <- NULL
 
-# Add ESV numbers to table
-rownames(seqtab.t) <- rep_set_ESVs$ESV_ID
+# Add ASV numbers to table
+rownames(seqtab.t) <- rep_set_ASVs$ASV_ID
 
-# Add ESV numbers to taxonomy
+# Add ASV numbers to taxonomy
 taxonomy <- as.data.frame(tax)
-taxonomy$ESV <- as.factor(rownames(taxonomy))
-taxonomy <- merge(rep_set_ESVs, taxonomy, by = "ESV")
-rownames(taxonomy) <- taxonomy$ESV_ID
+taxonomy$ASV <- as.factor(rownames(taxonomy))
+taxonomy <- merge(rep_set_ASVs, taxonomy, by = "ASV")
+rownames(taxonomy) <- taxonomy$ASV_ID
 taxonomy_for_mctoolsr <- unite_(taxonomy, "taxonomy", 
-                                c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"),
+                                c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ASV_ID"),
                                 sep = ";")
 
 # Write repset to fasta file
@@ -526,23 +556,23 @@ writeRepSetFasta<-function(data, filename){
 
 # Arrange the taxonomy dataframe for the writeRepSetFasta function
 taxonomy_for_fasta <- taxonomy %>%
-  unite("TaxString", c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ESV_ID"), 
+  unite("TaxString", c("Kingdom", "Phylum", "Class", "Order","Family", "Genus", "ASV_ID"), 
         sep = ";", remove = FALSE) %>%
-  unite("name", c("ESV_ID", "TaxString"), 
+  unite("name", c("ASV_ID", "TaxString"), 
         sep = " ", remove = TRUE) %>%
-  select(ESV, name) %>%
-  rename(seq = ESV)
+  select(ASV, name) %>%
+  rename(seq = ASV)
 
 # write fasta file
 writeRepSetFasta(taxonomy_for_fasta, paste0(table.fp, "/repset.fasta"))
 
 # Merge taxonomy and table
 seqtab_wTax <- merge(seqtab.t, taxonomy_for_mctoolsr, by = 0)
-seqtab_wTax$ESV <- NULL 
+seqtab_wTax$ASV <- NULL 
 
 # Set name of table in mctoolsr format and save
 out_fp <- paste0(table.fp, "/seqtab_wTax_mctoolsr.txt")
-names(seqtab_wTax)[1] = "#ESV_ID"
+names(seqtab_wTax)[1] = "#ASV_ID"
 write("#Exported for mctoolsr", out_fp)
 suppressWarnings(write.table(seqtab_wTax, out_fp, sep = "\t", row.names = FALSE, append = TRUE))
 
@@ -552,36 +582,64 @@ write.table(seqtab.t, file = paste0(table.fp, "/seqtab_final.txt"),
 write.table(tax, file = paste0(table.fp, "/tax_final.txt"), 
             sep = "\t", row.names = TRUE, col.names = NA)
 
+#' ### Summary of output files:
+#' 1. seqtab_final.txt - A tab-delimited sequence-by-sample (i.e. OTU) table 
+#' 2. tax_final.txt - a tab-demilimited file showing the relationship between ASVs, ASV IDs, and their taxonomy 
+#' 3. seqtab_wTax_mctoolsr.txt - a tab-delimited file with ASVs as rows, samples as columns and the final column showing the taxonomy of the ASV ID 
+#' 4. repset.fasta - a fasta file with the representative sequence of each ASV. Fasta headers are the ASV ID and taxonomy string.  
+#'
+#'
 #' ### 5. Summary of reads throughout pipeline
 #' Here we track the reads throughout the pipeline to see if any step is resulting in a greater-than-expected loss of reads. If a step is showing a greater than expected loss of reads, it is a good idea to go back to that step and troubleshoot why reads are dropping out. The dada2 tutorial has more details about what can be changed at each step. 
 #' 
 getN <- function(x) sum(getUniques(x)) # function to grab sequence counts from output objects
 # tracking reads by counts
-track <- cbind(filt_out, 
-               sapply(ddF[sample.names], getN), 
-               sapply(ddR[sample.names], getN), 
-               sapply(mergers, getN), 
-               rowSums(seqtab.nochim))
-colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
-rownames(track) <- sample.names
+filt_out_track <- filt_out %>%
+  data.frame() %>%
+  mutate(Sample = gsub("(R1\\_)(.{1,})(\\.fastq\\.gz)","\\2",rownames(.))) %>%
+  rename(input = reads.in, filtered = reads.out)
+rownames(filt_out_track) <- filt_out_track$Sample
+
+ddF_track <- data.frame(denoisedF = sapply(ddF[sample.names], getN)) %>%
+  mutate(Sample = row.names(.))
+ddR_track <- data.frame(denoisedR = sapply(ddR[sample.names], getN)) %>%
+  mutate(Sample = row.names(.))
+merge_track <- data.frame(merged = sapply(mergers, getN)) %>%
+  mutate(Sample = row.names(.))
+chim_track <- data.frame(nonchim = rowSums(seqtab.nochim)) %>%
+  mutate(Sample = row.names(.))
+
+
+track <- left_join(filt_out_track, ddF_track, by = "Sample") %>%
+  left_join(ddR_track, by = "Sample") %>%
+  left_join(merge_track, by = "Sample") %>%
+  left_join(chim_track, by = "Sample") %>%
+  replace(., is.na(.), 0) %>%
+  select(Sample, everything())
+row.names(track) <- track$Sample
 head(track)
 
 # tracking reads by percentage
 track_pct <- track %>% 
   data.frame() %>%
   mutate(Sample = rownames(.),
-         filtered_pct = 100 * (filtered/input),
-         denoisedF_pct = 100 * (denoisedF/filtered),
-         denoisedR_pct = 100 * (denoisedR/filtered),
-         merged_pct = 100 * merged/((denoisedF + denoisedR)/2),
-         nonchim_pct = 100 * (nonchim/merged),
-         total_pct = 100 * nonchim/input) %>%
+         filtered_pct = ifelse(filtered == 0, 0, 100 * (filtered/input)),
+         denoisedF_pct = ifelse(denoisedF == 0, 0, 100 * (denoisedF/filtered)),
+         denoisedR_pct = ifelse(denoisedR == 0, 0, 100 * (denoisedR/filtered)),
+         merged_pct = ifelse(merged == 0, 0, 100 * merged/((denoisedF + denoisedR)/2)),
+         nonchim_pct = ifelse(nonchim == 0, 0, 100 * (nonchim/merged)),
+         total_pct = ifelse(nonchim == 0, 0, 100 * nonchim/input)) %>%
   select(Sample, ends_with("_pct"))
 
 # summary stats of tracked reads averaged across samples
 track_pct_avg <- track_pct %>% summarize_at(vars(ends_with("_pct")), 
-                           list(avg = mean))
+                                            list(avg = mean))
 head(track_pct_avg)
+
+track_pct_med <- track_pct %>% summarize_at(vars(ends_with("_pct")), 
+                                            list(avg = stats::median))
+head(track_pct_avg)
+head(track_pct_med)
 
 # Plotting each sample's reads through the pipeline
 track_plot <- track %>% 
@@ -635,9 +693,9 @@ input = load_taxa_table(tax_table_fp, map_fp)
 
 #+ downstream options 2, eval = FALSE, include=TRUE
 input_filt <- filter_taxa_from_input(input, taxa_to_remove = c("Chloroplast","Mitochondria", "Eukaryota"))
-input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 1, taxa_to_remove = "NA")
+input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 2, taxa_to_remove = "NA")
 
-#' 4. Normalize or rarefy your ESV table
+#' 4. Normalize or rarefy your ASV table
 
 #+ downstream options 3, eval = FALSE, include=TRUE
 input_filt <- single_rarefy(input = input_filt, depth = 5000) # CHANGE ME to desired depth.
