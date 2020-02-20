@@ -355,10 +355,11 @@ ggsave(plot = rev_qual_plots, filename = paste0(filter.fp, "/rev_qual_plots.png"
 #' | :--- |
 #' | **WARNING:** THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine the trim and filtering parameters for your data. The following settings are generally appropriate for MiSeq runs that are 2x150 bp. See above for more details. |
 #' | <span> |
-
+# Notes: The maxEE parameter sets the maximum number of “expected errors” allowed in a read, which is a better filter than simply averaging quality scores.
+# The truncQ is very much related with your data, if truncQ is very high, you may delete lots of your reads
 filt_out <- filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
               rev=file.path(subR.fp, fastqRs), filt.rev=file.path(filtpathR, fastqRs),
-              truncLen=c(150,140), maxEE=1, truncQ=11, maxN=0, rm.phix=TRUE,
+              truncLen=c(150,140), maxEE=c(2,2), truncQ=2, maxN=0, rm.phix=TRUE,
               compress=TRUE, verbose=TRUE, multithread=TRUE)
 
 # look at how many reads were kept
@@ -425,11 +426,11 @@ names(filtRs) <- sample.names
 #' #### Learn the error rates
 set.seed(100) # set seed to ensure that randomized steps are replicatable
 
-# Learn forward error rates
-errF <- learnErrors(filtFs, nbases=1e8, multithread=TRUE)
+# Learn forward error rates(Notes:randomize default is FALSE)
+errF <- learnErrors(filtFs, nbases=1e8, multithread=TRUE,randomize = TRUE)
 
 # Learn reverse error rates
-errR <- learnErrors(filtRs, nbases=1e8, multithread=TRUE)
+errR <- learnErrors(filtRs, nbases=1e8, multithread=TRUE,randomize = TRUE)
 
 #' #### Plot Error Rates
 #' We want to make sure that the machine learning algorithm is learning the error rates properly. In the plots below, the red line represents what we should expect the learned error rates to look like for each of the 16 possible base transitions (A->A, A->C, A->G, etc.) and the black line and grey dots represent what the observed error rates are. If the black line and the red lines are very far off from each other, it may be a good idea to increase the ```nbases``` parameter. This alows the machine learning algorthim to train on a larger portion of your data and may help imporve the fit.
