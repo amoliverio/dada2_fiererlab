@@ -445,6 +445,13 @@ saveRDS(errF_plot, paste0(filtpathF, "/errF_plot.rds"))
 saveRDS(errR_plot, paste0(filtpathR, "/errR_plot.rds"))
 
 #' #### Dereplication, sequence inference, and merging of paired-end reads
+#' In this part of the pipeline, dada2 will make decisions about assigning sequences to ASVs (called "sequence inference"). There is a major parameter option in the core function dada() that changes how samples are handled during sequence inference. The parameter <pool = > can be set to: pool = FALSE (default), pool = TRUE, or pool = psuedo. 
+#' Details about this 
+
+#' ##### Default: SAMPLES NOT POOLED
+#' For simple communities or when you do not want increased sensitivity to rare taxa
+#' some more text here with details / links?
+
 # make lists to hold the loop output
 mergers <- vector("list", length(sample.names))
 names(mergers) <- sample.names
@@ -472,6 +479,34 @@ for(sam in sample.names) {
 }
 
 rm(derepF); rm(derepR)
+
+
+#' ##### Alternative: SAMPLES POOLED 
+#' For complex communities when you want to preserve rare taxa
+#' alternative: pool = pseudo?
+#' some text here with details / links?
+
+#+ eval = FALSE, include=TRUE
+
+### same steps, not in loop
+
+# Dereplicate forward reads
+derepF.p <- derepFastq(filtFs)
+names(derepF.p) <- sample.names
+# Infer sequences for forward reads
+dadaF.p <- dada(derepF.p, err=errF, multithread=TRUE, pool = TRUE)
+names(dadaF.p) <- sample.names
+
+# Dereplicate reverse reads
+derepR.p <- derepFastq(filtRs)
+names(derepR.p) <- sample.names
+# Infer sequences for reverse reads
+dadaR.p <- dada(derepR.p, err=errR, multithread=TRUE, pool = TRUE)
+names(dadaR.p) <- sample.names
+
+# Merge reads together
+mergers.p <- mergePairs(dadaF.p, derepF.p, dadaR.p, derepR.p)
+
 
 #' #### Construct sequence table
 seqtab <- makeSequenceTable(mergers)
