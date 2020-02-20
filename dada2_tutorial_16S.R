@@ -12,7 +12,7 @@ knitr::opts_chunk$set(eval = TRUE,
                       out.width = '98%',
                       out.height = '98%')
 
-#' This pipeline runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.
+#' This pipeline runs the dada2 workflow for Big Data (paired-end) from RStudio on the microbe server.
 #' 
 #' We suggest opening the dada2 tutorial online to understand more about each step. The original pipeline on which this tutorial is based can be found here: [https://benjjneb.github.io/dada2/bigdata_paired.html](https://benjjneb.github.io/dada2/bigdata_paired.html)
 #'    
