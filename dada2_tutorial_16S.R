@@ -675,27 +675,14 @@ saveRDS(track_pct, paste0(project.fp, "/tracking_reads_percentage.rds"))
 saveRDS(track_plot, paste0(project.fp, "/tracking_reads_summary_plot.rds"))
 
 
-#' ## Final Steps
+#' ## Next Steps
 #' You can now transfer over the output files onto your local computer. 
-#' The table and taxonomy can be read into R with 'mctoolsr' package as below. 
-
-#+ downstream options 1, eval = FALSE, include=TRUE
-tax_table_fp = 'mypath/seqtab_wTax_mctoolsr.txt'
-map_fp = 'mypath/my_mapfile.txt' 
-input = load_taxa_table(tax_table_fp, map_fp)
+#' The table and taxonomy can be read into R with 'mctoolsr' package or another R package of your chossing. 
 
 #' ### Post-pipeline considerations
-#' After following this pipline, you will need to think about the following in downstream applications (example with 'mctoolsr' R package below):
+#' After following this pipline, you will need to think about the following in downstream applications:
 #' 
 #' 1. Remove mitochondrial and chloroplast sequences
 #' 2. Remove reads assigned as eukaryotes
 #' 3. Remove reads that are unassigned at domain level
-
-#+ downstream options 2, eval = FALSE, include=TRUE
-input_filt <- filter_taxa_from_input(input, taxa_to_remove = c("Chloroplast","Mitochondria", "Eukaryota"))
-input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 2, taxa_to_remove = "NA")
-
 #' 4. Normalize or rarefy your ASV table
-
-#+ downstream options 3, eval = FALSE, include=TRUE
-input_filt <- single_rarefy(input = input_filt, depth = 5000) # CHANGE ME to desired depth.
