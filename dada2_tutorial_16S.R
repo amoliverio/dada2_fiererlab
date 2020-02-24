@@ -31,9 +31,9 @@ knitr::opts_chunk$set(eval = TRUE,
 #'    
 #' 3. Make note of which sequencing platform was used, as this can impact both read quality and downstream analysis. 
 #' 
-#' 4. Decide which database is best suited for your analysis needs. 
+#' 4. Decide which database is best suited for your analysis needs. Note that DADA2 requires databases be in a custom format!
 #' 
-#' 
+#' 5. For additional tutorials and reporting issues, please see link below
 #' 
 #' ## Set up (part 1) - Steps before starting pipeline ##
 #' 
