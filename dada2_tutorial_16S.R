@@ -22,6 +22,18 @@ knitr::opts_chunk$set(eval = TRUE,
 #' | **NOTE:** There is a slightly different pipeline for ITS and non-"Big data" workflows. The non-"Big data" pipeline, in particular, has very nice detailed explanations for each step and can be found here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) |
 #' | <span> |
 #' 
+#' ## Preliminary Checklist: Before You Begin (part 0) ###
+#' 
+#' 1. Check to make sure you know what your target 'AMPLICON' length. This can vary between primer sets, as well as WITHIN primer sets. For example, ITS (internal transcribed spacer) amplicon can vary from ~100 bps to 300 bps.
+#' 
+#' 2. Check to make sure you know how long your reads should be (i.e., how long should the reads be coming off the sequencer?) This is not the same as fragment length, as many times, especially with longer fragments, the entire fragment
+#'    is not being sequenced in one direction. 
+#'    
+#' 3. Make note of which sequencing platform was used, as this can impact both read quality and downstream analysis. 
+#' 
+#' 4. Decide which database is best suited for your analysis needs. 
+#' 
+#' 
 #' 
 #' ## Set up (part 1) - Steps before starting pipeline ##
 #' 
