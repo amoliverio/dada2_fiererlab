@@ -445,12 +445,17 @@ saveRDS(errF_plot, paste0(filtpathF, "/errF_plot.rds"))
 saveRDS(errR_plot, paste0(filtpathR, "/errR_plot.rds"))
 
 #' #### Dereplication, sequence inference, and merging of paired-end reads
-#' In this part of the pipeline, dada2 will make decisions about assigning sequences to ASVs (called "sequence inference"). There is a major parameter option in the core function dada() that changes how samples are handled during sequence inference. The parameter <pool = > can be set to: pool = FALSE (default), pool = TRUE, or pool = psuedo. 
-#' Details about this 
+#' In this part of the pipeline, dada2 will make decisions about assigning sequences to ASVs (called "sequence inference"). There is a major parameter option in the core function dada() that changes how samples are handled during sequence inference. The parameter ```pool = ``` can be set to: ```pool = FALSE``` (default), ```pool = TRUE```, or ```pool = psuedo```. For details on parameter choice, please see below, and further information on this blogpost [http://fiererlab.org/2020/02/17/whats-in-a-number-estimating-microbial-richness-using-dada2/](http://fiererlab.org/2020/02/17/whats-in-a-number-estimating-microbial-richness-using-dada2/), and explanation on the dada2 tutorial [https://benjjneb.github.io/dada2/pool.html](https://benjjneb.github.io/dada2/pool.html)
+#' 
+#' **Details**
+#' ```pool = FALSE```: Sequence information is not shared between samples. Fast processing time, less sensitivity to rare taxa.
+#' ```pool = psuedo```: Sequence information is shared in a separate "prior" step. Intermediate processing time, intermediate sensitivity to rare taxa. 
+#' ```pool = TRUE```: Sequence information from all samples is pooled together. Slow processing time, most sensitivity to rare taxa. 
+
+
 
 #' ##### Default: SAMPLES NOT POOLED
-#' For simple communities or when you do not want increased sensitivity to rare taxa
-#' some more text here with details / links?
+#' For simple communities or when you do not need high sensitivity for rare taxa
 
 # make lists to hold the loop output
 mergers <- vector("list", length(sample.names))
@@ -483,8 +488,7 @@ rm(derepF); rm(derepR)
 
 #' ##### Alternative: SAMPLES POOLED 
 #' For complex communities when you want to preserve rare taxa
-#' alternative: pool = pseudo?
-#' some text here with details / links?
+#' alternative: swap ```pool = TRUE``` with ```pool = "pseudo"```
 
 #+ eval = FALSE, include=TRUE
 
@@ -505,7 +509,7 @@ dadaR.p <- dada(derepR.p, err=errR, multithread=TRUE, pool = TRUE)
 names(dadaR.p) <- sample.names
 
 # Merge reads together
-mergers.p <- mergePairs(dadaF.p, derepF.p, dadaR.p, derepR.p)
+mergers <- mergePairs(dadaF.p, derepF.p, dadaR.p, derepR.p)
 
 
 #' #### Construct sequence table
