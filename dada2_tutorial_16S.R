@@ -38,9 +38,12 @@ knitr::opts_chunk$set(eval = TRUE,
 #'    
 #'    See the following link for details regarding database formatting: https://benjjneb.github.io/dada2/training.html#formatting-custom-databases
 #' 
-#' 5. For additional tutorials and reporting issues, please see link below
-#' 
-#' 
+#' 5. For additional tutorials and reporting issues, please see link below:
+#'    dada2 tutorial: https://benjjneb.github.io/dada2/tutorial.html
+#'    dada2 pipeline issues*: https://github.com/fiererlab/dada2_fiererlab/issues 
+#'    *Note by default, only 'OPEN' issues are shown. You can look at all issues by removing "is:open" in the search bar at the top.
+#'    
+#'  
 #' 
 #' ## Set up (part 1) - Steps before starting pipeline ##
 #' 
