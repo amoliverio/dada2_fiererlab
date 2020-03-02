@@ -12,7 +12,7 @@ knitr::opts_chunk$set(eval = TRUE,
                       out.width = '98%',
                       out.height = '98%')
 
-#' This pipeline runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.
+#' This pipeline runs the dada2 workflow for Big Data (paired-end) from RStudio on the microbe server.
 #' 
 #' We suggest opening the dada2 tutorial online to understand more about each step. The original pipeline on which this tutorial is based can be found here: [https://benjjneb.github.io/dada2/bigdata_paired.html](https://benjjneb.github.io/dada2/bigdata_paired.html)
 #'    
@@ -22,6 +22,28 @@ knitr::opts_chunk$set(eval = TRUE,
 #' | **NOTE:** There is a slightly different pipeline for ITS and non-"Big data" workflows. The non-"Big data" pipeline, in particular, has very nice detailed explanations for each step and can be found here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) |
 #' | <span> |
 #' 
+#' ## Preliminary Checklist: Before You Begin (part 0) ###
+#' 
+#' 1. Check to make sure you know what your target 'AMPLICON' length. This can vary between primer sets, as well as WITHIN primer sets. For example, ITS (internal transcribed spacer) amplicon can vary from ~100 bps to 300 bps.
+#'
+#' For examples regarding commonly used primer sets (515f/806r, Fungal ITS2, 1391f/EukBr) see protocols on the Earth Microbiome Project website: http://press.igsb.anl.gov/earthmicrobiome/protocols-and-standards/
+#' 
+#' 2. Check to make sure you know how long your reads should be (i.e., how long should the reads be coming off the sequencer?) This is not the same as fragment length, as many times, especially with longer fragments, the entire fragment
+#'    is not being sequenced in one direction. When long _amplicons_ are not sequenced with a _read length_ that allows for substantial overlap between the forward and reverse read, you can potentially insert biases into the data.
+#'    If you intend to merge your paired end reads, ensure that your read length is appropriate. For example, with a MiSeq 2 x 150, 300 cycle kit, you will get bidirectional reads of 150 base pairs. 
+#'    
+#' 3. Make note of which sequencing platform was used, as this can impact both read quality and downstream analysis. 
+#' 
+#' 4. Decide which database is best suited for your analysis needs. Note that DADA2 requires databases be in a custom format! If a custom database is required, further formatting will be needed to ensure that it can run correctly in dada2.
+#'    
+#'    See the following link for details regarding database formatting: https://benjjneb.github.io/dada2/training.html#formatting-custom-databases
+#' 
+#' 5. For additional tutorials and reporting issues, please see link below:
+#'    dada2 tutorial: https://benjjneb.github.io/dada2/tutorial.html
+#'    dada2 pipeline issues*: https://github.com/fiererlab/dada2_fiererlab/issues 
+#'    *Note by default, only 'OPEN' issues are shown. You can look at all issues by removing "is:open" in the search bar at the top.
+#'    
+#'  
 #' 
 #' ## Set up (part 1) - Steps before starting pipeline ##
 #' 
