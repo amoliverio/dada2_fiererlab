@@ -178,7 +178,7 @@ you do not need to create the subdirectories but they are nice to have
 for organizational purposes. 
 
 ````{r }
-project.fp <- "/data/cwalsh/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
+project.fp <- "/data/YOURUSERNAMEHERE/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
 
 # Set up names of sub directories to stay organized
 preprocess.fp <- file.path(project.fp, "01_preprocess")
@@ -252,7 +252,7 @@ filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE)
 
 | <span> |
 | :--- |
-| **Note:** The multithred = TRUE setting can sometimes generate an error (names not equal). If this occurs, try rerunning the function. The error normally does not occur the second time. |
+| **Note:** The `multithread = TRUE` setting can sometimes generate an error (names not equal). If this occurs, try rerunning the function. The error normally does not occur the second time. |
 | <span> |
 
 #### Prepare the primers sequences and custom functions for analyzing the results from cutadapt
@@ -519,7 +519,7 @@ saveRDS(errR_plot, paste0(filtpathR, "/errR_plot.rds"))
 ````
 
 #### Dereplication, sequence inference, and merging of paired-end reads
-In this part of the pipeline, dada2 will make decisions about assigning sequences to ASVs (called "sequence inference"). There is a major parameter option in the core function dada() that changes how samples are handled during sequence inference. The parameter ```pool = ``` can be set to: ```pool = FALSE``` (default), ```pool = TRUE```, or ```pool = psuedo```. For details on parameter choice, please see below, and further information on this blogpost [http://fiererlab.org/2020/02/17/whats-in-a-number-estimating-microbial-richness-using-dada2/](http://fiererlab.org/2020/02/17/whats-in-a-number-estimating-microbial-richness-using-dada2/), and explanation on the dada2 tutorial [https://benjjneb.github.io/dada2/pool.html](https://benjjneb.github.io/dada2/pool.html)
+In this part of the pipeline, dada2 will make decisions about assigning sequences to ASVs (called "sequence inference"). There is a major parameter option in the core function dada() that changes how samples are handled during sequence inference. The parameter ```pool = ``` can be set to: ```pool = FALSE``` (default), ```pool = TRUE```, or ```pool = psuedo```. For details on parameter choice, please see below, and further information on this blogpost [http://fiererlab.org/2020/02/17/whats-in-a-number-estimating-microbial-richness-using-dada2/](http://fiererlab.org/2020/02/17/whats-in-a-number-estimating-microbial-richness-using-dada2/), and explanation on the dada2 tutorial [https://benjjneb.github.io/dada2/pool.html](https://benjjneb.github.io/dada2/pool.html).
 
 **Details**   
 ```pool = FALSE```: Sequence information is not shared between samples. Fast processing time, less sensitivity to rare taxa.   
