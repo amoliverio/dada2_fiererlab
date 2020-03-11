@@ -1,5 +1,6 @@
 #'# dada2 tutorial with MiSeq dataset for Fierer Lab 
-#' *This tutorial created by Angela Oliverio and Hannah Holland-Moritz, and updated May 13th, 2019.*
+#' *This tutorial created by Angela Oliverio and Hannah Holland-Moritz, and is maintained by current members of the Fierer Lab (Corinne Walsh, Matt Gebert, Kunkun Fan)*     
+#' *Updated March 2nd, 2020*
 #+ setup, include=FALSE
 # some setup options for outputing markdown files; feel free to ignore these
 knitr::opts_chunk$set(eval = TRUE, 
@@ -12,7 +13,7 @@ knitr::opts_chunk$set(eval = TRUE,
                       out.width = '98%',
                       out.height = '98%')
 
-#' This pipeline runs the dada2 workflow for Big Data (paired-end) from Rstudio on the microbe server.
+#' This pipeline runs the dada2 workflow for Big Data (paired-end) from RStudio on the microbe server.
 #' 
 #' We suggest opening the dada2 tutorial online to understand more about each step. The original pipeline on which this tutorial is based can be found here: [https://benjjneb.github.io/dada2/bigdata_paired.html](https://benjjneb.github.io/dada2/bigdata_paired.html)
 #'    
@@ -22,6 +23,28 @@ knitr::opts_chunk$set(eval = TRUE,
 #' | **NOTE:** There is a slightly different pipeline for ITS and non-"Big data" workflows. The non-"Big data" pipeline, in particular, has very nice detailed explanations for each step and can be found here: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html) |
 #' | <span> |
 #' 
+#' ## Preliminary Checklist (part 0) - Before You Begin  ##
+#' 
+#' 1. Check to make sure you know what your target 'AMPLICON' length. This can vary between primer sets, as well as WITHIN primer sets. For example, ITS (internal transcribed spacer) amplicon can vary from ~100 bps to 300 bps
+#'
+#'    For examples regarding commonly used primer sets (515f/806r, Fungal ITS2, 1391f/EukBr) see protocols on the Earth Microbiome Project website: [http://press.igsb.anl.gov/earthmicrobiome/protocols-and-standards/](http://press.igsb.anl.gov/earthmicrobiome/protocols-and-standards/)
+#' 
+#' 2. Check to make sure you know how long your reads should be (i.e., how long should the reads be coming off the sequencer?) This is not the same as fragment length, as many times, especially with longer fragments, the entire fragment
+#'    is not being sequenced in one direction. When long _amplicons_ are not sequenced with a _read length_ that allows for substantial overlap between the forward and reverse read, you can potentially insert biases into the data.
+#'    If you intend to merge your paired end reads, ensure that your read length is appropriate. For example, with a MiSeq 2 x 150, 300 cycle kit, you will get bidirectional reads of 150 base pairs. 
+#'    
+#' 3. Make note of which sequencing platform was used, as this can impact both read quality and downstream analysis. 
+#' 
+#' 4. Decide which database is best suited for your analysis needs. Note that DADA2 requires databases be in a custom format! If a custom database is required, further formatting will be needed to ensure that it can run correctly in dada2.
+#'    
+#'    See the following link for details regarding database formatting: [https://benjjneb.github.io/dada2/training.html#formatting-custom-databases](https://benjjneb.github.io/dada2/training.html#formatting-custom-databases)  
+#' 
+#' 5. For additional tutorials and reporting issues, please see link below:    
+#'    dada2 tutorial: [https://benjjneb.github.io/dada2/tutorial.html](https://benjjneb.github.io/dada2/tutorial.html)    
+#'    dada2 pipeline issues*: [https://github.com/fiererlab/dada2_fiererlab/issues](https://github.com/fiererlab/dada2_fiererlab/issues)     
+#'    
+#'    *Note by default, only 'OPEN' issues are shown. You can look at all issues by removing "is:open" in the search bar at the top.  
+#'    
 #' 
 #' ## Set up (part 1) - Steps before starting pipeline ##
 #' 
@@ -145,7 +168,7 @@ R2.fp <- file.path(data.fp, "Undetermined_S0_L001_R2_001.fastq.gz")
 #' you do not need to create the subdirectories but they are nice to have
 #' for organizational purposes. 
 
-project.fp <- "/data/YOUR_USERNAME/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
+project.fp <- "/data/cwalsh/MicroMethods_dada2_tutorial" # CHANGE ME to project directory; don't append with a "/"
 
 # Set up names of sub directories to stay organized
 preprocess.fp <- file.path(project.fp, "01_preprocess")
@@ -210,6 +233,11 @@ fnRs.filtN <- file.path(preprocess.fp, "filtN", basename(fnRs))
 filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE) 
 # CHANGE multithread to FALSE on Windows (here and elsewhere in the program)
 
+#' | <span> |
+#' | :--- |
+#' | **Note:** The `multithread = TRUE` setting can sometimes generate an error (names not equal). If this occurs, try rerunning the function. The error normally does not occur the second time. |
+#' | <span> |
+#'
 
 #' #### Prepare the primers sequences and custom functions for analyzing the results from cutadapt
 #' Assign the primers you used to "FWD" and "REV" below. Note primers should be not be reverse complemented ahead of time. Our tutorial data uses 515f and 806br those are the primers below. Change if you sequenced with other primers.
@@ -353,12 +381,12 @@ ggsave(plot = rev_qual_plots, filename = paste0(filter.fp, "/rev_qual_plots.png"
 #'
 #' | <span> |
 #' | :--- |
-#' | **WARNING:** THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine the trim and filtering parameters for your data. The following settings are generally appropriate for MiSeq runs that are 2x150 bp. See above for more details. |
+#' | **WARNING:** THESE PARAMETERS ARE NOT OPTIMAL FOR ALL DATASETS. Make sure you determine the trim and filtering parameters for your data. The following settings are generally appropriate for MiSeq runs that are 2x150 bp. These are the recommended default parameters from the dada2 pipeline. See above for more details. |
 #' | <span> |
-
+#' 
 filt_out <- filterAndTrim(fwd=file.path(subF.fp, fastqFs), filt=file.path(filtpathF, fastqFs),
               rev=file.path(subR.fp, fastqRs), filt.rev=file.path(filtpathR, fastqRs),
-              truncLen=c(150,140), maxEE=1, truncQ=11, maxN=0, rm.phix=TRUE,
+              truncLen=c(150,140), maxEE=c(2,2), truncQ=2, maxN=0, rm.phix=TRUE,
               compress=TRUE, verbose=TRUE, multithread=TRUE)
 
 # look at how many reads were kept
@@ -425,17 +453,17 @@ names(filtRs) <- sample.names
 #' #### Learn the error rates
 set.seed(100) # set seed to ensure that randomized steps are replicatable
 
-# Learn forward error rates
-errF <- learnErrors(filtFs, nbases=1e8, multithread=TRUE)
+# Learn forward error rates (Notes: randomize default is FALSE)
+errF <- learnErrors(filtFs, nbases = 1e8, multithread = TRUE, randomize = TRUE)
 
 # Learn reverse error rates
-errR <- learnErrors(filtRs, nbases=1e8, multithread=TRUE)
+errR <- learnErrors(filtRs, nbases = 1e8, multithread = TRUE, randomize = TRUE)
 
 #' #### Plot Error Rates
 #' We want to make sure that the machine learning algorithm is learning the error rates properly. In the plots below, the red line represents what we should expect the learned error rates to look like for each of the 16 possible base transitions (A->A, A->C, A->G, etc.) and the black line and grey dots represent what the observed error rates are. If the black line and the red lines are very far off from each other, it may be a good idea to increase the ```nbases``` parameter. This alows the machine learning algorthim to train on a larger portion of your data and may help imporve the fit.
 
-errF_plot <- plotErrors(errF, nominalQ=TRUE)
-errR_plot <- plotErrors(errR, nominalQ=TRUE)
+errF_plot <- plotErrors(errF, nominalQ = TRUE)
+errR_plot <- plotErrors(errR, nominalQ = TRUE)
 
 errF_plot
 errR_plot
@@ -445,6 +473,17 @@ saveRDS(errF_plot, paste0(filtpathF, "/errF_plot.rds"))
 saveRDS(errR_plot, paste0(filtpathR, "/errR_plot.rds"))
 
 #' #### Dereplication, sequence inference, and merging of paired-end reads
+#' In this part of the pipeline, dada2 will make decisions about assigning sequences to ASVs (called "sequence inference"). There is a major parameter option in the core function dada() that changes how samples are handled during sequence inference. The parameter ```pool = ``` can be set to: ```pool = FALSE``` (default), ```pool = TRUE```, or ```pool = psuedo```. For details on parameter choice, please see below, and further information on this blogpost [http://fiererlab.org/2020/02/17/whats-in-a-number-estimating-microbial-richness-using-dada2/](http://fiererlab.org/2020/02/17/whats-in-a-number-estimating-microbial-richness-using-dada2/), and explanation on the dada2 tutorial [https://benjjneb.github.io/dada2/pool.html](https://benjjneb.github.io/dada2/pool.html).
+#' 
+#' **Details**   
+#' ```pool = FALSE```: Sequence information is not shared between samples. Fast processing time, less sensitivity to rare taxa.   
+#' ```pool = psuedo```: Sequence information is shared in a separate "prior" step. Intermediate processing time, intermediate sensitivity to rare taxa.   
+#' ```pool = TRUE```: Sequence information from all samples is pooled together. Slow processing time, most sensitivity to rare taxa.   
+#' 
+
+#' #### Default: SAMPLES NOT POOLED
+#' For simple communities or when you do not need high sensitivity for rare taxa
+
 # make lists to hold the loop output
 mergers <- vector("list", length(sample.names))
 names(mergers) <- sample.names
@@ -459,12 +498,12 @@ for(sam in sample.names) {
     # Dereplicate forward reads
     derepF <- derepFastq(filtFs[[sam]])
     # Infer sequences for forward reads
-    dadaF <- dada(derepF, err=errF, multithread=TRUE)
+    dadaF <- dada(derepF, err = errF, multithread = TRUE)
     ddF[[sam]] <- dadaF
     # Dereplicate reverse reads
     derepR <- derepFastq(filtRs[[sam]])
     # Infer sequences for reverse reads
-    dadaR <- dada(derepR, err=errR, multithread=TRUE)
+    dadaR <- dada(derepR, err = errR, multithread = TRUE)
     ddR[[sam]] <- dadaR
     # Merge reads together
     merger <- mergePairs(ddF[[sam]], derepF, ddR[[sam]], derepR)
@@ -472,6 +511,32 @@ for(sam in sample.names) {
 }
 
 rm(derepF); rm(derepR)
+
+
+#' #### Alternative: SAMPLES POOLED 
+#' For complex communities when you want to preserve rare taxa
+#' alternative: swap ```pool = TRUE``` with ```pool = "pseudo"```
+
+#+ eval = FALSE, include=TRUE
+# same steps, not in loop
+
+# Dereplicate forward reads
+derepF.p <- derepFastq(filtFs)
+names(derepF.p) <- sample.names
+# Infer sequences for forward reads
+dadaF.p <- dada(derepF.p, err = errF, multithread = TRUE, pool = TRUE)
+names(dadaF.p) <- sample.names
+
+# Dereplicate reverse reads
+derepR.p <- derepFastq(filtRs)
+names(derepR.p) <- sample.names
+# Infer sequences for reverse reads
+dadaR.p <- dada(derepR.p, err = errR, multithread = TRUE, pool = TRUE)
+names(dadaR.p) <- sample.names
+
+# Merge reads together
+mergers <- mergePairs(dadaF.p, derepF.p, dadaR.p, derepR.p)
+
 
 #' #### Construct sequence table
 seqtab <- makeSequenceTable(mergers)
@@ -675,27 +740,14 @@ saveRDS(track_pct, paste0(project.fp, "/tracking_reads_percentage.rds"))
 saveRDS(track_plot, paste0(project.fp, "/tracking_reads_summary_plot.rds"))
 
 
-#' ## Final Steps
+#' ## Next Steps
 #' You can now transfer over the output files onto your local computer. 
-#' The table and taxonomy can be read into R with 'mctoolsr' package as below. 
-
-#+ downstream options 1, eval = FALSE, include=TRUE
-tax_table_fp = 'mypath/seqtab_wTax_mctoolsr.txt'
-map_fp = 'mypath/my_mapfile.txt' 
-input = load_taxa_table(tax_table_fp, map_fp)
+#' The table and taxonomy can be read into R with 'mctoolsr' package or another R package of your choosing. 
 
 #' ### Post-pipeline considerations
-#' After following this pipline, you will need to think about the following in downstream applications (example with 'mctoolsr' R package below):
+#' After following this pipeline, you will need to think about the following in downstream applications:
 #' 
 #' 1. Remove mitochondrial and chloroplast sequences
 #' 2. Remove reads assigned as eukaryotes
 #' 3. Remove reads that are unassigned at domain level
-
-#+ downstream options 2, eval = FALSE, include=TRUE
-input_filt <- filter_taxa_from_input(input, taxa_to_remove = c("Chloroplast","Mitochondria", "Eukaryota"))
-input_filt <- filter_taxa_from_input(input_filt, at_spec_level = 2, taxa_to_remove = "NA")
-
 #' 4. Normalize or rarefy your ASV table
-
-#+ downstream options 3, eval = FALSE, include=TRUE
-input_filt <- single_rarefy(input = input_filt, depth = 5000) # CHANGE ME to desired depth.
