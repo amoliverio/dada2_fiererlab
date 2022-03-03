@@ -1,6 +1,6 @@
 #'# dada2 tutorial with MiSeq dataset for Fierer Lab 
-#' *This tutorial created by Angela Oliverio and Hannah Holland-Moritz, and is maintained by current members of the Fierer Lab (Corinne Walsh, Matt Gebert, Kunkun Fan)*     
-#' *Updated March 2nd, 2020*
+#' *This tutorial created by Angela Oliverio and Hannah Holland-Moritz, and is maintained by current members of the Fierer Lab (Corinne Walsh, Matt Gebert, Claire Winfrey, Michael Hoffert)*     
+#' *Updated March 3rd, 2022*
 #+ setup, include=FALSE
 # some setup options for outputing markdown files; feel free to ignore these
 knitr::opts_chunk$set(eval = TRUE, 
@@ -103,10 +103,10 @@ knitr::opts_chunk$set(eval = TRUE,
 #'
 #+ package installation, eval = FALSE, include=TRUE
 install.packages("BiocManager")
-BiocManager::install("dada2", version = "3.8")
+BiocManager::install("dada2", version = "3.14")
 
-source("https://bioconductor.org/biocLite.R")
-biocLite("ShortRead")
+# source("https://bioconductor.org/biocLite.R")
+BiocManager::install("ShortRead")
 install.packages("dplyr")
 install.packages("tidyr")
 install.packages("Hmisc")
@@ -136,6 +136,7 @@ library(plotly); packageVersion("plotly") # enables creation of interactive grap
 #' For this tutorial we will be working with some samples that we obtained 16S amplicon data for, from a Illumina Miseq run. The data for these samples can be found on the CME website. [http://cme.colorado.edu/projects/bioinformatics-tutorials](http://cme.colorado.edu/projects/bioinformatics-tutorials)
 #' 
 # Set up pathway to idemp (demultiplexing tool) and test
+# type "which idemp" in terminal to identify idemp path
 idemp <- "/usr/bin/idemp" # CHANGE ME if not on microbe
 system2(idemp) # Check that idemp is in your path and you can run shell commands from R
 
